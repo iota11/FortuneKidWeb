@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fortune Kid Inc. · Interactive Entertainment Studio</title>
+  <meta name="description" content="Fortune Kid Inc. is a New Jersey interactive-entertainment studio building original mobile games and 3D-printed collectibles." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- 顶部导航 -->
+  <header class="nav">
+    <a class="brand" href="#top">
+      <span class="brand-mark">🧸</span>
+      <span class="brand-name">FortuneKid</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#about">About</a>
+      <a href="#services">What We Build</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <!-- Hero 主视觉 -->
+  <section class="hero" id="top">
+    <div class="hero-inner">
+      <p class="eyebrow">FORTUNE KID INC.</p>
+      <h1>Play, built<br />with heart.</h1>
+      <p class="lede">Fortune Kid is an interactive-entertainment studio crafting original mobile games and 3D-printed collectibles — short-session, easy to love, made for players everywhere.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#contact">Get in touch</a>
+        <a class="btn btn-ghost" href="#services">See what we build</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 关于我们 -->
+  <section class="section" id="about">
+    <div class="section-inner">
+      <h2>About</h2>
+      <p class="section-lead">
+        Fortune Kid Inc. is a New Jersey&ndash;based interactive-entertainment company
+        (software publisher) building a growing portfolio of original mobile games and
+        physical collectibles tied to its own game IP. We ship small, high-craft titles
+        on a fast cadence, and pair them with made-to-order merchandise players can hold.
+      </p>
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-num">2026</span>
+          <span class="stat-label">Founded in New Jersey</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">Global</span>
+          <span class="stat-label">App Store &amp; Google Play</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">Craft</span>
+          <span class="stat-label">Art &amp; tech, together</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 我们提供 -->
+  <section class="section section-alt" id="services">
+    <div class="section-inner">
+      <h2>What We Build</h2>
+      <div class="cards">
+        <article class="card">
+          <div class="card-icon">🎮</div>
+          <h3>Original Mobile Games</h3>
+          <p>Short-session, easy-to-learn premium titles for casual players worldwide — including the <em>Roof Band</em> instrument-simulation series, released globally on the App Store and Google Play.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">🧩</div>
+          <h3>3D-Printed Collectibles</h3>
+          <p>Made-to-order toys, figures, and merchandise derived from our own game IP — produced with 3D and UV printing for direct-to-consumer fans.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">🚀</div>
+          <h3>More In The Works</h3>
+          <p>We're a small team obsessed with the craft where art meets engineering — with new titles and a flagship creative platform in active development.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 联系我们 -->
+  <section class="section" id="contact">
+    <div class="section-inner contact">
+      <h2>Contact</h2>
+      <p class="section-lead">Business inquiries, partnerships, or press &mdash; we'd love to hear from you.</p>
+      <a class="contact-mail" href="mailto:hello@fortunekidstudio.com">hello@fortunekidstudio.com</a>
+      <p class="addr">Fortune Kid Inc. &middot; Bridgewater, New Jersey, USA</p>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <p>© <span id="year">2026</span> Fortune Kid Inc. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // 自动更新页脚年份
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
