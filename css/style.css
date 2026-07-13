@@ -43,7 +43,7 @@ a { color: inherit; text-decoration: none; }
   border-bottom: 1px solid rgba(43, 35, 32, 0.06);
 }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.2rem; }
-.brand-mark { font-size: 1.5rem; }
+.brand-mark { height: 32px; width: auto; display: block; border-radius: 50%; }
 .nav-links { display: flex; gap: clamp(14px, 3vw, 32px); font-weight: 600; color: var(--ink-soft); }
 .nav-links a:hover { color: var(--accent); }
 
