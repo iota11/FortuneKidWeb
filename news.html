@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>News · Fortune Kid Inc.</title>
+  <meta name="description" content="Launches, press, and partnerships from Fortune Kid Inc." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/StudioLogo_32.png" />
+  <link rel="apple-touch-icon" sizes="96x96" href="assets/StudioLogo_96.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+  <header class="nav" id="nav">
+    <a class="brand" href="index.html#top">
+      <img class="brand-mark" src="assets/StudioLogo_180.png" alt="Fortune Kid logo" />
+      <span class="brand-name">FortuneKid</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="index.html#top">About</a>
+      <a href="games.html">Our Games</a>
+      <a href="news.html" class="is-current" aria-current="page">News</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+  </header>
+
+  <section class="page-hero">
+    <div class="section-inner">
+      <p class="eyebrow reveal">NEWS</p>
+      <h1 class="reveal">Launches, press, partnerships.</h1>
+      <p class="lede reveal">
+        What we shipped and when. This page is the running record &mdash; the traction signal is
+        the list getting longer, not any single entry.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+
+      <!--
+        ===== 加一篇 post =====
+        把下面 <template id="post-template"> 里的 <article> 复制出来，粘到 .posts 顶部
+        （最新的在最上面），然后：
+          1. <time datetime="YYYY-MM-DD"> 两处都要改（属性和显示文本）
+          2. .post-tag 用：Launch / Press / Partnership / Build note
+          3. 摘要控制在两三句；需要正文页时，把 .post-title 换成
+             <a href="news-<slug>.html">…</a> 并另建该页
+        贴上第一篇之后，删掉下面的 .empty 空状态块。
+      -->
+
+      <div class="posts">
+        <div class="empty reveal">
+          <p class="empty-title">Nothing published yet.</p>
+          <p class="empty-note">
+            Our first titles are in development. Launch, press, and partnership announcements will
+            be posted here as they happen. For the current build status and roadmap,
+            <a href="index.html#contact">request the deck</a>.
+          </p>
+        </div>
+      </div>
+
+      <template id="post-template">
+        <article class="post reveal">
+          <div class="post-meta">
+            <time datetime="2026-01-01">January 1, 2026</time>
+            <span class="post-tag">Launch</span>
+          </div>
+          <div class="post-body">
+            <h2 class="post-title">Headline in sentence case</h2>
+            <p class="post-summary">
+              Two or three sentences. What happened, on what date, and why it matters to someone
+              tracking the company. No adjectives doing work that a number could do.
+            </p>
+          </div>
+        </article>
+      </template>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <nav class="footer-links" aria-label="Footer">
+        <a href="index.html#top">About</a>
+        <a href="games.html">Our Games</a>
+        <a href="uni.html">Uni</a>
+        <a href="news.html">News</a>
+        <a href="index.html#contact">Contact</a>
+      </nav>
+      <p class="footer-legal">
+        Fortune Kid Inc. &middot; A corporation organized under the laws of the State of New Jersey, USA
+      </p>
+      <p class="footer-meta">
+        Bridgewater, New Jersey, USA &middot; © <span id="year">2026</span> Fortune Kid Inc. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <script src="js/main.js" defer></script>
+</body>
+</html>

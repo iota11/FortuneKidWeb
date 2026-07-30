@@ -1,0 +1,346 @@
+/* ===== UNI 产品页：双栏 + 滚动驱动的 3D 面板 =====
+   右栏物体是用 CSS 3D 图元搭的占位场景。所有状态都由
+   js/uni.js 写进下面这几个自定义属性，CSS 只负责把数值翻译成变换：
+
+     --rot-x / --rot-y   世界旋转（deg，无单位数值）
+     --scale             世界缩放
+     --asm               装配进度 0→1（03 段）
+     --ghost             remix 分身显隐 0→1（04 段）
+     --swap              A/B 两个场景的切换 0→1（05 段）
+
+   没有 JS 时这些值保留下面的默认值，页面显示一个静态的成品场景。 */
+
+.uni {
+  --m-stone:   #d9d3c6;
+  --m-stone-l: #e6e1d6;
+  --m-grass:   #8fbf8a;
+  --m-cream:   #f0ece2;
+  --m-cream-d: #e2ddd0;
+  --m-wood:    #b08a5f;
+  --m-wood-d:  #9c7850;
+  --m-leaf:    #5fa981;
+  --m-leaf-l:  #76c096;
+  --m-sand:    #e8dcc0;
+  --m-ink:     #3c414a;
+  --m-glow:    #f2b950;
+  --m-bloom:   #e88aa6;
+  --m-gold:    #f4c95d;
+  --m-deep:    #3f5f9e;
+  --m-deep-l:  #5a7fc4;
+}
+
+/* ===== 布局 ===== */
+.uni-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(24px, 5vw, 72px);
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 5vw, 48px);
+}
+
+/* ===== 左栏：分段文案 ===== */
+.uni-copy { min-width: 0; }
+
+.uni-step {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 64px 0;
+  max-width: 34rem;
+}
+.uni-step--wide { min-height: 118vh; }
+
+.step-num {
+  font-family: var(--display);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  color: var(--accent);
+  margin-bottom: 18px;
+}
+.step-lead {
+  font-family: var(--display);
+  font-size: clamp(3.2rem, 11vw, 6.4rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
+  margin-bottom: 22px;
+}
+.step-title {
+  font-size: clamp(1.8rem, 3.8vw, 2.7rem);
+  margin-bottom: 18px;
+}
+.step-body {
+  font-size: clamp(1.05rem, 1.6vw, 1.22rem);
+  color: var(--ink-soft);
+  margin-bottom: 14px;
+}
+.step-body:last-child { margin-bottom: 0; }
+.step-body--key { color: var(--ink); font-weight: 500; }
+
+.scroll-cue {
+  margin-top: 44px;
+  font-family: var(--display);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  color: var(--ink-soft);
+}
+.scroll-cue::after {
+  content: "";
+  display: block;
+  width: 1px;
+  height: 34px;
+  margin-top: 10px;
+  background: linear-gradient(var(--ink-soft), transparent);
+  animation: cueDrop 1.9s ease-in-out infinite;
+  transform-origin: top;
+}
+@keyframes cueDrop {
+  0%, 100% { transform: scaleY(0.4); opacity: 0.35; }
+  50%      { transform: scaleY(1);   opacity: 1; }
+}
+
+/* 非活动段落压暗，把注意力留给当前这一段（仅桌面端 sticky 模式下） */
+@media (min-width: 901px) {
+  /* 尾部留白：让 sticky 面板在 06 段读完后还多钉一会儿，
+     否则"动作慢下来"这个收束镜头会被提前解除固定截断。 */
+  .uni-copy { padding-bottom: 24vh; }
+
+  .uni-layout.is-live .uni-step {
+    opacity: 0.3;
+    transition: opacity 0.45s ease;
+  }
+  .uni-layout.is-live .uni-step.is-active { opacity: 1; }
+}
+
+/* ===== 右栏：sticky 面板 ===== */
+.uni-stage {
+  --rot-x: -18;
+  --rot-y: -26;
+  --scale: 0.95;
+  --asm: 1;
+  --ghost: 0;
+  --swap: 0;
+  --fit: 1;
+
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  z-index: 1;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.scene {
+  position: absolute;
+  inset: clamp(16px, 3vw, 40px);
+  border-radius: 22px;
+  background:
+    radial-gradient(120% 90% at 50% 12%, #fafbff 0%, var(--bg-alt) 62%, #dfe3f3 100%);
+  border: 1px solid var(--line);
+  perspective: 1400px;
+  perspective-origin: 50% 44%;
+}
+
+.world {
+  position: absolute;
+  left: 50%;
+  top: 60%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  transform:
+    scale3d(
+      calc(var(--fit) * var(--scale)),
+      calc(var(--fit) * var(--scale)),
+      calc(var(--fit) * var(--scale)))
+    rotateX(calc(var(--rot-x) * 1deg))
+    rotateY(calc(var(--rot-y) * 1deg));
+}
+
+.ground-shadow {
+  position: absolute;
+  left: -170px;
+  top: -170px;
+  width: 340px;
+  height: 340px;
+  background: radial-gradient(closest-side, rgba(20, 22, 26, 0.22), rgba(20, 22, 26, 0));
+  transform: rotateX(90deg);
+}
+
+/* ===== 两个场景：靠缩放互相切换（不用 opacity，避免 3D 被拍平） ===== */
+.place {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-style: preserve-3d;
+}
+#place-a {
+  transform:
+    scale3d(calc(1 - var(--swap)), calc(1 - var(--swap)), calc(1 - var(--swap)))
+    rotateY(calc(var(--swap) * -70deg));
+}
+#place-b {
+  transform:
+    scale3d(var(--swap), var(--swap), var(--swap))
+    rotateY(calc((1 - var(--swap)) * 70deg));
+}
+
+/* remix 分身：由 JS 克隆 #place-a 生成，面板用半透明填充 */
+.place.is-ghost {
+  transform:
+    translate3d(
+      calc(var(--ghost) * 92px),
+      calc(var(--ghost) * -30px),
+      calc(var(--ghost) * 26px))
+    scale3d(
+      calc(var(--ghost) * 0.88), calc(var(--ghost) * 0.88), calc(var(--ghost) * 0.88))
+    rotateY(calc(var(--ghost) * 84deg));
+}
+.place.is-ghost .bx > i {
+  background: rgba(12, 38, 255, calc(var(--ghost) * 0.22));
+  box-shadow: none;
+  border: 1px solid rgba(12, 38, 255, calc(var(--ghost) * 0.30));
+}
+
+/* ===== 图元盒子 =====
+   每个 .bx 用 --x/--y/--z 定位（--y 是离地高度），--w/--d/--h 是尺寸，
+   --i 是装配顺序（越小越早出现），--sx 控制装配时飞入的方向。 */
+.bx {
+  --a: clamp(0, calc(var(--asm) * 1.75 - var(--i) * 0.05), 1);
+
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  transform:
+    translate3d(
+      calc(var(--x) * 1px),
+      calc(var(--y) * -1px),
+      calc(var(--z) * 1px))
+    translate3d(0, calc(-80px * (1 - var(--a)) * var(--sx, 1)), 0)
+    rotateY(calc(50deg * (1 - var(--a)) * var(--sx, 1)))
+    scale3d(var(--a), var(--a), var(--a));
+}
+
+.bx > i {
+  position: absolute;
+  display: block;
+  background: var(--c);
+  backface-visibility: hidden;
+}
+
+/* 五个面（底面永远看不到，省掉）。数值推导见 README。 */
+.bx > .fF,
+.bx > .fB {
+  left: calc(var(--w) * -0.5px);
+  top: calc(var(--h) * -1px);
+  width: calc(var(--w) * 1px);
+  height: calc(var(--h) * 1px);
+}
+.bx > .fR,
+.bx > .fL {
+  left: calc(var(--d) * -0.5px);
+  top: calc(var(--h) * -1px);
+  width: calc(var(--d) * 1px);
+  height: calc(var(--h) * 1px);
+}
+.bx > .fT {
+  left: calc(var(--w) * -0.5px);
+  top: calc(var(--d) * -0.5px);
+  width: calc(var(--w) * 1px);
+  height: calc(var(--d) * 1px);
+}
+
+.bx > .fF { transform: translateZ(calc(var(--d) * 0.5px)); }
+.bx > .fB { transform: translateZ(calc(var(--d) * -0.5px)) rotateY(180deg); }
+.bx > .fR { transform: translateX(calc(var(--w) * 0.5px)) rotateY(90deg); }
+.bx > .fL { transform: translateX(calc(var(--w) * -0.5px)) rotateY(-90deg); }
+.bx > .fT { transform: translateY(calc(var(--h) * -1px)) rotateX(90deg); }
+
+/* 明暗：顶面最亮，左侧最暗，让体块读得出来 */
+.bx > .fF { box-shadow: inset 0 0 0 200px rgba(20, 22, 26, 0.10); }
+.bx > .fB { box-shadow: inset 0 0 0 200px rgba(20, 22, 26, 0.17); }
+.bx > .fR { box-shadow: inset 0 0 0 200px rgba(20, 22, 26, 0.21); }
+.bx > .fL { box-shadow: inset 0 0 0 200px rgba(20, 22, 26, 0.28); }
+
+.stage-hint {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(24px, 4vw, 52px);
+  transform: translateX(-50%);
+  font-family: var(--display);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--ink-soft);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ===== 07 投资人收尾卡片 ===== */
+.uni-callout {
+  padding: clamp(72px, 10vw, 132px) clamp(20px, 5vw, 48px) clamp(64px, 9vw, 112px);
+  background: var(--bg-alt);
+}
+.callout-card {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: clamp(30px, 5vw, 48px);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.callout-quote {
+  font-family: var(--display);
+  font-size: clamp(1.3rem, 3vw, 1.85rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  margin-bottom: 26px;
+}
+.callout-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+/* ===== 移动端：物体在上、文案在下，不做滚动联动，改成拖动 + 慢速自转 ===== */
+@media (max-width: 900px) {
+  .uni-layout {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .uni-stage {
+    order: -1;
+    height: 44vh;
+    min-height: 260px;
+    top: 56px;
+    background: var(--bg);
+  }
+  .scene { inset: 10px; border-radius: 16px; }
+  .uni-step {
+    min-height: 0;
+    padding: 44px 0 8px;
+    max-width: none;
+  }
+  .uni-step--wide { min-height: 0; }
+  .uni-copy > .uni-step:last-child { padding-bottom: 64px; }
+  .scroll-cue { display: none; }
+  .stage-hint { opacity: 0.65; transition: opacity 0.3s ease; }
+  .uni-stage.is-dragging .stage-hint { opacity: 0; }
+}
+
+@media (max-width: 1180px) { .uni-stage { --fit: 0.82; } }
+@media (max-width: 900px)  { .uni-stage { --fit: 0.62; } }
+@media (max-width: 480px)  { .uni-stage { --fit: 0.5; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue::after { animation: none; opacity: 0.6; }
+  .uni-layout.is-live .uni-step { opacity: 1; transition: none; }
+  .stage-hint { display: none; }
+}

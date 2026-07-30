@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Our Games · Fortune Kid Inc.</title>
+  <meta name="description" content="Original mobile titles from Fortune Kid Inc. — short-session games built on a fast cadence, each with tie-in collectibles printed from the same models." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/StudioLogo_32.png" />
+  <link rel="apple-touch-icon" sizes="96x96" href="assets/StudioLogo_96.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+  <header class="nav" id="nav">
+    <a class="brand" href="index.html#top">
+      <img class="brand-mark" src="assets/StudioLogo_180.png" alt="Fortune Kid logo" />
+      <span class="brand-name">FortuneKid</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="index.html#top">About</a>
+      <a href="games.html" class="is-current" aria-current="page">Our Games</a>
+      <a href="news.html">News</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+  </header>
+
+  <section class="page-hero">
+    <div class="section-inner">
+      <p class="eyebrow reveal">OUR GAMES</p>
+      <h1 class="reveal">Small titles, finished titles.</h1>
+      <p class="lede reveal">
+        Every game here is original IP, built in-house, and scoped so a small team can finish it
+        and keep iterating. Each one carries tie-in collectibles printed from the same models that
+        ship in the build.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-inner">
+      <!--
+        每加一款游戏：复制一个 .tile，指向新的 game-*.html（可直接复制 game-roof-band.html 改写）。
+        PRE-LAUNCH：.tile-status 在上架前只能写 "In development"，不得暗示已发布。
+      -->
+      <div class="tiles">
+        <a class="tile reveal" href="game-roof-band.html" style="--delay: 0ms">
+          <div class="tile-art tile-art--band" aria-hidden="true">
+            <span class="tile-art-mark">RB</span>
+          </div>
+          <div class="tile-body">
+            <p class="tile-status">In development</p>
+            <h2 class="tile-title">Roof Band</h2>
+            <p class="tile-desc">
+              An instrument-simulation series. Pick up an instrument, play a two-minute song on a
+              rooftop, keep the band. Built for players who have never touched a rhythm game.
+            </p>
+            <span class="tile-more">Read more &rarr;</span>
+          </div>
+        </a>
+
+        <a class="tile reveal" href="uni.html" style="--delay: 120ms">
+          <div class="tile-art tile-art--uni" aria-hidden="true">
+            <span class="tile-art-mark">UNI</span>
+          </div>
+          <div class="tile-body">
+            <p class="tile-status">In development &middot; Platform</p>
+            <h2 class="tile-title">UNI</h2>
+            <p class="tile-desc">
+              Make small 3D places by describing them, then play through places other people made.
+              Our flagship product and the reason the tooling exists.
+            </p>
+            <span class="tile-more">Full product page &rarr;</span>
+          </div>
+        </a>
+
+        <!--
+        <a class="tile reveal" href="game-NEXT.html" style="--delay: 240ms">
+          <div class="tile-art" aria-hidden="true"><span class="tile-art-mark">XX</span></div>
+          <div class="tile-body">
+            <p class="tile-status">In development</p>
+            <h2 class="tile-title">Title</h2>
+            <p class="tile-desc">One or two sentences: what the player does, and in how long.</p>
+            <span class="tile-more">Read more &rarr;</span>
+          </div>
+        </a>
+        -->
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <nav class="footer-links" aria-label="Footer">
+        <a href="index.html#top">About</a>
+        <a href="games.html">Our Games</a>
+        <a href="uni.html">Uni</a>
+        <a href="news.html">News</a>
+        <a href="index.html#contact">Contact</a>
+      </nav>
+      <p class="footer-legal">
+        Fortune Kid Inc. &middot; A corporation organized under the laws of the State of New Jersey, USA
+      </p>
+      <p class="footer-meta">
+        Bridgewater, New Jersey, USA &middot; © <span id="year">2026</span> Fortune Kid Inc. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <script src="js/main.js" defer></script>
+</body>
+</html>

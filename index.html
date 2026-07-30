@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fortune Kid Inc. · Interactive Entertainment Studio</title>
-  <meta name="description" content="Fortune Kid Inc. is a New Jersey interactive-entertainment company building original mobile games and 3D-printed collectibles." />
+  <meta name="description" content="Fortune Kid Inc. is a New Jersey interactive-entertainment company building original mobile games, 3D-printed collectibles tied to its own IP, and UNI — a mobile platform for making small 3D places with AI." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" />
@@ -15,71 +15,39 @@
 </head>
 <body>
 
-  <!-- 顶部导航 -->
+  <!-- 顶部导航（全站统一：About / Our Games / News / Contact；Uni 页面从 Our Games 的卡片进入） -->
   <header class="nav" id="nav">
     <a class="brand" href="#top">
       <img class="brand-mark" src="assets/StudioLogo_180.png" alt="Fortune Kid logo" />
       <span class="brand-name">FortuneKid</span>
     </a>
-    <nav class="nav-links">
-      <a href="#about">About</a>
-      <a href="#services">What We Build</a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#top" class="is-current" aria-current="page">About</a>
+      <a href="games.html">Our Games</a>
+      <a href="news.html">News</a>
       <a href="#contact">Contact</a>
     </nav>
   </header>
 
-  <!-- Hero 主视觉 -->
+  <!-- 01 Intro：定位语 + 进入页面的入口 -->
   <section class="hero" id="top">
     <div class="hero-inner">
-      <p class="eyebrow reveal">FORTUNE KID INC.</p>
-      <h1 class="reveal">Interactive entertainment,<br />built to ship.</h1>
-      <p class="lede reveal">A New Jersey company building original mobile games and 3D-printed collectibles &mdash; short-session, easy to love, made for players everywhere.</p>
-      <div class="hero-actions reveal">
-        <a class="btn btn-primary" href="#contact">Get in touch</a>
-        <a class="btn btn-ghost" href="#services">See what we build</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- 关于我们 -->
-  <section class="section" id="about">
-    <div class="section-inner">
-      <p class="eyebrow reveal">ABOUT</p>
-      <h2 class="reveal">A studio structured to ship, not to pitch.</h2>
-      <p class="section-lead reveal">
-        Fortune Kid Inc. is a New Jersey&ndash;based interactive-entertainment company
-        (software publisher) building a portfolio of original mobile games and
-        physical collectibles tied to its own game IP. We build small, high-craft titles
-        on a fast cadence, and pair them with made-to-order merchandise players can hold.
+      
+      <h1 class="reveal">Play, build<br /> with heart.</h1>
+      <p class="lede reveal">
+        Fortune Kid is expanding the possibilities of play through original mobile games that aim to inspire curiosity, foster community, and spark joy.
       </p>
-      <!--
-        PRE-LAUNCH COPY. Nothing here may state or imply that a title is published —
-        the first game is still in development. Revisit this block when Roof Band ships:
-        swap "Building" for a real launch/availability stat and update the label.
-        Numeric stats animate; add data-count-to (and optional data-count-from / data-suffix).
-      -->
-      <div class="stats reveal">
-        <div class="stat">
-          <span class="stat-num" data-count-to="2026" data-count-from="2016">2026</span>
-          <span class="stat-label">Founded in New Jersey</span>
-        </div>
-        <div class="stat">
-          <span class="stat-num">Building</span>
-          <span class="stat-label">For App Store &amp; Google Play</span>
-        </div>
-        <div class="stat">
-          <span class="stat-num">Craft</span>
-          <span class="stat-label">	collectibles tied to our game IP</span>
-        </div>
+      <div class="hero-actions reveal">
+        <a class="btn btn-primary" href="#build">See what we build</a>
+        <a class="btn btn-ghost" href="#contact">Contact</a>
       </div>
     </div>
   </section>
 
-  <!-- 我们提供 -->
-  <section class="section section-alt" id="services">
+  <!-- 02 What we build：三根支柱 -->
+  <section class="section" id="build">
     <div class="section-inner">
-      <p class="eyebrow reveal">WHAT WE BUILD</p>
-      <h2 class="reveal">Two product lines, one IP.</h2>
+      <h2 class="reveal">What we build</h2>
       <div class="cards">
         <article class="card reveal" style="--delay: 0ms">
           <div class="card-icon" aria-hidden="true">
@@ -90,21 +58,13 @@
               <circle cx="15.5" cy="12" r="0.9" fill="currentColor" stroke="none" />
             </svg>
           </div>
-          <h3>Original Mobile Games</h3>
-          <p>Short-session, easy-to-learn premium titles for casual players worldwide &mdash; starting with the <em>Roof Band</em> instrument-simulation series, in development for the App Store and Google Play.</p>
+          <h3>Mobile Games</h3>
+          <p>
+            Develop and publish cozy games for casual players worldwide.
+          </p>
+          <a class="card-link" href="games.html">Our Games &rarr;</a>
         </article>
         <article class="card reveal" style="--delay: 120ms">
-          <div class="card-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2.6 20.5 7v10L12 21.4 3.5 17V7z" />
-              <path d="M3.5 7 12 11.6 20.5 7" />
-              <path d="M12 11.6v9.8" />
-            </svg>
-          </div>
-          <h3>3D-Printed Collectibles</h3>
-          <p>Made-to-order toys, figures, and merchandise derived from our own game IP &mdash; produced with 3D and UV printing for direct-to-consumer fans.</p>
-        </article>
-        <article class="card reveal" style="--delay: 240ms">
           <div class="card-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M4 20 20 4" />
@@ -113,19 +73,48 @@
               <path d="M15.5 16h3M17 14.5v3" />
             </svg>
           </div>
-          <h3>More In The Works</h3>
-          <p>A small team working where art meets engineering &mdash; with our first titles and a flagship creative platform in active development.</p>
+          <h3>Uni</h3>
+          <p>
+            Uni is a social app where you create small 3D interactive worlds with AI and explore
+            places people around the world have made.
+          </p>
+          <a class="card-link" href="uni.html">Check out Uni &rarr;</a>
+        </article>
+        <article class="card reveal" style="--delay: 240ms">
+          <div class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2.6 20.5 7v10L12 21.4 3.5 17V7z" />
+              <path d="M3.5 7 12 11.6 20.5 7" />
+              <path d="M12 11.6v9.8" />
+            </svg>
+          </div>
+          <h3>Collectibles</h3>
+          <p>
+            Made-to-order 3D-printed collectibles from our own game characters. Coming soon.
+          </p>
+          <span class="card-link card-link--soon" aria-disabled="true">Coming soon</span>
         </article>
       </div>
     </div>
   </section>
 
-  <!-- 联系我们 -->
+  <!-- 03 Our Team：团队 -->
+  <section class="section section-alt" id="about">
+    <div class="section-inner">
+      <h2 class="reveal">Meet The Team</h2>
+      <div class="prose reveal">
+        <p>
+          Our team is a mix of creatives, engineers, and dreamers who believe the best ideas start with a question nobody has answered yet. Together we build experiences that worth returning to.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 Contact（锚点，页面底部）：面向投资人 -->
   <section class="section" id="contact">
     <div class="section-inner contact">
-      <p class="eyebrow reveal">CONTACT</p>
-      <h2 class="reveal">Get in touch.</h2>
-      <p class="section-lead reveal">Business inquiries, partnerships, or press &mdash; we'd love to hear from you.</p>
+      <h2 class="reveal">Get in Touch</h2>
+      <p class="section-lead reveal">Business inquiries, partnerships, or press. We'd love to hear from you!</p>
       <a class="contact-mail reveal" href="mailto:hello@fortunekidstudio.com">hello@fortunekidstudio.com</a>
     </div>
   </section>
@@ -133,8 +122,15 @@
   <!-- 页脚 -->
   <footer class="footer">
     <div class="footer-inner">
+      <nav class="footer-links" aria-label="Footer">
+        <a href="#top">About</a>
+        <a href="games.html">Our Games</a>
+        <a href="uni.html">Uni</a>
+        <a href="news.html">News</a>
+        <a href="#contact">Contact</a>
+      </nav>
       <p class="footer-legal">
-        Fortune Kid Inc. &middot; A corporation organized under the laws of the State of New Jersey, USA
+        Fortune Kid Inc. 
       </p>
       <p class="footer-meta">
         Bridgewater, New Jersey, USA &middot; © <span id="year">2026</span> Fortune Kid Inc. All rights reserved.
