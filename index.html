@@ -12,7 +12,6 @@
   <link rel="apple-touch-icon" sizes="96x96" href="assets/StudioLogo_96.png" />
   <link rel="stylesheet" href="css/style.css" />
   <script>document.documentElement.classList.add('js');</script>
-  <script>var _mm=window.matchMedia.bind(window);window.matchMedia=function(q){return /reduced-motion/.test(q)?{matches:false,media:q,addListener:function(){},removeListener:function(){}}:_mm(q);};</script>
 </head>
 <body>
 
@@ -144,28 +143,5 @@
   </footer>
 
   <script src="js/main.js" defer></script>
-
-<script>
-  var log = [];
-  function sample(tag) {
-    var parts = [tag];
-    document.querySelectorAll('.card').forEach(function (el, i) {
-      var cs = getComputedStyle(el);
-      parts.push('c' + i + ':op=' + (+cs.opacity).toFixed(2) +
-                 ',dur=' + cs.transitionDuration.split(',')[0] +
-                 ',del=' + cs.transitionDelay.split(',')[0] +
-                 ',rev=' + (el.classList.contains('reveal') ? 'Y' : 'N'));
-    });
-    log.push(parts.join(' '));
-  }
-  // simulate the user scrolling the cards into reading position
-  setTimeout(function () {
-    var y = document.getElementById('services').offsetTop;
-    window.scrollTo({ top: y, behavior: 'instant' });
-    log.push('scrolled to ' + y + ' (vh=' + window.innerHeight + ')');
-  }, 200);
-  setTimeout(function () { sample('MID-200ms-after-scroll'); }, 400);
-  setTimeout(function () { sample('SETTLED'); document.title = 'PROBE ' + log.join(' || '); }, 2200);
-</script>
 </body>
 </html>
