@@ -1,19 +1,24 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fortune Kid Inc. · Interactive Entertainment Studio</title>
-  <meta name="description" content="Fortune Kid Inc. is a New Jersey interactive-entertainment studio building original mobile games and 3D-printed collectibles." />
+  <meta name="description" content="Fortune Kid Inc. is a New Jersey interactive-entertainment company building original mobile games and 3D-printed collectibles." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/StudioLogo_32.png" />
+  <link rel="apple-touch-icon" sizes="96x96" href="assets/StudioLogo_96.png" />
   <link rel="stylesheet" href="css/style.css" />
+  <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
 
   <!-- 顶部导航 -->
-  <header class="nav">
+  <header class="nav" id="nav">
     <a class="brand" href="#top">
-      <span class="brand-mark">🧸</span>
+      <img class="brand-mark" src="assets/StudioLogo_180.png" alt="Fortune Kid logo" />
       <span class="brand-name">FortuneKid</span>
     </a>
     <nav class="nav-links">
@@ -26,10 +31,10 @@
   <!-- Hero 主视觉 -->
   <section class="hero" id="top">
     <div class="hero-inner">
-      <p class="eyebrow">FORTUNE KID INC.</p>
-      <h1>Play, built<br />with heart.</h1>
-      <p class="lede">Fortune Kid is an interactive-entertainment studio crafting original mobile games and 3D-printed collectibles — short-session, easy to love, made for players everywhere.</p>
-      <div class="hero-actions">
+      <p class="eyebrow reveal">FORTUNE KID INC.</p>
+      <h1 class="reveal">Interactive entertainment,<br />built to ship.</h1>
+      <p class="lede reveal">A New Jersey company building original mobile games and 3D-printed collectibles &mdash; short-session, easy to love, made for players everywhere.</p>
+      <div class="hero-actions reveal">
         <a class="btn btn-primary" href="#contact">Get in touch</a>
         <a class="btn btn-ghost" href="#services">See what we build</a>
       </div>
@@ -39,25 +44,32 @@
   <!-- 关于我们 -->
   <section class="section" id="about">
     <div class="section-inner">
-      <h2>About</h2>
-      <p class="section-lead">
+      <p class="eyebrow reveal">ABOUT</p>
+      <h2 class="reveal">A studio structured to ship, not to pitch.</h2>
+      <p class="section-lead reveal">
         Fortune Kid Inc. is a New Jersey&ndash;based interactive-entertainment company
-        (software publisher) building a growing portfolio of original mobile games and
-        physical collectibles tied to its own game IP. We ship small, high-craft titles
+        (software publisher) building a portfolio of original mobile games and
+        physical collectibles tied to its own game IP. We build small, high-craft titles
         on a fast cadence, and pair them with made-to-order merchandise players can hold.
       </p>
-      <div class="stats">
+      <!--
+        PRE-LAUNCH COPY. Nothing here may state or imply that a title is published —
+        the first game is still in development. Revisit this block when Roof Band ships:
+        swap "Building" for a real launch/availability stat and update the label.
+        Numeric stats animate; add data-count-to (and optional data-count-from / data-suffix).
+      -->
+      <div class="stats reveal">
         <div class="stat">
-          <span class="stat-num">2026</span>
+          <span class="stat-num" data-count-to="2026" data-count-from="2016">2026</span>
           <span class="stat-label">Founded in New Jersey</span>
         </div>
         <div class="stat">
-          <span class="stat-num">Global</span>
-          <span class="stat-label">App Store &amp; Google Play</span>
+          <span class="stat-num">Building</span>
+          <span class="stat-label">For App Store &amp; Google Play</span>
         </div>
         <div class="stat">
           <span class="stat-num">Craft</span>
-          <span class="stat-label">Art &amp; tech, together</span>
+          <span class="stat-label">	collectibles tied to our game IP</span>
         </div>
       </div>
     </div>
@@ -66,22 +78,43 @@
   <!-- 我们提供 -->
   <section class="section section-alt" id="services">
     <div class="section-inner">
-      <h2>What We Build</h2>
+      <p class="eyebrow reveal">WHAT WE BUILD</p>
+      <h2 class="reveal">Two product lines, one IP.</h2>
       <div class="cards">
-        <article class="card">
-          <div class="card-icon">🎮</div>
+        <article class="card reveal" style="--delay: 0ms">
+          <div class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="6" y="2" width="12" height="20" rx="2.5" />
+              <path d="M10 5.5h4" />
+              <path d="M9 12h3M10.5 10.5v3" />
+              <circle cx="15.5" cy="12" r="0.9" fill="currentColor" stroke="none" />
+            </svg>
+          </div>
           <h3>Original Mobile Games</h3>
-          <p>Short-session, easy-to-learn premium titles for casual players worldwide — including the <em>Roof Band</em> instrument-simulation series, released globally on the App Store and Google Play.</p>
+          <p>Short-session, easy-to-learn premium titles for casual players worldwide &mdash; starting with the <em>Roof Band</em> instrument-simulation series, in development for the App Store and Google Play.</p>
         </article>
-        <article class="card">
-          <div class="card-icon">🧩</div>
+        <article class="card reveal" style="--delay: 120ms">
+          <div class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2.6 20.5 7v10L12 21.4 3.5 17V7z" />
+              <path d="M3.5 7 12 11.6 20.5 7" />
+              <path d="M12 11.6v9.8" />
+            </svg>
+          </div>
           <h3>3D-Printed Collectibles</h3>
-          <p>Made-to-order toys, figures, and merchandise derived from our own game IP — produced with 3D and UV printing for direct-to-consumer fans.</p>
+          <p>Made-to-order toys, figures, and merchandise derived from our own game IP &mdash; produced with 3D and UV printing for direct-to-consumer fans.</p>
         </article>
-        <article class="card">
-          <div class="card-icon">🚀</div>
+        <article class="card reveal" style="--delay: 240ms">
+          <div class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 20 20 4" />
+              <path d="M14 4h6v6" />
+              <path d="M4 10.5h4M6 8.5v4" />
+              <path d="M15.5 16h3M17 14.5v3" />
+            </svg>
+          </div>
           <h3>More In The Works</h3>
-          <p>We're a small team obsessed with the craft where art meets engineering — with new titles and a flagship creative platform in active development.</p>
+          <p>A small team working where art meets engineering &mdash; with our first titles and a flagship creative platform in active development.</p>
         </article>
       </div>
     </div>
@@ -90,21 +123,25 @@
   <!-- 联系我们 -->
   <section class="section" id="contact">
     <div class="section-inner contact">
-      <h2>Contact</h2>
-      <p class="section-lead">Business inquiries, partnerships, or press &mdash; we'd love to hear from you.</p>
-      <a class="contact-mail" href="mailto:hello@fortunekidstudio.com">hello@fortunekidstudio.com</a>
-      <p class="addr">Fortune Kid Inc. &middot; Bridgewater, New Jersey, USA</p>
+      <p class="eyebrow reveal">CONTACT</p>
+      <h2 class="reveal">Get in touch.</h2>
+      <p class="section-lead reveal">Business inquiries, partnerships, or press &mdash; we'd love to hear from you.</p>
+      <a class="contact-mail reveal" href="mailto:hello@fortunekidstudio.com">hello@fortunekidstudio.com</a>
     </div>
   </section>
 
   <!-- 页脚 -->
   <footer class="footer">
-    <p>© <span id="year">2026</span> Fortune Kid Inc. All rights reserved.</p>
+    <div class="footer-inner">
+      <p class="footer-legal">
+        Fortune Kid Inc. &middot; A corporation organized under the laws of the State of New Jersey, USA
+      </p>
+      <p class="footer-meta">
+        Bridgewater, New Jersey, USA &middot; © <span id="year">2026</span> Fortune Kid Inc. All rights reserved.
+      </p>
+    </div>
   </footer>
 
-  <script>
-    // 自动更新页脚年份
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
+  <script src="js/main.js" defer></script>
 </body>
 </html>
