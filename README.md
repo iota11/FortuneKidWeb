@@ -7,6 +7,7 @@ Fortune Kid Inc.（新泽西互动娱乐工作室）官方网站。纯静态 HTM
 ```
 index.html        首页
 css/style.css     样式
+js/main.js        滚动动画 / 导航状态 / 数字滚动
 assets/           图片 / logo（自行放入）
 .nojekyll         关闭 GitHub 的 Jekyll 处理
 CNAME             自定义域名（注册域名后创建，见下）
@@ -47,3 +48,4 @@ python3 -m http.server 8000   # 然后访问 http://localhost:8000
 - [ ] 开通 Zoho 邮箱，把联系邮箱确认为 `hello@fortunekidstudio.com`
 - [ ] 放入 logo / 游戏截图到 `assets/`，并在页面引用
 - [ ] 游戏上架后，在 "What We Build" 卡片加上 App Store / Google Play 链接
+- [ ] 游戏上架后，把 About 数据条的 "Building" 换成真实的上线数据，并同步更新页面上所有"在研中"的措辞（当前全站均为 pre-launch 口径，不得暗示已上架）
