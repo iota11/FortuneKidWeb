@@ -12,15 +12,22 @@
   --accent-soft: rgba(12, 38, 255, 0.08);
   --mint: #4ec3b0;        /* 次级点缀，仅用于标签/悬停 */
   --line: rgba(20, 22, 26, 0.10);
+  --line-accent: rgba(12, 38, 255, 0.32);       /* 卡片默认描边：淡蓝 */
+  --line-accent-hover: rgba(12, 38, 255, 0.75); /* 悬停时加深 */
   --shadow: 0 1px 2px rgba(20, 22, 26, 0.04), 0 12px 28px rgba(20, 22, 26, 0.05);
   --radius: 12px;
   --maxw: 1080px;
-  --display: "Space Grotesk", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --body: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI",
-    "Microsoft YaHei", Roboto, Helvetica, Arial, sans-serif;
+  /* 全站唯一字体：Poppins；CJK 与系统字体仅作兜底 */
+  --font: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "PingFang SC", "Microsoft YaHei", Roboto, Helvetica, Arial, sans-serif;
+  --display: var(--font);
+  --body: var(--font);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* 表单控件默认不继承字体，这里强制拉回全站唯一字体 */
+button, input, textarea, select { font-family: inherit; }
 
 html { scroll-behavior: smooth; }
 
@@ -56,7 +63,8 @@ h1, h2, h3 {
 }
 .nav.is-scrolled {
   padding: 12px clamp(20px, 5vw, 48px);
-  background: rgba(247, 245, 240, 0.8);
+  /* 跟 --bg (#f2f3fb) 同一冷色调，否则滚动时导航条会泛黄 */
+  background: rgba(242, 243, 251, 0.8);
   backdrop-filter: saturate(180%) blur(14px);
   border-bottom-color: var(--line);
 }
@@ -86,7 +94,9 @@ h1, h2, h3 {
   padding: clamp(72px, 13vw, 160px) clamp(20px, 5vw, 48px) clamp(64px, 10vw, 120px);
   background: var(--bg);
 }
-.hero-inner { max-width: var(--maxw); margin: 0 auto; }
+.hero-inner { max-width: var(--maxw); margin: 0 auto; text-align: center; }
+/* 居中版 hero：lede 的 620px 限宽要左右都留白，且下方已无按钮 */
+.hero .lede { margin-left: auto; margin-right: auto; margin-bottom: 0; }
 .hero h1 {
   font-size: clamp(2.4rem, 6.4vw, 4.2rem);
   letter-spacing: -0.035em;
@@ -109,7 +119,6 @@ h1, h2, h3 {
   margin-bottom: 16px;
 }
 
-.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 .btn {
   display: inline-block;
   padding: 12px 26px;
@@ -171,13 +180,13 @@ h1, h2, h3 {
   display: flex;
   flex-direction: column;
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-accent);
   border-radius: var(--radius);
   padding: 30px 26px;
   box-shadow: var(--shadow);
   transition: border-color 0.18s ease, transform 0.18s ease;
 }
-.card:hover { border-color: rgba(12, 38, 255, 0.35); transform: translateY(-3px); }
+.card:hover { border-color: var(--line-accent-hover); transform: translateY(-3px); }
 .card-icon {
   display: inline-flex;
   align-items: center;
@@ -221,16 +230,50 @@ h1, h2, h3 {
 
 /* ===== 滚动入场动画（仅在 JS 可用时隐藏初始状态） =====
    动画结束后 JS 会移除 .reveal，元素回到默认状态：
-   这样 .card 的 hover 过渡不会被这里的时长和 --delay 覆盖。 */
+   这样 .card 的 hover 过渡不会被这里的时长和 --delay 覆盖。
+   缓动统一用这条长尾 ease-out：起步快、尾巴长，滚动时读起来是"滑到位"
+   而不是"弹出来"。 */
+:root { --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1); }
+
 .js .reveal {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translate3d(0, 32px, 0) scale(0.985);
   will-change: opacity, transform;
   transition:
-    opacity 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) var(--delay, 0ms),
-    transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) var(--delay, 0ms);
+    opacity 0.85s var(--ease-out-soft) var(--delay, 0ms),
+    transform 0.95s var(--ease-out-soft) var(--delay, 0ms);
 }
 .js .reveal.is-visible { opacity: 1; transform: none; }
+
+/* ===== 标题分行遮罩入场 =====
+   JS 把 [data-split] 按真实换行切成 .split-line，每行是一个裁切框，
+   内层 <i> 从框下方推上来，逐行错峰（--d 由 JS 写入）。 */
+.js [data-split] { opacity: 0; }
+.js [data-split].split { opacity: 1; }
+
+.split-line {
+  display: block;
+  overflow: hidden;
+  /* 给 g / y / j 的下伸部留位，否则会被裁切框切掉一截 */
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+.split-line > i {
+  display: block;
+  font-style: inherit;
+  opacity: 0;
+  transform: translate3d(0, 112%, 0);
+  will-change: opacity, transform;
+  transition:
+    opacity 0.8s var(--ease-out-soft) var(--d, 0ms),
+    transform 0.95s var(--ease-out-soft) var(--d, 0ms);
+}
+[data-split].is-in .split-line > i { opacity: 1; transform: none; }
+/* 动画结束后撤掉合成层提示，别让每一行常驻显存 */
+[data-split].split-done .split-line > i { will-change: auto; }
+
+/* Hero 内容随滚动实时上移淡出，transform / opacity 由 JS 每帧写入 */
+.js .hero-inner { will-change: transform, opacity; }
 
 /* ===== 子页头部（比首页 hero 矮一档） ===== */
 .page-hero {
@@ -288,13 +331,13 @@ h1, h2, h3 {
   display: flex;
   flex-direction: column;
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-accent);
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: var(--shadow);
   transition: border-color 0.18s ease, transform 0.18s ease;
 }
-.tile:hover { border-color: rgba(12, 38, 255, 0.4); transform: translateY(-3px); }
+.tile:hover { border-color: var(--line-accent-hover); transform: translateY(-3px); }
 .tile-art {
   display: flex;
   align-items: center;
@@ -448,6 +491,11 @@ h1, h2, h3 {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; transition: none; }
+  /* 关掉动效时 JS 不会分行，这里兜底保证文字始终可见 */
+  .js [data-split] { opacity: 1; }
+  .split-line { overflow: visible; }
+  .split-line > i { opacity: 1; transform: none; transition: none; }
+  .js .hero-inner { will-change: auto; }
   .card:hover { transform: none; }
   * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
