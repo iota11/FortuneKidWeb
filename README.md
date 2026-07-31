@@ -12,7 +12,7 @@ index.html            About（首页，单页滚动 + 锚点）
 games.html            Our Games（作品列表）
 game-roof-band.html   单个作品页（新作品复制这一份改写）
 uni.html              UNI 产品页（双栏 + 滚动驱动的 3D 面板）
-news.html             News（博客/动态列表）
+news.html             News（博客/动态列表，**当前暂时隐藏**：导航链接已注释、页面 noindex）
 css/style.css         全站样式
 css/uni.css           仅 UNI 页
 js/main.js            滚动入场 / 导航状态 / 数字滚动
@@ -24,7 +24,8 @@ CNAME                 自定义域名
 
 ## 站点结构
 
-全站导航五项：`About` · `Our Games` · `Uni` · `News` · `Contact`
+全站导航当前四项：`About` · `Our Games` · `Uni` · `Contact`
+（`News` 因暂无内容临时下线，链接在各页以 `TODO 暂时隐藏 News` 注释保留，恢复时取消注释即可）
 
 - **About 就是首页**，单页滚动，四个锚点分区：
   `#top` Intro → `#about` 公司故事/新泽西根基/创立命题 → `#build` 三根支柱 → `#contact`
@@ -108,8 +109,12 @@ python3 -m http.server 8000   # 然后访问 http://localhost:8000
       —— 领导层履历、明确的 ask（deck / data room / intro call）—— 目前**没有**放在页面上，
       需要时再决定放 Contact 还是分一部分到 About
 
-- [ ] News 现在是空状态。发第一篇时：复制 `news.html` 里 `<template id="post-template">` 的
-      `<article>`，粘到 `.posts` 顶部（新的在上），然后删掉 `.empty` 那块空状态
+- [ ] News 现在是**暂时隐藏**的空页面。发第一篇时按顺序做三件事：
+      ① 复制 `news.html` 里 `<template id="post-template">` 的 `<article>`，粘到 `.posts` 顶部
+      （新的在上），然后删掉 `.empty` 那块空状态；
+      ② 删掉 `news.html` `<head>` 里的 `<meta name="robots" content="noindex, nofollow" />`；
+      ③ 在 `index.html` / `games.html` / `uni.html` / `game-roof-band.html` 里搜索
+      `TODO 暂时隐藏 News`（每个文件顶部导航 + 页脚各一处），把注释里的链接放回去
 - [ ] 加新游戏：复制 `games.html` 里注释掉的 `.tile` 模板，另建 `game-<slug>.html`
       （直接复制 `game-roof-band.html` 改写）
 - [ ] 放入 logo / 游戏截图到 `assets/`；`.tile-art` 现在是纯色占位，换成真截图

@@ -141,7 +141,7 @@
   border-radius: 22px;
   background:
     radial-gradient(120% 90% at 50% 12%, #fafbff 0%, var(--bg-alt) 62%, #dfe3f3 100%);
-  border: 1px solid var(--line);
+  border: var(--border-w) solid var(--line);
   perspective: 1400px;
   perspective-origin: 50% 44%;
 }
@@ -294,8 +294,8 @@
   margin: 0 auto;
   padding: clamp(30px, 5vw, 48px);
   background: var(--surface);
-  border: 1px solid var(--line);
-  border-left: 3px solid var(--accent);
+  border: var(--border-w) solid var(--line);
+  border-left: 6px solid var(--accent);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }

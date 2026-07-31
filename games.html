@@ -23,68 +23,66 @@
     <nav class="nav-links" aria-label="Primary">
       <a href="index.html#top">About</a>
       <a href="games.html" class="is-current" aria-current="page">Our Games</a>
-      <a href="news.html">News</a>
-      <a href="index.html#contact">Contact</a>
+      <!-- TODO 暂时隐藏 News（暂无内容），有第一篇文章后取消注释：<a href="news.html">News</a> -->
+      <a href="index.html#contact" class="nav-cta">Contact Us</a>
     </nav>
   </header>
 
-  <section class="page-hero">
+  <section class="page-hero page-hero--center">
     <div class="section-inner">
-      <p class="eyebrow reveal">OUR GAMES</p>
-      <h1 class="reveal">Small titles, finished titles.</h1>
-      <p class="lede reveal">
-        Every game here is original IP, built in-house, and scoped so a small team can finish it
-        and keep iterating. Each one carries tie-in collectibles printed from the same models that
-        ship in the build.
-      </p>
+      <h1 class="reveal" data-split>Our Games</h1>
     </div>
   </section>
 
-  <section class="section">
+  <section class="section section--tiles">
     <div class="section-inner">
       <!--
         每加一款游戏：复制一个 .tile，指向新的 game-*.html（可直接复制 game-roof-band.html 改写）。
-        PRE-LAUNCH：.tile-status 在上架前只能写 "In development"，不得暗示已发布。
+        PRE-LAUNCH：.tile-status 只能写 "Upcoming" / "In development" 这类未发布措辞，不得暗示已上架。
+        极简版：卡片留封面 + 状态标签 + 名字 + 一句话，完整说明放在各自的详情页。
+        .tile-desc 固定裁到两行，多写的字会被截断，卡片高度才对得齐。
       -->
       <div class="tiles">
         <a class="tile reveal" href="game-roof-band.html" style="--delay: 0ms">
           <div class="tile-art tile-art--band" aria-hidden="true">
-            <span class="tile-art-mark">RB</span>
+            <img class="tile-art-img" src="assets/games/roof-band/cover.jpg" alt=""
+                 width="960" height="720" />
           </div>
+          <p class="tile-status">Upcoming</p>
           <div class="tile-body">
-            <p class="tile-status">In development</p>
-            <h2 class="tile-title">Roof Band</h2>
-            <p class="tile-desc">
-              An instrument-simulation series. Pick up an instrument, play a two-minute song on a
-              rooftop, keep the band. Built for players who have never touched a rhythm game.
-            </p>
-            <span class="tile-more">Read more &rarr;</span>
+            <div class="tile-text">
+              <h2 class="tile-title">Rooftop Band</h2>
+              <p class="tile-desc">
+                A cozy harmonica game. Play it slow, play it your way, play it again.
+              </p>
+            </div>
+            <span class="tile-more" aria-hidden="true">&rarr;</span>
           </div>
         </a>
 
-        <a class="tile reveal" href="uni.html" style="--delay: 120ms">
+        <a class="tile reveal" href="uni.html" style="--delay: 110ms">
           <div class="tile-art tile-art--uni" aria-hidden="true">
             <span class="tile-art-mark">UNI</span>
           </div>
+          <p class="tile-status">In development &middot; Platform</p>
           <div class="tile-body">
-            <p class="tile-status">In development &middot; Platform</p>
-            <h2 class="tile-title">UNI</h2>
-            <p class="tile-desc">
-              Make small 3D places by describing them, then play through places other people made.
-              Our flagship product and the reason the tooling exists.
-            </p>
-            <span class="tile-more">Full product page &rarr;</span>
+            <div class="tile-text">
+              <h2 class="tile-title">UNI</h2>
+              <p class="tile-desc">
+                A social app for creating small 3D worlds with AI and exploring what others have made.
+              </p>
+            </div>
+            <span class="tile-more" aria-hidden="true">&rarr;</span>
           </div>
         </a>
 
         <!--
-        <a class="tile reveal" href="game-NEXT.html" style="--delay: 240ms">
+        <a class="tile reveal" href="game-NEXT.html" style="--delay: 220ms">
           <div class="tile-art" aria-hidden="true"><span class="tile-art-mark">XX</span></div>
+          <p class="tile-status">In development</p>
           <div class="tile-body">
-            <p class="tile-status">In development</p>
             <h2 class="tile-title">Title</h2>
-            <p class="tile-desc">One or two sentences: what the player does, and in how long.</p>
-            <span class="tile-more">Read more &rarr;</span>
+            <span class="tile-more" aria-hidden="true">&rarr;</span>
           </div>
         </a>
         -->
@@ -98,11 +96,11 @@
         <a href="index.html#top">About</a>
         <a href="games.html">Our Games</a>
         <a href="uni.html">Uni</a>
-        <a href="news.html">News</a>
+        <!-- TODO 暂时隐藏 News（暂无内容），有第一篇文章后取消注释：<a href="news.html">News</a> -->
         <a href="index.html#contact">Contact</a>
       </nav>
       <p class="footer-legal">
-        Fortune Kid Inc. &middot; A corporation organized under the laws of the State of New Jersey, USA
+        Fortune Kid Inc.
       </p>
       <p class="footer-meta">
         Bridgewater, New Jersey, USA &middot; © <span id="year">2026</span> Fortune Kid Inc. All rights reserved.

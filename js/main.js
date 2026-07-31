@@ -34,8 +34,17 @@
   // ===== 导航滚动状态：越过 hero 后加模糊与底边 =====
   var nav = document.getElementById('nav');
   if (nav) {
+    // 迟滞：开关阈值错开，滚轮在临界点附近抖两下不会把 class 来回切，
+    // 否则导航的背景和模糊会跟着一闪一闪。
+    var navOn = false;
     frameJobs.push(function (y) {
-      nav.classList.toggle('is-scrolled', y > 24);
+      if (!navOn && y > 48) {
+        navOn = true;
+        nav.classList.add('is-scrolled');
+      } else if (navOn && y < 16) {
+        navOn = false;
+        nav.classList.remove('is-scrolled');
+      }
     });
   }
 
@@ -67,13 +76,21 @@
     var heroH = hero.offsetHeight;
     window.addEventListener('resize', function () { heroH = hero.offsetHeight; });
 
+    var lastP = -1;
     frameJobs.push(function (y) {
       // 走完 hero 高度的 85% 时正好完全淡出，剩下一点余量避免刚滚就消失
       var p = Math.min(Math.max(y / Math.max(heroH * 0.85, 1), 0), 1);
+      // 值没变就别写样式：滚出 hero 之后每帧照写会一直让这层重绘
+      if (Math.abs(p - lastP) < 0.0015) return;
+      var moving = (p > 0 && p < 1);
+      var wasMoving = (lastP > 0 && lastP < 1);
+      lastP = p;
       var eased = p * p; // easeInQuad：起步慢，离场快
       heroInner.style.transform =
         'translate3d(0,' + (-eased * 88).toFixed(2) + 'px,0) scale(' + (1 - eased * 0.055).toFixed(4) + ')';
       heroInner.style.opacity = Math.max(1 - eased * 1.15, 0).toFixed(3);
+      // 只在动的那段挂合成层提示，停在两端就撤掉
+      if (moving !== wasMoving) heroInner.style.willChange = moving ? 'transform, opacity' : 'auto';
     });
   }
 
