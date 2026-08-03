@@ -13,6 +13,8 @@ games.html            Our Games（作品列表）
 game-roof-band.html   单个作品页（新作品复制这一份改写）
 uni.html              UNI 产品页（双栏 + 滚动驱动的 3D 面板）
 news.html             News（博客/动态列表，**当前暂时隐藏**：导航链接已注释、页面 noindex）
+privacy.html          隐私政策（**只管游戏**，明确排除本网站 / UNI / 周边 / 商店）
+terms.html            使用条款（**只管本网站**，明确排除游戏 / UNI / 购买）
 css/style.css         全站样式
 css/uni.css           仅 UNI 页
 js/main.js            滚动入场 / 导航状态 / 数字滚动
@@ -34,6 +36,36 @@ CNAME                 自定义域名
 
 三根支柱固定为：Original Mobile Games、3D-Printed Collectibles、Tools That Helped
 （第三项讲内部工具链，用来支撑"小团队 / 快节奏"这个可信度论点，并引出 UNI）。
+
+## 法律页面（privacy.html / terms.html）
+
+两页各自把适用范围写死，互不兜底 —— **这是有意的，改的时候不要打破**：
+
+| 页面 | 管什么 | 明确不管什么 |
+| --- | --- | --- |
+| `privacy.html` | 表格里列出的**游戏** | 本网站、UNI、周边、App Store / Google Play |
+| `terms.html` | **本网站** fortunekidstudio.com | 游戏（随商店发布的 EULA）、UNI（上线时独立 ToS）、购买退款（商店条款） |
+
+`terms.html` 里对公司现状真正重要的两节，改文案时别删：
+
+- **§8 Ideas, feedback and unsolicited submissions** —— 官网挂着公开邮箱，任何人都能把
+  游戏点子发进来。这一节声明来稿非保密、不构成任何义务、并授予免版税使用许可，
+  是"你抄了我的创意"这类主张的主要防线
+- **§9 Forward-looking statements; no offer of securities** —— 站点面向投资人，
+  且全站是 pre-launch 口径（Upcoming / In development / Coming soon）。
+  这一节声明前瞻性表述不是承诺，且站内任何内容都不构成证券要约
+
+`terms.html` §11 顺带补上了本网站自身的隐私披露（GitHub Pages 访问日志、Google Fonts
+会把访客 IP 暴露给 Google）—— 因为 `privacy.html` 明确不管本网站，这块原本是空的。
+如果以后把 Poppins 字体自托管到 `assets/`，第三方请求归零，§11 第二条就可以删掉。
+
+**未来两件事需要另写文档，不要改这两页去迁就：**
+
+1. 游戏上架 → 随商店发布的 EULA
+2. UNI 上线 → 独立的 clickwrap ToS，必须覆盖 UGC / AI 生成内容归属 / 内容审核 /
+   **DMCA 指定代理人**（§512 安全港要去美国版权局实名注册并交费，不是网页写一段就行）。
+   仲裁 + 集体诉讼弃权条款也留到那时候写 —— 那里才有真正的"我同意"勾选；
+   现在这种没人点过的 browsewrap 加仲裁条款，法院一般不认，对投资人观感也差
 
 ## UNI 页是怎么动的
 
@@ -115,6 +147,11 @@ python3 -m http.server 8000   # 然后访问 http://localhost:8000
       ② 删掉 `news.html` `<head>` 里的 `<meta name="robots" content="noindex, nofollow" />`；
       ③ 在 `index.html` / `games.html` / `uni.html` / `game-roof-band.html` 里搜索
       `TODO 暂时隐藏 News`（每个文件顶部导航 + 页脚各一处），把注释里的链接放回去
+- [ ] `terms.html` 上线前请律师过一遍（尤其 §8 来稿条款、§9 证券免责、§14 责任上限）。
+      当前版本是按公司现状写的，不是法律意见
+- [ ] 商标：`Fortune Kid` / `Rooftop Band` / `UNI` 目前在 `terms.html` §5 按未注册商标主张
+      （TM 而非 ®）。真去 USPTO 注册后再改措辞
+- [ ] 考虑把 Poppins 自托管到 `assets/`：第三方请求归零，`terms.html` §11 可以简化
 - [ ] 加新游戏：复制 `games.html` 里注释掉的 `.tile` 模板，另建 `game-<slug>.html`
       （直接复制 `game-roof-band.html` 改写）
 - [ ] 放入 logo / 游戏截图到 `assets/`；`.tile-art` 现在是纯色占位，换成真截图
