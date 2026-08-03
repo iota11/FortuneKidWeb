@@ -371,11 +371,11 @@ h1, h2, h3 {
 
 /* ===== 游戏列表 =====
    极简卡片：整块就是一张封面，状态标签浮在左上，标题压在底部的一条玻璃条上。
-   两栏封顶，卡片宽了才有"游戏封面"的分量，窄屏自动落回单栏。 */
+   固定两栏，卡片宽了才有"游戏封面"的分量，760px 以下落回单栏。 */
 .section--tiles { padding-top: clamp(40px, 6vw, 72px); }
 .tiles {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(18px, 2.6vw, 30px);
 }
 .tile {
@@ -398,6 +398,34 @@ h1, h2, h3 {
   box-shadow: 0 1px 2px rgba(20, 22, 26, 0.05), 0 22px 44px rgba(12, 38, 255, 0.14);
 }
 .tile:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* 占位卡：下一款游戏公布前占住第二格。故意不带 .tile —— 它不是链接，
+   不该有描边加深、抬升和箭头那套可点击的反馈。虚线描边就是"这里还空着"。 */
+.tile-soon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 3;
+  padding: 24px;
+  text-align: center;
+  background: var(--surface);
+  border: var(--border-w) solid var(--line);
+  border-radius: 20px;
+}
+.tile-soon-mark {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 3.4vw, 2rem);
+  letter-spacing: -0.03em;
+  color: rgba(20, 22, 26, 0.34);
+  margin-bottom: 8px;
+}
+.tile-soon-note {
+  margin-bottom: 0;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
 .tile-art {
   position: relative;
   display: flex;
@@ -622,6 +650,7 @@ h1, h2, h3 {
 @media (max-width: 760px) {
   .post { grid-template-columns: 1fr; gap: 12px; }
   .post-meta { flex-direction: row; align-items: center; gap: 12px; }
+  .tiles { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 560px) {

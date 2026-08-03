@@ -23,6 +23,7 @@
     <nav class="nav-links" aria-label="Primary">
       <a href="index.html#top">About</a>
       <a href="games.html" class="is-current" aria-current="page">Our Games</a>
+      <a href="uni.html">Uni</a>
       <!-- TODO 暂时隐藏 News（暂无内容），有第一篇文章后取消注释：<a href="news.html">News</a> -->
       <a href="index.html#contact" class="nav-cta">Contact Us</a>
     </nav>
@@ -37,7 +38,8 @@
   <section class="section section--tiles">
     <div class="section-inner">
       <!--
-        每加一款游戏：复制一个 .tile，指向新的 game-*.html（可直接复制 game-roof-band.html 改写）。
+        每加一款游戏：复制一个 .tile，指向新的 game-*.html（可直接复制 game-roof-band.html 改写），
+        并把下面的 .tile-soon 占位卡删掉 —— 网格固定两栏，占位卡只是用来占住空着的那一格。
         PRE-LAUNCH：.tile-status 只能写 "Upcoming" / "In development" 这类未发布措辞，不得暗示已上架。
         极简版：卡片留封面 + 状态标签 + 名字 + 一句话，完整说明放在各自的详情页。
         .tile-desc 固定裁到两行，多写的字会被截断，卡片高度才对得齐。
@@ -60,24 +62,14 @@
           </div>
         </a>
 
-        <a class="tile reveal" href="uni.html" style="--delay: 110ms">
-          <div class="tile-art tile-art--uni" aria-hidden="true">
-            <span class="tile-art-mark">UNI</span>
+        <div class="tile-soon reveal" style="--delay: 110ms">
+          <div>
+            <p class="tile-soon-mark">Coming soon</p>
           </div>
-          <p class="tile-status">In development &middot; Platform</p>
-          <div class="tile-body">
-            <div class="tile-text">
-              <h2 class="tile-title">UNI</h2>
-              <p class="tile-desc">
-                A social app for creating small 3D worlds with AI and exploring what others have made.
-              </p>
-            </div>
-            <span class="tile-more" aria-hidden="true">&rarr;</span>
-          </div>
-        </a>
+        </div>
 
         <!--
-        <a class="tile reveal" href="game-NEXT.html" style="--delay: 220ms">
+        <a class="tile reveal" href="game-NEXT.html" style="--delay: 110ms">
           <div class="tile-art" aria-hidden="true"><span class="tile-art-mark">XX</span></div>
           <p class="tile-status">In development</p>
           <div class="tile-body">
