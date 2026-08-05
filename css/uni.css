@@ -67,11 +67,18 @@
    卡片间距比全站 .cards 的 20px 收窄一档——这里只有三张，靠得近才像一组。 */
 .uni-step--row {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* TODO 现在只有两栏（What we are building toward 在 uni.html 里暂时注释掉了）。
+     那一栏放回来时，这里改回 repeat(3, minmax(0, 1fr))。 */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(16px, 1.8vw, 24px);
   align-content: center;   /* 三栏合起来比一屏矮，整体在段落里居中，别吊在顶上 */
   max-width: none;
-  min-height: 56vh;        /* 内容变少了，不用再按 72vh 占屏 */
+  min-height: 0;           /* 卡片按内容定高：撑到 56vh 只会在文字下面留一大片空白 */
+  /* 两行轨道：标题一行、正文一行。几张卡用 subgrid 共用这两行，
+     标题折成两行时其余各栏的标题也占同样高度，正文因此从同一条基线起排。
+     两行都是 auto——正文行按最长的一栏定高，卡片就在文字下面收住，
+     下内边距和上内边距一样，不再被拉长。 */
+  grid-template-rows: auto auto;
 }
 
 /* 卡面沿用全站 .card 那一套：纯白 + 圆角 + 柔和投影，不描边。
@@ -82,6 +89,17 @@
   border-radius: var(--radius);
   padding: clamp(22px, 2.2vw, 30px) clamp(20px, 2vw, 26px);
   box-shadow: var(--shadow);
+  display: grid;
+  grid-template-rows: subgrid;   /* 借用外层那两行 */
+  grid-row: span 2;
+  row-gap: 0;                    /* 别继承外层的栏间距，标题与正文之间用标题的 margin 撑开 */
+}
+
+/* 不支持 subgrid 的旧浏览器退回普通块级排版：给标题留两行的高度，
+   三栏正文照样从同一条线起排，只是不如 subgrid 精确。 */
+@supports not (grid-template-rows: subgrid) {
+  .uni-step--row .row-item { display: block; }
+  .uni-step--row .step-title--sm { min-height: 2.6em; }
 }
 
 /* 非活动段落压暗，把注意力留给当前这一段（仅桌面端）。
@@ -227,7 +245,9 @@
   .uni-step--lead { min-height: 0; padding-top: 56px; }
 
   /* 窄屏没有三栏的余地，折回单栏，栏与栏之间留出一段间距 */
-  .uni-step--row { grid-template-columns: 1fr; gap: 34px; }
+  /* 窄屏折回单栏，卡片上下排，没有"对齐同一行"这回事——撤掉 subgrid，回到普通块级 */
+  .uni-step--row { grid-template-columns: 1fr; grid-template-rows: none; gap: 34px; }
+  .uni-step--row .row-item { display: block; grid-row: auto; }
   .uni-copy > .uni-step:last-child { padding-bottom: 72px; }
 
   /* 单栏：文案在上、画面在下。窄屏没有并排的余地，
