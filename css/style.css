@@ -3,7 +3,7 @@
 :root {
   --bg: #f2f3fb;          /* 冷调米白底色，无渐变 */
   --bg-alt: #eaecf7;      /* 次级分区底色 */
-  --surface: #fafbff;     /* 卡片：偏蓝的米白 */
+  --surface: #ffffff;     /* 卡片：纯白 —— 没有描边了，全靠这层白跟冷灰底分开 */
   --surface-tint: #e5e8f6;/* 数据卡片浅灰底 */
   --ink: #14161a;         /* 标题：近黑炭灰 */
   --ink-soft: #5b6068;    /* 正文：中灰 */
@@ -11,13 +11,14 @@
   --accent-strong: #0a1fcc;
   --accent-soft: rgba(12, 38, 255, 0.08);
   --mint: #4ec3b0;        /* 次级点缀，仅用于标签/悬停 */
-  --line: rgba(20, 22, 26, 0.10);
-  --line-accent: rgba(12, 38, 255, 0.32);       /* 卡片默认描边：淡蓝 */
-  --line-accent-hover: rgba(12, 38, 255, 0.75); /* 悬停时加深 */
-  --shadow: 0 1px 2px rgba(20, 22, 26, 0.04), 0 12px 28px rgba(20, 22, 26, 0.05);
-  --radius: 12px;         /* 卡片圆角：圆润一档，观感更亲和 */
+  --line: rgba(20, 22, 26, 0.10);   /* 仅用于分隔线（页脚、列表、表格），不画轮廓 */
+  /* 卡片一律无描边：层级只由"白色卡面 + 柔和投影"给。
+     两层阴影是常规做法——第一层近距离压出边缘，第二层大范围铺开做浮起感。
+     悬停时只加深第二层，抬升读起来才是"浮上来"而不是"变粗了"。 */
+  --shadow: 0 1px 2px rgba(20, 22, 26, 0.05), 0 8px 24px rgba(20, 22, 26, 0.06);
+  --shadow-hover: 0 1px 2px rgba(20, 22, 26, 0.05), 0 18px 40px rgba(20, 22, 26, 0.10);
+  --radius: 14px;         /* 无描边的卡片圆角可以再圆一档，边缘更柔 */
   --radius-sm: 8px;       /* 图标块 / 按钮等小元素 */
-  --border-w: 1.5px;      /* 卡片描边统一加粗，轮廓更实 */
   --maxw: 1080px;
   /* 全站唯一字体：Poppins；CJK 与系统字体仅作兜底 */
   --font: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -117,20 +118,17 @@ h1, h2, h3 {
 .nav-links a { transition: color 0.15s ease; white-space: nowrap; }
 .nav-links a:hover { color: var(--accent); }
 .nav-links a.is-current { color: var(--ink); font-weight: 600; }
-/* Contact Us：导航里唯一的行动项，描边按钮 + 主色蓝，跟其他灰色文字链接区分开 */
+/* Contact Us：导航里唯一的行动项。描边去掉后改成实心胶囊——
+   没有轮廓时，"是个按钮"这件事得靠填充来说。 */
 .nav-links a.nav-cta {
-  color: var(--accent);
-  border: var(--border-w) solid var(--line-accent);
+  color: #fff;
+  background: var(--accent);
   border-radius: 999px;
   padding: 6px 16px;
   line-height: 1.4;
-  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  transition: background-color 0.15s ease;
 }
-.nav-links a.nav-cta:hover {
-  color: var(--accent-strong);
-  border-color: var(--line-accent-hover);
-  background: var(--accent-soft);
-}
+.nav-links a.nav-cta:hover { background: var(--accent-strong); }
 
 /* ===== Hero ===== */
 .hero {
@@ -172,8 +170,9 @@ h1, h2, h3 {
 }
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-primary:hover { background: var(--accent-strong); }
-.btn-ghost { background: transparent; color: var(--ink); border: var(--border-w) solid var(--line); }
-.btn-ghost:hover { border-color: var(--ink); }
+/* 次级按钮：原来是描边款，改成浅灰实心块——同样是"无轮廓"那套语言 */
+.btn-ghost { background: rgba(20, 22, 26, 0.055); color: var(--ink); }
+.btn-ghost:hover { background: rgba(20, 22, 26, 0.10); }
 
 /* ===== 通用 section ===== */
 .section { padding: clamp(64px, 9vw, 112px) clamp(20px, 5vw, 48px); }
@@ -223,13 +222,12 @@ h1, h2, h3 {
   display: flex;
   flex-direction: column;
   background: var(--surface);
-  border: var(--border-w) solid var(--line-accent);
   border-radius: var(--radius);
   padding: 30px 26px;
   box-shadow: var(--shadow);
-  transition: border-color 0.18s ease, transform 0.18s ease;
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
 }
-.card:hover { border-color: var(--line-accent-hover); transform: translateY(-3px); }
+.card:hover { box-shadow: var(--shadow-hover); transform: translateY(-3px); }
 .card-icon {
   display: inline-flex;
   align-items: center;
@@ -293,6 +291,34 @@ h1, h2, h3 {
   left: -9px;
   color: var(--line);
 }
+
+/* 版权行与社交图标同一条横线：版权靠左，社交锚在右下角 */
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+}
+.footer-social {
+  display: flex;
+  align-items: center;
+  gap: 12px;           /* 实心方块比裸线条重，间距收窄一档才不散 */
+  list-style: none;
+  margin-left: auto;   /* 版权行换行时也仍然贴右 */
+}
+.footer-social a {
+  display: block;
+  color: var(--ink);   /* 实心深灰黑，跟参考图一个分量 */
+  transition: color 0.15s ease;
+}
+.footer-social a:hover { color: var(--accent); }
+/* 两个图标的图形都正好顶满各自 24×24 的视框（YouTube 是铺满的圆角方块，
+   Instagram 外框也贴着 0 和 24），所以锁成正方形就等高等宽，不用再单独微调 */
+.footer-social svg { width: 20px; height: 20px; display: block; fill: currentColor; }
+/* YouTube 的播放三角用页脚底色"挖"出来：页脚背景是纯色 var(--bg) 没有渐变，
+   直接刷底色跟真做镂空看不出区别，路径却简单得多、不会画错。 */
+.footer-social .cut-fill { fill: var(--bg); }
 
 /* ===== 滚动入场动画（仅在 JS 可用时隐藏初始状态） =====
    动画结束后 JS 会移除 .reveal，元素回到默认状态：
@@ -406,24 +432,23 @@ h1, h2, h3 {
   display: block;
   isolation: isolate;
   background: var(--surface);
-  border: var(--border-w) solid var(--line-accent);
-  border-radius: 20px;
+  border-radius: 18px;
   overflow: hidden;
   box-shadow: var(--shadow);
   transition:
-    border-color 0.2s ease,
     transform 0.35s var(--ease-out-soft),
     box-shadow 0.35s var(--ease-out-soft);
 }
 .tile:hover {
-  border-color: var(--line-accent-hover);
   transform: translateY(-6px);
-  box-shadow: 0 1px 2px rgba(20, 22, 26, 0.05), 0 22px 44px rgba(12, 38, 255, 0.14);
+  box-shadow: 0 1px 2px rgba(20, 22, 26, 0.05), 0 24px 48px rgba(20, 22, 26, 0.13);
 }
 .tile:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 /* 占位卡：下一款游戏公布前占住第二格。故意不带 .tile —— 它不是链接，
-   不该有描边加深、抬升和箭头那套可点击的反馈。虚线描边就是"这里还空着"。 */
+   不该有抬升和箭头那套可点击的反馈。
+   真实卡片是"白面 + 投影"，这里反过来：凹下去的浅灰底、不投影，
+   一眼就是"这格还空着"，全程不用画一条线。 */
 .tile-soon {
   display: flex;
   align-items: center;
@@ -431,9 +456,8 @@ h1, h2, h3 {
   aspect-ratio: 4 / 3;
   padding: 24px;
   text-align: center;
-  background: var(--surface);
-  border: var(--border-w) solid var(--line);
-  border-radius: 20px;
+  background: var(--surface-tint);
+  border-radius: 18px;
 }
 .tile-soon-mark {
   font-family: var(--display);
@@ -534,7 +558,7 @@ h1, h2, h3 {
   background: rgba(255, 255, 255, 1);
   /* -webkit-backdrop-filter: saturate(180%) blur(12px); */
   /* backdrop-filter: saturate(180%) blur(12px); */
-  border-top: 1px solid rgba(12, 38, 255, 0.12);
+  /* 上边不再画分隔线：白条压在封面上，本身就是一道足够硬的边界 */
 }
 .tile-text { min-width: 0; }
 .tile .tile-title {
@@ -689,6 +713,8 @@ h1, h2, h3 {
   .nav-links::-webkit-scrollbar { display: none; }
   .brand-name { display: none; }
   .section h2 { max-width: none; }
+  /* 窄屏版权行会占满整行，社交图标另起一行贴左，右对齐在这里读起来是"掉队" */
+  .footer-social { margin-left: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -819,9 +845,8 @@ h1, h2, h3 {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  border-radius: 20px;
+  border-radius: 18px;
   background: var(--ink);
-  border: var(--border-w) solid var(--line-accent);
   box-shadow: var(--shadow);
 }
 
@@ -971,18 +996,21 @@ h1, h2, h3 {
   aspect-ratio: 16 / 9;
   padding: 0;
   overflow: hidden;
-  border: 2px solid transparent;
+  border: 0;
   border-radius: 10px;
   background: var(--surface-tint);
   cursor: pointer;
-  transition: border-color 0.18s ease, transform 0.3s var(--ease-out-soft), opacity 0.18s ease;
-  opacity: 0.62;
+  transition: opacity 0.18s ease, transform 0.3s var(--ease-out-soft), box-shadow 0.18s ease;
+  /* 选中框没了，未选中的就得压得更暗一点，两者才拉得开 */
+  opacity: 0.45;
 }
 .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.gallery-thumb:hover { opacity: 1; transform: translateY(-2px); }
+.gallery-thumb:hover { opacity: 0.8; transform: translateY(-2px); }
+/* 选中态：全亮 + 微微浮起，不画框 */
 .gallery-thumb[aria-selected="true"] {
   opacity: 1;
-  border-color: var(--line-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(20, 22, 26, 0.16);
 }
 .gallery-thumb:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* 视频缩略图上的小播放角标 */
@@ -1022,7 +1050,7 @@ h1, h2, h3 {
   width: min(94vw, calc((100vh - 210px) * 16 / 9));
   margin: 0 auto;
 }
-.gallery.is-theater .gallery-stage { border-radius: 12px; border-color: transparent; }
+.gallery.is-theater .gallery-stage { border-radius: 12px; box-shadow: none; }
 .gallery.is-theater .gallery-rail { justify-content: center; margin-top: 18px; }
 .gallery.is-theater .gallery-slide img { object-fit: contain; }
 

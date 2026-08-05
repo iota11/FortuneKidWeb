@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920" aria-hidden="true">
+  <!-- 占位图：竖屏手机 App —— 世界流（feed）。换成真素材时直接替成竖版 GIF/MP4。 -->
+  <defs>
+    <style>
+      .t{fill:var(--c,#0C26FF)}
+      .l{fill:var(--c,#0C26FF);opacity:.5}
+      .r{fill:var(--c,#0C26FF);opacity:.75}
+      .b{--c:#0C26FF}
+      .m{--c:#4ec3b0}
+    </style>
+    <symbol id="cube" viewBox="0 0 100 100">
+      <path class="t" d="M50 17 92 38 50 59 8 38Z"/>
+      <path class="l" d="M8 38 8 78 50 99 50 59Z"/>
+      <path class="r" d="M92 38 92 78 50 99 50 59Z"/>
+    </symbol>
+    <symbol id="ball" viewBox="0 0 100 100">
+      <circle cx="50" cy="52" r="36" fill="var(--c,#0C26FF)" opacity=".85"/>
+      <circle cx="37" cy="39" r="11" fill="#ffffff" opacity=".5"/>
+    </symbol>
+    <symbol id="spark" viewBox="0 0 100 100">
+      <path d="M50 4C56 33 67 44 96 50 67 56 56 67 50 96 44 67 33 56 4 50 33 44 44 33 50 4Z" fill="var(--c,#0C26FF)"/>
+    </symbol>
+  </defs>
+
+  <rect width="1080" height="1920" fill="#f2f3fb"/>
+
+  <!-- 顶部：搜索 + 头像 -->
+  <rect x="70" y="140" width="800" height="104" rx="52" fill="#ffffff"/>
+  <g fill="none" stroke="#5b6068" stroke-width="8" stroke-linecap="round" opacity=".45">
+    <circle cx="150" cy="186" r="22"/>
+    <path d="M167 203 183 219"/>
+  </g>
+  <rect x="215" y="179" width="300" height="26" rx="13" fill="#5b6068" opacity=".28"/>
+  <circle cx="955" cy="192" r="52" fill="#ffffff"/>
+  <circle cx="955" cy="180" r="18" fill="#0C26FF" opacity=".35"/>
+  <path d="M925 224a30 30 0 0 1 60 0Z" fill="#0C26FF" opacity=".35"/>
+
+  <!-- 分类胶囊 -->
+  <rect x="70" y="285" width="170" height="62" rx="31" fill="#0C26FF"/>
+  <rect x="260" y="285" width="150" height="62" rx="31" fill="#ffffff"/>
+  <rect x="430" y="285" width="190" height="62" rx="31" fill="#ffffff"/>
+  <rect x="640" y="285" width="160" height="62" rx="31" fill="#ffffff"/>
+  <rect x="820" y="285" width="190" height="62" rx="31" fill="#ffffff"/>
+
+  <!-- 卡片 A -->
+  <rect x="70" y="395" width="445" height="590" rx="28" fill="#ffffff"/>
+  <rect x="70" y="395" width="445" height="400" rx="28" fill="#e5e8f6"/>
+  <rect x="70" y="755" width="445" height="40" fill="#e5e8f6"/>
+  <path d="M292 570 452 650 292 730 132 650Z" fill="#ffffff" opacity=".6"/>
+  <use href="#cube" class="b" x="180" y="538" width="150" height="150"/>
+  <use href="#cube" class="m" x="297" y="596" width="110" height="110"/>
+  <use href="#spark" class="b" x="398" y="472" width="54" height="54" opacity=".65"/>
+  <rect x="110" y="845" width="250" height="26" rx="13" fill="#14161a" opacity=".16"/>
+  <rect x="110" y="893" width="160" height="20" rx="10" fill="#14161a" opacity=".1"/>
+  <circle cx="455" cy="875" r="28" fill="#0C26FF" opacity=".14"/>
+
+  <!-- 卡片 B -->
+  <rect x="565" y="395" width="445" height="500" rx="28" fill="#ffffff"/>
+  <rect x="565" y="395" width="445" height="330" rx="28" fill="#e5e8f6"/>
+  <rect x="565" y="685" width="445" height="40" fill="#e5e8f6"/>
+  <path d="M787 525 942 590 787 655 632 590Z" fill="#ffffff" opacity=".6"/>
+  <ellipse cx="787" cy="588" rx="110" ry="55" fill="none" stroke="#0C26FF" stroke-width="26" opacity=".22"/>
+  <use href="#cube" class="m" x="665" y="510" width="70" height="70"/>
+  <use href="#spark" class="m" x="878" y="462" width="44" height="44" opacity=".8"/>
+  <rect x="605" y="765" width="230" height="26" rx="13" fill="#14161a" opacity=".16"/>
+  <rect x="605" y="813" width="150" height="20" rx="10" fill="#14161a" opacity=".1"/>
+  <circle cx="950" cy="795" r="28" fill="#4ec3b0" opacity=".22"/>
+
+  <!-- 卡片 C -->
+  <rect x="70" y="1015" width="445" height="500" rx="28" fill="#ffffff"/>
+  <rect x="70" y="1015" width="445" height="330" rx="28" fill="#e5e8f6"/>
+  <rect x="70" y="1305" width="445" height="40" fill="#e5e8f6"/>
+  <path d="M292 1145 447 1210 292 1275 137 1210Z" fill="#ffffff" opacity=".6"/>
+  <use href="#cube" class="b" x="200" y="1137" width="100" height="100"/>
+  <use href="#ball" class="m" x="305" y="1121" width="90" height="90"/>
+  <use href="#spark" class="b" x="178" y="1082" width="40" height="40" opacity=".7"/>
+  <rect x="110" y="1385" width="240" height="26" rx="13" fill="#14161a" opacity=".16"/>
+  <rect x="110" y="1433" width="150" height="20" rx="10" fill="#14161a" opacity=".1"/>
+  <circle cx="455" cy="1415" r="28" fill="#0C26FF" opacity=".14"/>
+
+  <!-- 卡片 D -->
+  <rect x="565" y="925" width="445" height="590" rx="28" fill="#ffffff"/>
+  <rect x="565" y="925" width="445" height="400" rx="28" fill="#e5e8f6"/>
+  <rect x="565" y="1285" width="445" height="40" fill="#e5e8f6"/>
+  <path d="M787 1090 947 1170 787 1250 627 1170Z" fill="#ffffff" opacity=".6"/>
+  <use href="#cube" class="b" x="640" y="1056" width="120" height="120"/>
+  <use href="#cube" class="m" x="750" y="1076" width="140" height="140"/>
+  <use href="#cube" class="b" x="845" y="1060" width="90" height="90"/>
+  <use href="#spark" class="m" x="638" y="992" width="46" height="46" opacity=".8"/>
+  <rect x="605" y="1375" width="250" height="26" rx="13" fill="#14161a" opacity=".16"/>
+  <rect x="605" y="1423" width="170" height="20" rx="10" fill="#14161a" opacity=".1"/>
+  <circle cx="950" cy="1405" r="28" fill="#4ec3b0" opacity=".22"/>
+
+  <!-- 底部悬浮导航 -->
+  <rect x="120" y="1600" width="840" height="132" rx="66" fill="#ffffff"/>
+  <rect x="228" y="1644" width="44" height="44" rx="12" fill="#5b6068" opacity=".35"/>
+  <g fill="none" stroke="#5b6068" stroke-width="7" stroke-linecap="round" opacity=".35">
+    <circle cx="412" cy="1656" r="20"/>
+    <path d="M427 1671 441 1685"/>
+  </g>
+  <circle cx="540" cy="1666" r="46" fill="#0C26FF"/>
+  <path d="M540 1644v44M518 1666h44" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+  <path d="M655 1640h44a12 12 0 0 1 12 12v28a12 12 0 0 1-12 12h-30l-22 16v-16h-2a12 12 0 0 1-12-12v-28a12 12 0 0 1 12-12Z" fill="#5b6068" opacity=".35"/>
+  <circle cx="830" cy="1652" r="18" fill="#5b6068" opacity=".35"/>
+  <path d="M804 1690a26 26 0 0 1 52 0Z" fill="#5b6068" opacity=".35"/>
+
+  <rect x="440" y="1790" width="200" height="12" rx="6" fill="#14161a" opacity=".16"/>
+</svg>

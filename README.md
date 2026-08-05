@@ -10,7 +10,7 @@ Fortune Kid Inc.（新泽西互动娱乐工作室）官方网站。纯静态 HTM
 ```
 index.html            About（首页，单页滚动 + 锚点）
 games.html            Our Games（作品列表）
-game-roof-band.html   单个作品页（新作品复制这一份改写）
+hua.html   单个作品页（新作品复制这一份改写）
 uni.html              UNI 产品页（双栏 + 滚动驱动的 3D 面板）
 news.html             News（博客/动态列表，**当前暂时隐藏**：导航链接已注释、页面 noindex）
 privacy.html          隐私政策（**只管游戏**，明确排除本网站 / UNI / 周边 / 商店）
@@ -69,41 +69,30 @@ CNAME                 自定义域名
 
 ## UNI 页是怎么动的
 
-左栏 6 段文案，每段一屏高；右栏 `position: sticky` 面板里放一个 3D 物体。
-滚动位置 → 时间轴 `tl`（0–6，整数部分就是当前第几段）→ 采样关键帧 → 写成 CSS 自定义属性：
+单栏 9 段文案，每段一屏高、内容垂直居中。`js/uni.js` 只做一件事：把停在屏幕
+中间的那一段标上 `.is-active`，其余段落压到 `opacity: .3`。
 
-| 变量 | 作用 | 出现在 |
-| --- | --- | --- |
-| `--rot-x` / `--rot-y` | 世界旋转 | 全程 |
-| `--scale` | 世界缩放（02 段拉远，读出"房间大小"） | 02 |
-| `--asm` | 装配进度 0→1，图元按 `--i` 错峰缩放飞入 | 03 |
-| `--ghost` | remix 分身剥离（JS 克隆 `#place-a` 生成） | 04 |
-| `--swap` | 切换到第二个场景 `#place-b` | 05 |
+滚动位置 → 时间轴 `tl`（0–9，整数部分就是当前第几段）。**参考线取视口顶端**，
+不是中线 —— 用中线的话页面一打开 `tl` 就已经是 0.5，01 段的静置状态会被跳过。
+每帧只做一次"读 rect → 算下标"，rAF 只在还有东西要动时才继续排队。
 
-关键帧表在 `js/uni.js` 的 `TRACKS` 里，改数值就能调节奏，不用动 CSS。
+对外口径统一叫 **worlds**（不是 places），index.html 的 Uni 卡片和 uni.html 01 段用同一句话。
+文案只讲用户看得见的部分 —— 说一句话、边看边生成、说话改、一键发布 —— **不写 AI 内部怎么拆解**
+（"geometry / objects / rules" 这类枚举已经删掉了，别加回来）。
 
-几个已经踩过的点，改的时候注意：
-
-- **不要对 3D 节点用 `opacity`**。它会强制 `transform-style: flat`，盒子会被拍扁。
-  淡入淡出一律用缩放（`--swap`）或改面板底色的 alpha（`--ghost`），现在的写法就是这么绕开的。
-- **参考线取视口顶端**，不是中线。用中线的话页面一打开 `tl` 就已经是 0.5，01 段的静置状态会被跳过。
-- **`.uni-copy` 底部留了 24vh**。没有这段留白，06 段"动作慢下来"的收束镜头会因为 sticky 提前解除固定而被截断。
-- 每帧只做一次"读 rect → 写变量"，并且 rAF 只在还有东西要动时才继续排队；
-  面板滚出视口后由 IntersectionObserver 停掉环境自转。
-
-物体现在是 CSS 3D 图元搭的占位场景（Place A 小花园 / Place B 跑酷小关卡），
-盒子结构见 `css/uni.css` 里 `.bx` 那一段：每个盒子五个面（底面看不到，省掉），
-`--x/--y/--z` 定位、`--w/--d/--h` 尺寸、`--i` 装配顺序。真模型到位后整块 `.place` 可以直接替换。
+> 早先右栏有一块 sticky 的 CSS 3D 占位场景（Place A 小花园 / Place B 跑酷小关卡），
+> 由滚动进度驱动旋转、装配、切换。已整体移除 —— HTML 里的 `.uni-stage`、CSS 里的
+> `.bx`/`.place`/`--asm`/`--swap`/`--ghost`，以及 `js/uni.js` 的 `TRACKS` 关键帧表
+> 都不在了。真模型到位后是重新加一块，不是恢复这块。
 
 ### 移动端
 
-≤900px 时收起 sticky 联动：物体在上、文案在下，旋转改成慢速自转 + 手指拖动（`touch-action: pan-y`
-保证纵向还能正常滚页面），不做滚动联动的旋转。
+≤900px 时段落不再一段一屏，改成靠上下间距拉开；压暗效果只在 ≥901px 生效。
 
 ### 减少动效
 
-`prefers-reduced-motion: reduce` 时 `js/uni.js` 直接返回，页面显示 CSS 默认值里那个摆好姿势的成品场景。
-**注意：headless Chrome 默认就是 reduce**，用无头浏览器截图/测试时会走到这条分支，需要临时覆盖 `matchMedia` 才测得到滚动联动。
+`prefers-reduced-motion: reduce` 时不做压暗，所有段落保持正常亮度。
+**注意：headless Chrome 默认就是 reduce**，用无头浏览器截图/测试时会走到这条分支。
 
 ## 本地预览
 
@@ -145,17 +134,17 @@ python3 -m http.server 8000   # 然后访问 http://localhost:8000
       ① 复制 `news.html` 里 `<template id="post-template">` 的 `<article>`，粘到 `.posts` 顶部
       （新的在上），然后删掉 `.empty` 那块空状态；
       ② 删掉 `news.html` `<head>` 里的 `<meta name="robots" content="noindex, nofollow" />`；
-      ③ 在 `index.html` / `games.html` / `uni.html` / `game-roof-band.html` 里搜索
+      ③ 在 `index.html` / `games.html` / `uni.html` / `hua.html` 里搜索
       `TODO 暂时隐藏 News`（每个文件顶部导航 + 页脚各一处），把注释里的链接放回去
 - [ ] `terms.html` 上线前请律师过一遍（尤其 §8 来稿条款、§9 证券免责、§14 责任上限）。
       当前版本是按公司现状写的，不是法律意见
-- [ ] 商标：`Fortune Kid` / `Rooftop Band` / `UNI` 目前在 `terms.html` §5 按未注册商标主张
+- [ ] 商标：`Fortune Kid` / `Hua` / `UNI` 目前在 `terms.html` §5 按未注册商标主张
       （TM 而非 ®）。真去 USPTO 注册后再改措辞
 - [ ] 考虑把 Poppins 自托管到 `assets/`：第三方请求归零，`terms.html` §11 可以简化
 - [ ] 加新游戏：复制 `games.html` 里注释掉的 `.tile` 模板，另建 `game-<slug>.html`
-      （直接复制 `game-roof-band.html` 改写）
+      （直接复制 `hua.html` 改写）
 - [ ] 放入 logo / 游戏截图到 `assets/`；`.tile-art` 现在是纯色占位，换成真截图
-- [ ] 游戏上架后：`.tile-status` 和 `game-roof-band.html` 的 `.detail-note` 换成真实商店链接，
+- [ ] 游戏上架后：`.tile-status` 和 `hua.html` 的 `.detail-note` 换成真实商店链接，
       把 About 数据条的 "Building" 换成真实上线数据，并同步更新全站所有"在研中"措辞
       （当前全站均为 pre-launch 口径，**不得暗示已上架**）
 

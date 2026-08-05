@@ -66,7 +66,7 @@
             </thead>
             <tbody>
               <tr>
-                <td>HarmonicaGame (iOS)</td>
+                <td>Hua (iOS)</td>
                 <td>com.fortunekid.harmonica</td>
                 <td>None</td>
               </tr>
@@ -85,6 +85,26 @@
           services you may reach outside our games, such as the Apple App Store or Google Play. Those
           are governed by their own separate policies.
         </p>
+
+        <!--
+          推送通知待定（2026-08-04）。两条路差别很大，定下来之前不要动正文：
+
+          ① 本地通知（本机排程，如"该练琴了"）——
+             不联网、拿不到 token、不需要服务器。下面 §2 整节继续成立，
+             只要在 §4 补一句"待发送的提醒存在本机"，再加一小节说明怎么在
+             系统设置里关掉。App Store 隐私标签仍然填 Data Not Collected。
+
+          ② 远程推送（APNs / FCM，由我们发给玩家）——
+             registerForRemoteNotifications 拿到的 device token 要上传到服务器存着，
+             那就是实打实的"收集设备标识符"：
+               §2 第二条当场作废，必须重写；
+               §5 要把 Apple APNs / Firebase 写成第三方处理方；
+               §9 "没有服务器可被攻破"不再成立，要写服务器、留存期限、安全措施；
+               §8 要给出删除 token 的实际途径，不能再说"我们手上没有数据"。
+             隐私标签要从 Data Not Collected 改成 Identifiers → Device ID。
+
+          §10 承诺的是"在该版本发布之前"更新本页，不是提前预告没定的事。
+        -->
 
         <h2>2. What we do not collect</h2>
         <p>
@@ -169,12 +189,15 @@
 
         <h2>7. Children&rsquo;s privacy</h2>
         <p>
-          Our games are general-audience apps suitable for all ages. They are not directed to
-          children under 13, and are not listed in the App Store Kids Category or in Google
-          Play&rsquo;s Designed for Families program. Because they collect
-          no personal information from anyone, we do not knowingly collect personal information from
-          children under 13 &mdash; or from any user &mdash; as those terms are used in the U.S.
-          Children&rsquo;s Online Privacy Protection Act (COPPA) and comparable laws elsewhere.
+          Our games carry a 4+ age rating and are suitable for players of all ages, including
+          young children. They are not listed in the App Store Kids Category or in Google
+          Play&rsquo;s Designed for Families program.
+        </p>
+        <p>
+          Because our games collect no personal information from anyone, we do not knowingly
+          collect personal information from children under 13 &mdash; or from any user &mdash; as
+          those terms are used in the U.S. Children&rsquo;s Online Privacy Protection Act (COPPA)
+          and comparable laws elsewhere.
         </p>
         <p>
           If you are a parent or guardian and believe your child has somehow provided us with
@@ -231,7 +254,7 @@
           Questions about this policy or about privacy in our games are always welcome.
         </p>
         <p>
-          <a href="mailto:hello@fortunekidstudio.com">hello@fortunekidstudio.com</a>
+          <a href="mailto:contact@fortunekidstudio.com">contact@fortunekidstudio.com</a>
         </p>
         <p>
           We aim to respond to every privacy inquiry within 30 days, and in all cases within the
@@ -251,11 +274,26 @@
         <!-- TODO 暂时隐藏 News（暂无内容），有第一篇文章后取消注释：<a href="news.html">News</a> -->
         <a href="index.html#contact">Contact</a>
       </nav>
-      <p class="footer-copy">
-        <span>Copyright © <span id="year">2026</span> Fortune Kid Inc. All rights reserved.</span>
-        <a href="terms.html">Terms of Use</a>
-        <a href="privacy.html">Privacy Policy</a>
-      </p>
+      <div class="footer-bottom">
+        <p class="footer-copy">
+          <span>Copyright © <span id="year">2026</span> Fortune Kid Inc. All rights reserved.</span>
+          <a href="terms.html">Terms of Use</a>
+          <a href="privacy.html">Privacy Policy</a>
+        </p>
+        <!-- 社交入口：右下角，与版权行同一条横线上 -->
+        <ul class="footer-social">
+          <li>
+            <a href="https://www.youtube.com" target="_blank" rel="noopener" aria-label="YouTube">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="24" height="24" rx="6"/><path class="cut-fill" d="M9.5 7.4v9.2L17.3 12z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.instagram.com/fortunekidstudio/" target="_blank" rel="noopener" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.209 0-4-1.79-4-4 0-2.209 1.79-4 4-4 2.209 0 4 1.79 4 4 0 2.209-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
   </footer>
 

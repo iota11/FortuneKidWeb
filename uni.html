@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>UNI · Fortune Kid Inc.</title>
-  <meta name="description" content="UNI — make small 3D places with AI, and play through places other people made. In development at Fortune Kid Inc." />
+  <meta name="description" content="UNI is an app for making small 3D worlds with AI, and playing what the community builds. In development at Fortune Kid Inc." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" />
@@ -32,130 +32,143 @@
 
   <main class="uni">
 
-    <!-- ===== 双栏：左侧分段文案，右侧 sticky 物体 =====
-         左栏每个 .uni-step 对应右栏物体的一个状态；
-         滚动进度由 js/uni.js 写成 CSS 变量驱动，不用自动播放。 -->
+    <!-- ===== 单栏：分段文案 =====
+         每段占一屏，滚动时由 js/uni.js 把当前这一段点亮、其余压暗。 -->
     <div class="uni-layout" id="uni-layout">
 
       <div class="uni-copy" id="uni-copy">
 
-        <!-- 01 Landing -->
+        <!-- 01 Hero -->
         <section class="uni-step uni-step--lead" data-step="1">
-          <p class="step-num">01</p>
           <h1 class="step-lead">UNI</h1>
           <p class="step-body">
-            Make small 3D places with AI. Play through places other people made.
-          </p>
-          <p class="scroll-cue" aria-hidden="true">Scroll</p>
-        </section>
-
-        <!-- 02 What a place is -->
-        <section class="uni-step" data-step="2">
-          <p class="step-num">02</p>
-          <h2 class="step-title">Room-sized, not a map.</h2>
-          <p class="step-body">
-            A garden you tend. A 60-second platforming level. A hangout where you and your friends
-            talk.
+            An app for crafting small 3D worlds with AI, and playing what the community builds.
           </p>
         </section>
 
-        <!-- 03 How it's made -->
-        <section class="uni-step" data-step="3">
-          <p class="step-num">03</p>
-          <h2 class="step-title">Describe it in a sentence.</h2>
-          <p class="step-body">
-            Our agents build the geometry, the objects, the rules. You refine it by talking.
-          </p>
-        </section>
+        <!-- 02–05 带画面的段落：左右交替。
+             画面和自己这一段的文案并排、一起滚动，进出视口时轻轻淡入淡出。
+             画面里的 .uni-media 放大后在裁切框里上下漂移，就是视差。
+             UNI 是 App，素材按竖屏（9:16）录，占位图也是竖版手机界面。
+             换成真素材时把 <img> 换成
+             <video autoplay muted loop playsinline poster="…">，其余不用动。 -->
 
-        <!-- 04 Publish and remix -->
-        <section class="uni-step" data-step="4">
-          <p class="step-num">04</p>
-          <h2 class="step-title">One tap to publish.</h2>
-          <p class="step-body">
-            Anyone who visits can remix it into their own version.
-          </p>
-        </section>
-
-        <!-- 05 The feed -->
-        <section class="uni-step" data-step="5">
-          <p class="step-num">05</p>
-          <h2 class="step-title">Open the app, you're in a feed.</h2>
-          <p class="step-body">
-            Tap a place, you're inside it. Swipe to the next.
-          </p>
-        </section>
-
-        <!-- 06 Why now（论点段，留出视觉空间） -->
-        <section class="uni-step uni-step--wide" data-step="6">
-          <p class="step-num">06</p>
-          <h2 class="step-title">Why now.</h2>
-          <p class="step-body">
-            Building anything in a virtual world used to take professional tools and weeks of work.
-            That's why every UGC platform has far more players than creators.
-          </p>
-          <p class="step-body">
-            AI removes the labor. But today's AI creation tools are still built for professionals.
-          </p>
-          <p class="step-body step-body--key">
-            UNI is for someone who's never made anything &mdash; and is doing it because it's fun.
-          </p>
-        </section>
-
-      </div>
-
-      <!-- 右栏：sticky 3D 面板。
-           物体用 CSS 3D 图元搭出来的"小场景"占位，等真模型到位后
-           整块 .place 可以直接替换（见 README 待办）。 -->
-      <div class="uni-stage" id="uni-stage">
-        <div class="scene" aria-hidden="true">
-          <div class="world">
-
-            <!-- 地面投影 -->
-            <div class="ground-shadow"></div>
-
-            <!-- ===== Place A：小花园（01–04 使用） ===== -->
-            <div class="place" id="place-a">
-              <div class="bx" style="--x:0;--y:0;--z:0;--w:220;--d:220;--h:24;--i:0;--c:var(--m-stone)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:0;--y:24;--z:0;--w:184;--d:184;--h:6;--i:1;--c:var(--m-grass)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:0;--y:30;--z:-87;--w:184;--d:10;--h:56;--i:2;--sx:-1;--c:var(--m-cream)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:-87;--y:30;--z:0;--w:10;--d:184;--h:56;--i:3;--c:var(--m-cream-d)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:-42;--y:30;--z:-22;--w:12;--d:12;--h:34;--i:4;--sx:-1;--c:var(--m-wood)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:-42;--y:64;--z:-22;--w:56;--d:56;--h:22;--i:5;--c:var(--m-leaf)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:22;--y:30;--z:34;--w:40;--d:110;--h:3;--i:6;--c:var(--m-sand)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:-42;--y:86;--z:-22;--w:36;--d:36;--h:18;--i:7;--sx:-1;--c:var(--m-leaf-l)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:46;--y:30;--z:-46;--w:48;--d:16;--h:10;--i:8;--c:var(--m-wood)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:46;--y:40;--z:-53;--w:48;--d:5;--h:16;--i:9;--c:var(--m-wood-d)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:62;--y:30;--z:58;--w:6;--d:6;--h:50;--i:10;--sx:-1;--c:var(--m-ink)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:62;--y:80;--z:58;--w:14;--d:14;--h:12;--i:11;--c:var(--m-glow)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:-46;--y:30;--z:62;--w:34;--d:34;--h:16;--i:12;--c:var(--m-stone-l)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:-46;--y:46;--z:62;--w:22;--d:22;--h:10;--i:13;--sx:-1;--c:var(--m-bloom)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-            </div>
-
-            <!-- ===== Place B：跑酷小关卡（05 之后换成这一个） ===== -->
-            <div class="place" id="place-b">
-              <div class="bx" style="--x:0;--y:0;--z:0;--w:220;--d:220;--h:24;--i:0;--c:var(--m-stone)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:-18;--y:24;--z:52;--w:150;--d:108;--h:10;--i:1;--c:var(--m-deep)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:-56;--y:50;--z:4;--w:72;--d:56;--h:12;--i:2;--c:var(--m-deep-l)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:12;--y:80;--z:-34;--w:64;--d:50;--h:12;--i:3;--sx:-1;--c:var(--m-deep-l)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:66;--y:110;--z:-70;--w:54;--d:44;--h:12;--i:4;--c:var(--m-deep-l)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:40;--y:34;--z:46;--w:46;--d:60;--h:10;--i:5;--sx:-1;--c:var(--m-deep-l)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:66;--y:122;--z:-70;--w:5;--d:5;--h:40;--i:6;--c:var(--m-ink)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:-14;--y:64;--z:66;--w:18;--d:18;--h:18;--i:7;--sx:-1;--c:var(--m-glow)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:79;--y:144;--z:-70;--w:22;--d:3;--h:14;--i:8;--sx:-1;--c:var(--m-bloom)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:-50;--y:92;--z:-24;--w:16;--d:16;--h:16;--i:9;--c:var(--m-glow)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:12;--y:104;--z:-34;--w:10;--d:10;--h:10;--i:10;--c:var(--m-gold)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-              <div class="bx" style="--x:-56;--y:74;--z:4;--w:10;--d:10;--h:10;--i:11;--sx:-1;--c:var(--m-gold)"><i class="fF"></i><i class="fB"></i><i class="fR"></i><i class="fL"></i><i class="fT"></i></div>
-            </div>
-
+        <!-- 02 The feed + the worlds -->
+        <section class="uni-step uni-step--media" data-step="2">
+          <div class="step-copy">
+            <h2 class="step-title">Every kind of world</h2>
+            <p class="step-body">
+              Open UNI and you're in a feed of worlds made by the community. A racing game? A place
+              to hang out? A store you can actually walk through and shop in?
+            </p>
+            <p class="step-body step-body--key">
+              If you can imagine it, someone can build and share it.
+            </p>
           </div>
-        </div>
+          <div class="step-media">
+            <figure class="uni-card">
+              <div class="uni-card-frame">
+                <img class="uni-media" src="assets/uni/uni-02-feed.svg" alt="" width="1080" height="1920" loading="lazy" decoding="async" />
+              </div>
+            </figure>
+          </div>
+        </section>
 
-        <!-- 移动端提示：可拖动旋转 -->
-        <p class="stage-hint" aria-hidden="true">Drag to turn</p>
+        <!-- 03 Creation -->
+        <section class="uni-step uni-step--media uni-step--flip" data-step="3">
+          <div class="step-copy">
+            <h2 class="step-title">Meet UNI's AI builder</h2>
+            <p class="step-body">
+              Describe the world you want in one sentence. UNI's AI builder creates it while you watch.
+            </p>
+          </div>
+          <div class="step-media">
+            <figure class="uni-card">
+              <div class="uni-card-frame">
+                <img class="uni-media" src="assets/uni/uni-03-build.svg" alt="" width="1080" height="1920" loading="lazy" decoding="async" />
+              </div>
+            </figure>
+          </div>
+        </section>
+
+        <!-- 04 Editing -->
+        <section class="uni-step uni-step--media" data-step="4">
+          <div class="step-copy">
+            <h2 class="step-title">Then shape it</h2>
+            <p class="step-body">
+              Move things by hand if you want to. Or just tell the AI what to change. Keep going until
+              it matches the world you pictured.
+            </p>
+          </div>
+          <div class="step-media">
+            <figure class="uni-card">
+              <div class="uni-card-frame">
+                <img class="uni-media" src="assets/uni/uni-04-edit.svg" alt="" width="1080" height="1920" loading="lazy" decoding="async" />
+              </div>
+            </figure>
+          </div>
+        </section>
+
+        <!-- 05 Publishing -->
+        <section class="uni-step uni-step--media uni-step--flip" data-step="5">
+          <div class="step-copy">
+            <h2 class="step-title">Publish in a tap</h2>
+            <p class="step-body">
+              When it feels right, put it in the feed. People start walking through it right away.
+            </p>
+          </div>
+          <div class="step-media">
+            <figure class="uni-card">
+              <div class="uni-card-frame">
+                <img class="uni-media" src="assets/uni/uni-05-publish.svg" alt="" width="1080" height="1920" loading="lazy" decoding="async" />
+              </div>
+            </figure>
+          </div>
+        </section>
+
+        <!-- 06 收束段：Vision / Direction / Audience 三栏并排。
+             这三段是补充说明，分量不如上面几段，并排一行、字号收小一档，
+             整页在这里收住，不用再往下拖三屏。窄屏由 CSS 折回单栏。 -->
+        <section class="uni-step uni-step--row" data-step="6">
+          <div class="row-item">
+            <h2 class="step-title step-title--sm">Why we made UNI</h2>
+            <p class="step-body step-body--sm">
+              Building a virtual world used to mean pro tools and weeks of work. Creative people didn't
+              need the skills. They needed the barrier gone.
+            </p>
+          </div>
+
+          <div class="row-item">
+            <h2 class="step-title step-title--sm">What we are building toward</h2>
+            <p class="step-body step-body--sm">
+              AI removes the labor and the knowledge. What's left is taste.
+            </p>
+            <p class="step-body step-body--sm">
+              A minute in UNI gets you a world that actually looks stunning, whether or not you've ever
+              built anything.
+            </p>
+          </div>
+
+          <div class="row-item">
+            <h2 class="step-title step-title--sm">Who it is for</h2>
+            <p class="step-body step-body--sm">
+              Someone who has ideas but isn't a developer or an artist, and shouldn't have to be.
+            </p>
+            <p class="step-body step-body--sm step-body--key">
+              Someone who opens UNI because it's fun, and stays because what they make gets played.
+            </p>
+          </div>
+        </section>
+
       </div>
-
     </div>
+
+    <!-- 收尾：状态 + 联系入口 -->
+    <section class="uni-close">
+      <h2 class="uni-close-title">UNI is in development at Fortune Kid Inc.</h2>
+      <p class="uni-close-body">If you'd like to see where it is, we're happy to talk.</p>
+      <a class="contact-mail" href="mailto:contact@fortunekidstudio.com">contact@fortunekidstudio.com</a>
+    </section>
 
   </main>
 
@@ -168,11 +181,26 @@
         <!-- TODO 暂时隐藏 News（暂无内容），有第一篇文章后取消注释：<a href="news.html">News</a> -->
         <a href="index.html#contact">Contact</a>
       </nav>
-      <p class="footer-copy">
-        <span>Copyright © <span id="year">2026</span> Fortune Kid Inc. All rights reserved.</span>
-        <a href="terms.html">Terms of Use</a>
-        <a href="privacy.html">Privacy Policy</a>
-      </p>
+      <div class="footer-bottom">
+        <p class="footer-copy">
+          <span>Copyright © <span id="year">2026</span> Fortune Kid Inc. All rights reserved.</span>
+          <a href="terms.html">Terms of Use</a>
+          <a href="privacy.html">Privacy Policy</a>
+        </p>
+        <!-- 社交入口：右下角，与版权行同一条横线上 -->
+        <ul class="footer-social">
+          <li>
+            <a href="https://www.youtube.com" target="_blank" rel="noopener" aria-label="YouTube">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="24" height="24" rx="6"/><path class="cut-fill" d="M9.5 7.4v9.2L17.3 12z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.instagram.com/fortunekidstudio/" target="_blank" rel="noopener" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.209 0-4-1.79-4-4 0-2.209 1.79-4 4-4 2.209 0 4 1.79 4 4 0 2.209-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z"/></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
   </footer>
 
