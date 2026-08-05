@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920" aria-hidden="true">
+  <!-- 占位图：竖屏手机 App —— 手动摆放 / 让 AI 改（editing）。 -->
+  <defs>
+    <style>
+      .t{fill:var(--c,#0C26FF)}
+      .l{fill:var(--c,#0C26FF);opacity:.5}
+      .r{fill:var(--c,#0C26FF);opacity:.75}
+      .b{--c:#0C26FF}
+      .m{--c:#4ec3b0}
+    </style>
+    <symbol id="cube" viewBox="0 0 100 100">
+      <path class="t" d="M50 17 92 38 50 59 8 38Z"/>
+      <path class="l" d="M8 38 8 78 50 99 50 59Z"/>
+      <path class="r" d="M92 38 92 78 50 99 50 59Z"/>
+    </symbol>
+    <symbol id="ball" viewBox="0 0 100 100">
+      <circle cx="50" cy="52" r="36" fill="var(--c,#0C26FF)" opacity=".85"/>
+      <circle cx="37" cy="39" r="11" fill="#ffffff" opacity=".5"/>
+    </symbol>
+    <symbol id="spark" viewBox="0 0 100 100">
+      <path d="M50 4C56 33 67 44 96 50 67 56 56 67 50 96 44 67 33 56 4 50 33 44 44 33 50 4Z" fill="var(--c,#0C26FF)"/>
+    </symbol>
+  </defs>
+
+  <rect width="1080" height="1920" fill="#e5e8f6"/>
+
+  <!-- 顶部：返回 + 撤销 / 重做 -->
+  <circle cx="126" cy="196" r="54" fill="#ffffff"/>
+  <path d="M140 174 116 196 140 218" fill="none" stroke="#5b6068" stroke-width="9"
+        stroke-linecap="round" stroke-linejoin="round" opacity=".55"/>
+  <circle cx="828" cy="196" r="54" fill="#ffffff"/>
+  <circle cx="954" cy="196" r="54" fill="#ffffff"/>
+  <g fill="none" stroke="#5b6068" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity=".5">
+    <path d="M840 176 816 196 840 216"/>
+    <path d="M942 176 966 196 942 216"/>
+  </g>
+
+  <!-- 地面网格 -->
+  <path d="M540 730 940 930 540 1130 140 930Z" fill="#ffffff" opacity=".55"/>
+  <g stroke="#0C26FF" stroke-width="4" opacity=".18" stroke-linecap="round">
+    <path d="M340 1030 740 830"/>
+    <path d="M240 980 640 780"/>
+    <path d="M340 830 740 1030"/>
+    <path d="M440 780 840 980"/>
+  </g>
+
+  <!-- 场景里的物件 -->
+  <use href="#cube" class="m" x="260" y="891" width="140" height="140"/>
+  <use href="#ball" class="m" x="775" y="843" width="110" height="110"/>
+  <use href="#cube" class="b" x="480" y="713" width="240" height="240"/>
+
+  <!-- 选中框 + 四角控制点 + 旋转手柄 -->
+  <rect x="470" y="725" width="260" height="255" rx="16" fill="none" stroke="#0C26FF" stroke-width="6"/>
+  <path d="M600 725V670" stroke="#0C26FF" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="600" cy="652" r="22" fill="#ffffff" stroke="#0C26FF" stroke-width="6"/>
+  <g fill="#ffffff" stroke="#0C26FF" stroke-width="6">
+    <rect x="454" y="709" width="32" height="32" rx="8"/>
+    <rect x="714" y="709" width="32" height="32" rx="8"/>
+    <rect x="454" y="964" width="32" height="32" rx="8"/>
+    <rect x="714" y="964" width="32" height="32" rx="8"/>
+  </g>
+
+  <!-- 手指 / 光标：正在拖右下角的控制点 -->
+  <path d="M752 992v58l16-14 12 26 14-7-12-26 20-3Z" fill="#14161a" stroke="#ffffff" stroke-width="5"
+        stroke-linejoin="round"/>
+
+  <!-- 左侧工具栏 -->
+  <rect x="70" y="820" width="120" height="540" rx="60" fill="#ffffff"/>
+  <g fill="none" stroke="#5b6068" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity=".5">
+    <!-- 移动 -->
+    <path d="M130 876v48M106 900h48M122 886l8-8 8 8M122 914l8 8 8-8M116 892l-8 8 8 8M144 892l8 8-8 8"/>
+    <!-- 旋转 -->
+    <path d="M152 1030a22 22 0 1 1-9-17"/>
+    <path d="M152 1004v22h-22"/>
+    <!-- 缩放 -->
+    <rect x="110" y="1140" width="40" height="40" rx="8"/>
+  </g>
+  <rect x="138" y="1168" width="20" height="20" rx="5" fill="#5b6068" opacity=".5"/>
+  <!-- 当前工具：让 AI 改 -->
+  <circle cx="130" cy="1290" r="46" fill="#0C26FF" opacity=".1"/>
+  <use href="#spark" class="b" x="108" y="1268" width="44" height="44"/>
+
+  <!-- 底部：告诉 AI 要改什么 -->
+  <rect x="70" y="1500" width="940" height="150" rx="75" fill="#ffffff"/>
+  <use href="#spark" class="b" x="118" y="1547" width="56" height="56"/>
+  <rect x="200" y="1552" width="380" height="24" rx="12" fill="#14161a" opacity=".2"/>
+  <rect x="200" y="1594" width="250" height="24" rx="12" fill="#14161a" opacity=".1"/>
+  <g fill="none" stroke="#5b6068" stroke-width="8" stroke-linecap="round" opacity=".45">
+    <rect x="800" y="1543" width="30" height="46" rx="15"/>
+    <path d="M788 1580a27 27 0 0 0 54 0M815 1607v18"/>
+  </g>
+  <circle cx="930" cy="1575" r="54" fill="#0C26FF"/>
+  <path d="M930 1598V1552M910 1572l20-20 20 20" fill="none" stroke="#ffffff" stroke-width="9"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <rect x="440" y="1740" width="200" height="12" rx="6" fill="#14161a" opacity=".16"/>
+</svg>

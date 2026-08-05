@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920" aria-hidden="true">
+  <!-- 占位图：竖屏手机 App —— 一句话生成 3D 世界（AI builder）。 -->
+  <defs>
+    <style>
+      .t{fill:var(--c,#0C26FF)}
+      .l{fill:var(--c,#0C26FF);opacity:.5}
+      .r{fill:var(--c,#0C26FF);opacity:.75}
+      .b{--c:#0C26FF}
+      .m{--c:#4ec3b0}
+    </style>
+    <symbol id="cube" viewBox="0 0 100 100">
+      <path class="t" d="M50 17 92 38 50 59 8 38Z"/>
+      <path class="l" d="M8 38 8 78 50 99 50 59Z"/>
+      <path class="r" d="M92 38 92 78 50 99 50 59Z"/>
+    </symbol>
+    <symbol id="cubeo" viewBox="0 0 100 100">
+      <!-- 生成中：只有轮廓 -->
+      <g fill="none" stroke="var(--c,#0C26FF)" stroke-width="5" stroke-linejoin="round" opacity=".7">
+        <path d="M50 17 92 38 50 59 8 38Z"/>
+        <path d="M8 38 8 78 50 99 50 59"/>
+        <path d="M92 38 92 78 50 99"/>
+      </g>
+    </symbol>
+    <symbol id="ball" viewBox="0 0 100 100">
+      <circle cx="50" cy="52" r="36" fill="var(--c,#0C26FF)" opacity=".85"/>
+      <circle cx="37" cy="39" r="11" fill="#ffffff" opacity=".5"/>
+    </symbol>
+    <symbol id="spark" viewBox="0 0 100 100">
+      <path d="M50 4C56 33 67 44 96 50 67 56 56 67 50 96 44 67 33 56 4 50 33 44 44 33 50 4Z" fill="var(--c,#0C26FF)"/>
+    </symbol>
+  </defs>
+
+  <!-- 全屏 3D 取景器 -->
+  <rect width="1080" height="1920" fill="#e5e8f6"/>
+
+  <!-- 顶部：返回 / 更多 -->
+  <circle cx="126" cy="196" r="54" fill="#ffffff"/>
+  <path d="M140 174 116 196 140 218" fill="none" stroke="#5b6068" stroke-width="9"
+        stroke-linecap="round" stroke-linejoin="round" opacity=".55"/>
+  <circle cx="954" cy="196" r="54" fill="#ffffff"/>
+  <g fill="#5b6068" opacity=".55">
+    <circle cx="928" cy="196" r="7"/><circle cx="954" cy="196" r="7"/><circle cx="980" cy="196" r="7"/>
+  </g>
+
+  <!-- 地面网格 -->
+  <path d="M540 730 940 930 540 1130 140 930Z" fill="#ffffff" opacity=".55"/>
+  <g stroke="#0C26FF" stroke-width="4" opacity=".18" stroke-linecap="round">
+    <path d="M340 1030 740 830"/>
+    <path d="M240 980 640 780"/>
+    <path d="M340 830 740 1030"/>
+    <path d="M440 780 840 980"/>
+  </g>
+
+  <!-- 已生成的物件 -->
+  <use href="#cube" class="b" x="340" y="758" width="220" height="220"/>
+  <use href="#cube" class="m" x="555" y="842" width="170" height="170"/>
+  <use href="#ball" class="b" x="700" y="818" width="120" height="120"/>
+
+  <!-- 正在生成：悬浮的轮廓块 -->
+  <use href="#cubeo" class="b" x="325" y="673" width="150" height="150"/>
+  <use href="#cubeo" class="m" x="760" y="741" width="120" height="120"/>
+
+  <!-- AI 火花 -->
+  <use href="#spark" class="b" x="665" y="605" width="70" height="70"/>
+  <use href="#spark" class="m" x="386" y="596" width="50" height="50" opacity=".85"/>
+  <use href="#spark" class="b" x="862" y="682" width="40" height="40" opacity=".6"/>
+
+  <!-- 生成进度 -->
+  <rect x="70" y="1440" width="940" height="12" rx="6" fill="#14161a" opacity=".1"/>
+  <rect x="70" y="1440" width="600" height="12" rx="6" fill="#0C26FF"/>
+
+  <!-- 底部：一句话提示词 + 发送 -->
+  <rect x="70" y="1500" width="940" height="150" rx="75" fill="#ffffff"/>
+  <use href="#spark" class="b" x="118" y="1547" width="56" height="56"/>
+  <rect x="200" y="1552" width="430" height="24" rx="12" fill="#14161a" opacity=".2"/>
+  <rect x="200" y="1594" width="290" height="24" rx="12" fill="#14161a" opacity=".1"/>
+  <circle cx="930" cy="1575" r="54" fill="#0C26FF"/>
+  <path d="M930 1598V1552M910 1572l20-20 20 20" fill="none" stroke="#ffffff" stroke-width="9"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <rect x="440" y="1740" width="200" height="12" rx="6" fill="#14161a" opacity=".16"/>
+</svg>
