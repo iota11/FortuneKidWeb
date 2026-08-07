@@ -32,12 +32,12 @@
     </nav>
   </header>
 
-  <!-- TODO 占位素材：assets/games/backyard/ 目前整套是从 Hua（roof-band）复制过来的，
-       正式对外前必须换成 Backyard 自己的横幅、封面和截图。
-       换图只要覆盖 assets/games/backyard/ 里的同名文件，这一页不用动。 -->
+  <!-- assets/games/backyard/ 的图：banner.jpg 来自专门的宽幅原图，其余（cover、
+       gallery-01、video-poster、两张 thumb）从 Backyard_Thumbnails_Placeholder.png
+       裁出来。换正式图时覆盖同名文件、保持尺寸即可，这一页不用动。 -->
 
-  <!-- 顶部横幅：暂用画廊第一张当底图，将来换成 2560×900 的专用横幅时
-       直接替换 assets/games/backyard/banner.jpg 即可，不用改结构。 -->
+  <!-- 顶部横幅：banner.jpg 是 2560×891 的专用横幅，比例 2.87 正好贴合这一栏的取景，
+       所以宽屏下几乎不裁切。换图请仍按这个比例出，窄屏会从中间横向裁，主体别摆太偏。 -->
   <section class="hero-band">
     <img class="hero-band-img" src="assets/games/backyard/banner.jpg" alt="" aria-hidden="true" />
     <div class="hero-band-inner">
@@ -49,8 +49,8 @@
     媒体画廊。加一张图：在 .gallery-stage 里加一个 .gallery-slide，
     再在 .gallery-rail 里加一个对应的 .gallery-thumb，顺序保持一致即可，
     计数和键盘顺序由 js/gallery.js 自动接管。
-    TODO 第一片的 data-yt 现在指着 Hua 的预告片（占位）。Backyard 自己的片子出来后，
-    把 data-yt 换成新的 YouTube ID，并替换 backyard/video-poster.jpg 和 thumb-video.jpg。
+    TODO 目前只有一张截图。视频片的封面已经是 Backyard 的图，但 data-yt 还指着 Hua 的
+    预告片（占位）—— Backyard 自己的片子出来后把这个 ID 换掉。
   -->
   <section class="section gallery-section">
     <div class="section-inner">
@@ -61,7 +61,8 @@
             <div class="gallery-stage" role="tabpanel" aria-label="Backyard media">
 
               <div class="gallery-slide is-active" data-yt="OaZ-6VpdFMs" data-title="Backyard trailer">
-                <img src="assets/games/backyard/video-poster.jpg" alt="Placeholder trailer standing in for Backyard footage." width="1280" height="720" />
+                <img src="assets/games/backyard/video-poster.jpg" width="1280" height="720"
+                     alt="Backyard trailer: a yellow off-road van driving through tall grass in a low-poly pine forest." />
                 <button class="gallery-play" type="button" aria-label="Play the trailer">
                   <span>
                     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z"/></svg>
@@ -71,22 +72,7 @@
 
               <div class="gallery-slide" aria-hidden="true">
                 <img src="assets/games/backyard/gallery-01.jpg" loading="lazy" width="1578" height="882"
-                     alt="Placeholder screenshot standing in for Backyard artwork." />
-              </div>
-
-              <div class="gallery-slide" aria-hidden="true">
-                <img src="assets/games/backyard/gallery-02.jpg" loading="lazy" width="1578" height="882"
-                     alt="Placeholder screenshot standing in for Backyard artwork." />
-              </div>
-
-              <div class="gallery-slide" aria-hidden="true">
-                <img src="assets/games/backyard/gallery-03.jpg" loading="lazy" width="1578" height="882"
-                     alt="Placeholder screenshot standing in for Backyard artwork." />
-              </div>
-
-              <div class="gallery-slide" aria-hidden="true">
-                <img src="assets/games/backyard/gallery-04.jpg" loading="lazy" width="1578" height="882"
-                     alt="Placeholder screenshot standing in for Backyard artwork." />
+                     alt="A yellow off-road van pushing through tall grass in a low-poly pine forest, boulders scattered down the slope beside it." />
               </div>
 
               <button class="gallery-arrow gallery-arrow--prev" type="button" aria-label="Previous">
@@ -103,7 +89,7 @@
               </button>
 
               <div class="gallery-tools">
-                <p class="gallery-counter">1 / 5</p>
+                <p class="gallery-counter">1 / 2</p>
                 <button class="gallery-expand" type="button" aria-label="Expand">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
@@ -124,15 +110,6 @@
             </button>
             <button class="gallery-thumb" type="button" role="tab" aria-selected="false" tabindex="-1" aria-label="Screenshot 1">
               <img src="assets/games/backyard/thumb-01.jpg" alt="" loading="lazy" width="320" height="180" />
-            </button>
-            <button class="gallery-thumb" type="button" role="tab" aria-selected="false" tabindex="-1" aria-label="Screenshot 2">
-              <img src="assets/games/backyard/thumb-02.jpg" alt="" loading="lazy" width="320" height="180" />
-            </button>
-            <button class="gallery-thumb" type="button" role="tab" aria-selected="false" tabindex="-1" aria-label="Screenshot 3">
-              <img src="assets/games/backyard/thumb-03.jpg" alt="" loading="lazy" width="320" height="180" />
-            </button>
-            <button class="gallery-thumb" type="button" role="tab" aria-selected="false" tabindex="-1" aria-label="Screenshot 4">
-              <img src="assets/games/backyard/thumb-04.jpg" alt="" loading="lazy" width="320" height="180" />
             </button>
           </div>
 
