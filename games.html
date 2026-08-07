@@ -41,8 +41,8 @@
   <section class="section section--tiles">
     <div class="section-inner">
       <!--
-        每加一款游戏：复制一个 .tile，指向新的 game-*.html（可直接复制 hua.html 改写），
-        并把下面的 .tile-soon 占位卡删掉 —— 网格固定两栏，占位卡只是用来占住空着的那一格。
+        每加一款游戏：复制一个 .tile，指向新的详情页（可直接复制 hua.html 或 backyard.html 改写）。
+        网格固定两栏，如果新游戏让最后一行空出一格，就补一张 .tile-soon 占位卡（样式还在 style.css 里）。
         PRE-LAUNCH：.tile-status 只能写 "Upcoming" / "In development" 这类未发布措辞，不得暗示已上架。
         极简版：卡片留封面 + 状态标签 + 名字 + 一句话，完整说明放在各自的详情页。
         .tile-desc 固定裁到两行，多写的字会被截断，卡片高度才对得齐。
@@ -65,11 +65,22 @@
           </div>
         </a>
 
-        <div class="tile-soon reveal" style="--delay: 110ms">
-          <div>
-            <p class="tile-soon-mark">Coming soon</p>
+        <a class="tile reveal" href="backyard.html" style="--delay: 110ms">
+          <div class="tile-art" aria-hidden="true">
+            <img class="tile-art-img" src="assets/games/backyard/cover.jpg" alt=""
+                 width="960" height="720" />
           </div>
-        </div>
+          <p class="tile-status">Upcoming</p>
+          <div class="tile-body">
+            <div class="tile-text">
+              <h2 class="tile-title">Backyard</h2>
+              <p class="tile-desc">
+                Drive off the road and into the wild. Every mile hides something you didn't see coming.
+              </p>
+            </div>
+            <span class="tile-more" aria-hidden="true">&rarr;</span>
+          </div>
+        </a>
 
         <!--
         <a class="tile reveal" href="game-NEXT.html" style="--delay: 110ms">
