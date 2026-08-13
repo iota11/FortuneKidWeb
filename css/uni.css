@@ -42,6 +42,9 @@ body:has(.uni-copy > .uni-step--lead:only-child) .nav {
   position: fixed;
   left: 0;
   right: 0;
+  /* 导航胶囊在 style.css 里带了 margin-top（给 sticky 的子页补位置），
+     这里既然改成 fixed，位置由 top 给，margin 再叠一层会掉到 28px */
+  margin-top: 0;
 }
 .uni-copy > .uni-step--lead:only-child {
   min-height: 100vh;

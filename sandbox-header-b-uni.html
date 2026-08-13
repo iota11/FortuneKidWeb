@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UNI · Fortune Kid Inc.</title>
+  <title>SANDBOX B · UNI · Fortune Kid Inc.</title>
   <meta name="description" content="UNI is an app for making small 3D worlds with AI, and playing what the community builds. In development at Fortune Kid Inc." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -13,11 +13,27 @@
   <!-- ?v= 是缓存戳：GitHub Pages 给 css/js 的 Cache-Control 是 max-age=600，改了样式却不换这个数字，
        浏览器就会拿旧样式去配新 HTML（社交图标变巨大、Our Games 栅格错位就是这么来的）。
        每次改 css/ 或 js/ 里的文件，把全部页面上的 v= 一起换成当天日期。 -->
-  <link rel="stylesheet" href="css/style.css?v=20260813h" />
-  <link rel="stylesheet" href="css/uni.css?v=20260813h" />
+  <link rel="stylesheet" href="css/style.css?v=20260813g" />
+  <link rel="stylesheet" href="css/uni.css?v=20260813g" />
+  <link rel="stylesheet" href="css/sandbox-header-b.css?v=sbx3" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
+  <div class="sbx-switch">
+    <span class="sbx-tag">Header sandbox</span>
+    <span class="sbx-row">
+      <a href="sandbox-header-a-uni.html">A · Glass</a>
+      <a href="sandbox-header-b-uni.html" class="is-on">B · Ink</a>
+    </span>
+    <span class="sbx-sep"></span>
+    <span class="sbx-row">
+      <a href="sandbox-header-b.html">Home</a>
+      <a href="sandbox-header-b-uni.html" class="is-on">Uni</a>
+      <a href="sandbox-header-b-games.html">Our Games</a>
+    </span>
+    <span class="sbx-sep"></span>
+    <a href="uni.html" class="sbx-live">Live page</a>
+  </div>
 
   <header class="nav" id="nav">
     <a class="brand" href="index.html#top">
@@ -243,7 +259,7 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=20260813h" defer></script>
-  <script src="js/uni.js?v=20260813h" defer></script>
+  <script src="js/main.js?v=20260813g" defer></script>
+  <script src="js/uni.js?v=20260813g" defer></script>
 </body>
 </html>
