@@ -27,6 +27,25 @@
   --radius: 22px;         /* 卡片 */
   --radius-sm: 999px;     /* 按钮一律做成胶囊 */
   --maxw: 1080px;
+  /* ---- 导航胶囊 ----
+     导航不是通栏条，是一颗浮在页面上的玻璃药丸，四个数决定它的位置和大小。 */
+  --nav-pill-maxw: var(--maxw);  /* 跟正文同一条边界，导航和内容对得上 */
+  --nav-pill-gutter: clamp(16px, 4vw, 40px); /* 距屏幕左右 */
+  --nav-pill-top: 14px;          /* 距屏幕顶 */
+  /* 玻璃的通透度只由这一个数决定，滚动后自动加 0.18。
+     0.26 是"能看见底下在动、但字还站得住"的位置：再往下走到 0.2 以下，
+     着色器扫过深蓝那一块时 --ink-soft 的链接会开始发灰。 */
+  --nav-glass: 0.26;
+  /* 玻璃感靠的不是白色多，是背景被"磨"得够狠：大半径模糊 + 提饱和 + 稍微提亮。
+     提亮压在 1.03：提得再多，透上来的颜色会被洗成白，白一多就不通透了。
+     饱和停在 170%：Our Games 那页的卡片是整幅游戏原画，200% 会把画面里的
+     绿和橙放大到跟导航文字抢，170% 既有玻璃味又压得住。 */
+  --nav-glass-filter: blur(26px) saturate(170%) brightness(1.03);
+  /* CTA 的墨色：不是实心 --btn-dark。整条导航薄成一片玻璃之后，
+     一块 100% 的黑压在上面是这条里唯一的重量，读起来像贴了张贴纸；
+     压到 0.78 让玻璃从它底下透一点上来，它就跟这条导航是一套的了。 */
+  --nav-cta-ink: rgba(16, 24, 40, 0.78);
+  --nav-cta-ink-hover: rgba(16, 24, 40, 0.92);
   /* 交互动效统一这条缓动和时长。比原来的 0.15s ease 慢得多是故意的：
      hero 的颜色是缓慢晕开的，按钮"啪"地变色会显得比背景急躁。 */
   --ease-ui: cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -79,30 +98,76 @@ h1, h2, h3 {
   line-height: 1.1;
 }
 
-/* ===== 导航 ===== */
+/* ===== 导航 =====
+   一颗浮在页面上的玻璃胶囊，不是通栏条。尺寸和通透度都在 :root 的
+   "导航胶囊" 那一组里，改那几个数就够，下面这些规则不用动。 */
 .nav {
   position: sticky;
-  top: 0;
+  top: var(--nav-pill-top);
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  /* 收窄并居中。子页的导航是 sticky、在文档流里，sticky 的 top 只在"贴住"
+     之后才生效，所以要补一个同高的 margin-top——不补的话胶囊开局顶着 y=0，
+     一滚动会突然往下跳 14px。导航是 fixed 的页面会把这个 margin 清掉
+     （见下面 body:has(.hero) 那条，和 uni.css 里对应的一条）。 */
+  margin: var(--nav-pill-top) auto 0;
+  width: calc(100% - 2 * var(--nav-pill-gutter));
+  max-width: var(--nav-pill-maxw);
   /* 高度必须恒定：sticky 导航在文档流里，滚动时改 padding 会把下面整页顶上去，
      过阈值时抖一下；更糟的是链接会在 0.25s 里从光标底下挪走，
      mousedown 和 mouseup 落在不同元素上，浏览器就不发 click——点了没反应。 */
-  padding: 16px clamp(20px, 5vw, 48px);
-  background: transparent;
-  border-bottom: 1px solid transparent;
+  padding: 9px 11px 9px 22px;
+  border-radius: 999px;
+  /* 通透玻璃：白色只铺很薄一层，形状靠"边"而不是靠"底"立起来。三道边缺一道就露馅：
+       1. border 用高透白 —— 玻璃的边缘是迎光面，不是暗线；
+       2. 外圈 0.5px 的极淡墨环（阴影第一层）—— 滚过 hero 之后胶囊落在 --bg 上，
+          纯白的边在那里等于没有边，得靠这道环定形；
+       3. inset 顶部高光 + 底部极淡暗边 —— 给这片玻璃一点厚度，
+          否则薄到这个程度会读成"一块脏了的区域"而不是一块玻璃。 */
+  background: rgba(255, 255, 255, var(--nav-glass));
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  backdrop-filter: var(--nav-glass-filter);
+  -webkit-backdrop-filter: var(--nav-glass-filter);
+  box-shadow:
+    0 0 0 0.5px rgba(20, 22, 26, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -1px 0 rgba(20, 22, 26, 0.03),
+    0 2px 6px rgba(20, 22, 26, 0.04),
+    0 12px 34px rgba(20, 22, 26, 0.10);
   /* 自己占一层合成层：底下 hero 每帧都在改 transform，不提升的话
      这条 backdrop-filter 每帧重采样背景，在 Windows/Chrome 上会闪。 */
   transform: translateZ(0);
-  transition: background-color 0.25s ease, border-color 0.25s ease;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    top 0.3s var(--ease-ui);
 }
+/* 滚动后：仍是同一颗玻璃胶囊，只是厚一档、贴顶一点、投影更沉。
+   加 0.18 而不是给死值，是为了 --nav-glass 一改两个状态一起动。 */
 .nav.is-scrolled {
-  /* 跟 --bg (#f6f6f6) 同一支中性灰，否则滚动时导航条会跟底色分层 */
-  background: rgba(246, 246, 246, 0.86);
-  backdrop-filter: saturate(180%) blur(14px);
-  border-bottom-color: var(--line);
+  top: 10px;
+  background: rgba(255, 255, 255, calc(var(--nav-glass) + 0.18));
+  border-color: rgba(255, 255, 255, 0.55);
+  /* 模糊必须在这里再写一遍：这条选择器权重（0,2,0）比上面的 .nav（0,1,0）高，
+     只在 .nav 里写的话，一滚过阈值 backdrop-filter 就被这条的 initial 值顶掉，
+     玻璃会"薄"一下——这个跳变在滚到阈值时看得很清楚。 */
+  backdrop-filter: var(--nav-glass-filter);
+  -webkit-backdrop-filter: var(--nav-glass-filter);
+  box-shadow:
+    0 0 0 0.5px rgba(20, 22, 26, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 rgba(20, 22, 26, 0.03),
+    0 2px 6px rgba(20, 22, 26, 0.05),
+    0 16px 40px rgba(20, 22, 26, 0.13);
+}
+/* 玻璃跑不动就退回半实心：没有 backdrop-filter 的话，0.26 的白等于什么都没有，
+   导航会直接消失在 hero 上。老 Safari 和关掉合成的环境走这条。 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .nav { background: rgba(255, 255, 255, 0.82); }
+  .nav.is-scrolled { background: rgba(255, 255, 255, 0.92); }
 }
 /* 滚动后收紧一档的观感用 transform 做，不碰布局 */
 .brand-mark { transition: transform 0.25s ease; }
@@ -117,11 +182,16 @@ h1, h2, h3 {
   letter-spacing: -0.02em;
 }
 .brand-mark { height: 30px; width: auto; display: block; border-radius: 50%; }
+/* 链接居中：吃掉品牌右边的所有余量，再在右侧留出一个 CTA 的宽度，
+   链接组的视觉中心才落在胶囊正中，而不是被 CTA 推偏。 */
 .nav-links {
   display: flex;
   /* CTA 有 padding 会比纯文字链接高，这里居中对齐，避免被拉伸 */
   align-items: center;
-  gap: clamp(14px, 3vw, 32px);
+  flex: 1;
+  justify-content: center;
+  gap: clamp(12px, 2.4vw, 30px);
+  padding-right: clamp(92px, 11vw, 126px);
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--ink-soft);
@@ -129,17 +199,26 @@ h1, h2, h3 {
 .nav-links a { transition: color 0.15s ease; white-space: nowrap; }
 .nav-links a:hover { color: var(--accent); }
 .nav-links a.is-current { color: var(--ink); font-weight: 600; }
-/* Contact Us：导航里唯一的行动项。描边去掉后改成实心胶囊——
-   没有轮廓时，"是个按钮"这件事得靠填充来说。 */
+/* Contact Us：导航里唯一的行动项，用填充说明"是个按钮"，不画描边。
+   脱离流钉在胶囊右端——包含块是 .nav，sticky/fixed 两种情况都已定位。
+   墨底是半透明的（--nav-cta-ink）：实心黑压在这片玻璃上太重。
+   字重仍是 500，跟旁边的链接同一档，靠底色区分而不是靠更粗的字。 */
 .nav-links a.nav-cta {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
   color: #fff;
-  background: var(--btn-dark);
+  background: var(--nav-cta-ink);
   border-radius: 999px;
-  padding: 8px 18px;
+  padding: 8px 17px;
+  font-size: 0.92rem;
   line-height: 1.4;
+  /* 一道极淡的内高光：半透明深色块的边缘容易发闷，顶上提一线就立起来了 */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
   transition: background-color var(--dur-ui) var(--ease-ui);
 }
-.nav-links a.nav-cta:hover { background: var(--btn-dark-hover); }
+.nav-links a.nav-cta:hover { background: var(--nav-cta-ink-hover); }
 
 /* ===== Hero ===== */
 .hero {
@@ -164,13 +243,13 @@ body:has(.hero) .nav {
   position: fixed;
   left: 0;
   right: 0;
+  /* fixed 的位置由 top 给，再叠一个 margin-top 会掉到 28px */
+  margin-top: 0;
 }
-/* 透明状态下让指针穿过去：ChromaFlow 的蓝是跟着光标走的，导航条横在最上面
-   会留一条颜色永远晕不到的死区。链接各自把事件收回来，只有空隙放行。
-   滚动后导航变成实心玻璃条，压在正常内容上，事件就该归它。 */
-body:has(.hero) .nav:not(.is-scrolled) { pointer-events: none; }
-body:has(.hero) .nav:not(.is-scrolled) .brand,
-body:has(.hero) .nav:not(.is-scrolled) .nav-links a { pointer-events: auto; }
+/* 原来这里有一组 pointer-events:none —— 那时导航是条通栏透明带，横在最上面会给
+   ChromaFlow 留一条光标永远晕不到的死区，所以让指针穿过去、链接各自收回事件。
+   现在导航只有胶囊那一小块，顶部两侧的空隙根本不属于 .nav，光标本来就能过去；
+   而胶囊自己是一块看得见的实体，指针不该再从它中间穿过。所以整组删掉。 */
 
 /* 着色器画布：铺满 hero，压在文字下面 */
 .hero-shader {
@@ -885,6 +964,22 @@ body:has(.hero) .nav:not(.is-scrolled) .nav-links a { pointer-events: auto; }
   .post { grid-template-columns: 1fr; gap: 12px; }
   .post-meta { flex-direction: row; align-items: center; gap: 12px; }
   .tiles { grid-template-columns: 1fr; }
+}
+
+/* 窄屏的胶囊：链接不再居中，改成从左排开、可横向滑动；CTA 继续钉在右端，
+   不跟着链接滑走，Contact Us 永远在原地。
+   min-width:0 是给下面那条 overflow-x:auto 兜底的：.nav-links 是 flex 子项，
+   默认 min-width:auto 会以内容宽为下限，胶囊比整宽的导航窄，留不住这个下限。 */
+@media (max-width: 760px) {
+  :root { --nav-pill-top: 10px; --nav-pill-gutter: 12px; }
+  .nav { padding: 8px 8px 8px 14px; }
+  .nav-links {
+    min-width: 0;
+    justify-content: flex-start;
+    margin-left: 14px;
+    padding-right: 100px;  /* 给钉住的 CTA 留位，链接不会滑到它底下 */
+  }
+  .nav-links a.nav-cta { right: 8px; padding: 7px 14px; }
 }
 
 @media (max-width: 560px) {
