@@ -18,7 +18,13 @@
   /* Apple 那种玻璃靠的不是白色多，是背景被"磨"得够狠：
      大半径模糊 + 提饱和 + 稍微提亮。提亮压在 1.03 这一档很关键——提得再多，
      底下透上来的颜色会被洗成白，白色一多就不通透了，等于把 --nav-glass 的活抢了。 */
-  --nav-glass-filter: blur(26px) saturate(200%) brightness(1.03);
+  --nav-glass-filter: blur(26px) saturate(170%) brightness(1.03);
+
+  /* CTA 的墨色：不再是实心 --btn-dark。整条导航现在薄成一片玻璃，
+     一块 100% 的黑压在上面是这条里唯一的重量，读起来像贴了张贴纸。
+     压到 0.78 让玻璃从它底下透一点上来，它就跟这条导航是一套的了。 */
+  --nav-cta-ink: rgba(16, 24, 40, 0.78);
+  --nav-cta-ink-hover: rgba(16, 24, 40, 0.92);
 }
 
 .nav {
@@ -90,23 +96,40 @@
    ChromaFlow 的光标色能晕到导航那一条）。只在胶囊范围内收回事件。 */
 body:has(.hero) .nav:not(.is-scrolled) { pointer-events: auto; }
 
+/* 子页（Uni / Our Games）：导航是 sticky，在文档流里。
+   sticky 的 top 只在"贴住"之后生效，页面刚打开时胶囊还在流里、顶着 y=0，
+   于是一滚动它会突然往下跳 14px。补一个同样高度的 margin-top，
+   静止和贴住时的位置就对上了，胶囊从一开始就是浮着的。
+   首页、以及 Uni 只剩 Hero 那种情况下导航是 fixed，margin 会跟 top 叠加成 28px，
+   所以这两种情况要清掉——条件跟 style.css / uni.css 里那两条 :has 一一对应。 */
+.nav { margin-top: var(--nav-pill-top); }
+body:has(.hero) .nav,
+body:has(.uni-copy > .uni-step--lead:only-child) .nav { margin-top: 0; }
+
 /* 链接居中：nav-links 吃掉中间所有余量，右侧预留一个 CTA 的宽度，
    这样链接组的视觉中心才落在胶囊正中，而不是被 CTA 推偏。 */
 .nav-links {
   flex: 1;
   justify-content: center;
   gap: clamp(12px, 2.4vw, 30px);
-  padding-right: clamp(96px, 12vw, 132px);
+  padding-right: clamp(92px, 11vw, 126px);
 }
 
-/* CTA 脱离流、贴住胶囊右端（包含块是 .nav —— fixed/sticky 都已定位） */
+/* CTA 脱离流、贴住胶囊右端（包含块是 .nav —— fixed/sticky 都已定位）。
+   同时压轻一档：半透明墨底 + 收一点内边距和字号。字重仍是 500，
+   跟旁边的链接同一档——CTA 靠"有底色"跟链接区分，不靠更粗的字。 */
 .nav-links a.nav-cta {
   position: absolute;
   right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  padding: 9px 20px;
+  padding: 8px 17px;
+  font-size: 0.92rem;
+  background: var(--nav-cta-ink);
+  /* 一道极淡的内高光：半透明的深色块边缘容易发闷，顶上提一线就立起来了 */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
+.nav-links a.nav-cta:hover { background: var(--nav-cta-ink-hover); }
 
 /* 窄屏：链接不再居中，改成从左排开、可横向滑动；CTA 继续钉在胶囊右端，
    不跟着链接滑走——这是比现在更稳的一点，Contact Us 永远在原地。
@@ -121,7 +144,7 @@ body:has(.hero) .nav:not(.is-scrolled) { pointer-events: auto; }
     justify-content: flex-start;
     gap: 16px;
     margin-left: 14px;
-    padding-right: 104px;  /* 给钉住的 CTA 留位，链接不会滑到它底下 */
+    padding-right: 100px;
     overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -130,7 +153,7 @@ body:has(.hero) .nav:not(.is-scrolled) { pointer-events: auto; }
   .nav-links a.nav-cta { right: 8px; padding: 7px 14px; }
 }
 
-/* ---- 下面只是沙盒页自己的切换器，正式上线时不要带走 ---- */
+/* 下面只是沙盒页自己的切换器，正式上线时不要带走 */
 .sbx-switch {
   position: fixed;
   z-index: 99;
@@ -139,35 +162,47 @@ body:has(.hero) .nav:not(.is-scrolled) { pointer-events: auto; }
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  max-width: calc(100vw - 24px);
+  padding: 6px 10px;
   border-radius: 999px;
   background: rgba(16, 24, 40, 0.88);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   font-family: var(--font);
   font-size: 0.8rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.65);
 }
-.sbx-switch span { padding-left: 6px; letter-spacing: 0.02em; }
+.sbx-tag { padding: 0 4px; letter-spacing: 0.02em; white-space: nowrap; }
+.sbx-row { display: flex; align-items: center; gap: 2px; }
+.sbx-sep {
+  width: 1px;
+  height: 18px;
+  margin: 0 4px;
+  background: rgba(255, 255, 255, 0.16);
+}
 .sbx-switch a {
-  padding: 5px 12px;
+  padding: 5px 11px;
   border-radius: 999px;
   color: rgba(255, 255, 255, 0.72);
+  white-space: nowrap;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 .sbx-switch a:hover { color: #fff; background: rgba(255, 255, 255, 0.14); }
 .sbx-switch a.is-on { background: #fff; color: #101828; }
+.sbx-switch a.sbx-live { color: rgba(255, 255, 255, 0.5); }
 .sbx-glass {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-left: 4px;
-  padding-left: 10px;
-  border-left: 1px solid rgba(255, 255, 255, 0.16);
+  padding-left: 2px;
   cursor: pointer;
+  white-space: nowrap;
 }
-.sbx-glass input[type="range"] { width: 96px; accent-color: #fff; cursor: ew-resize; }
+.sbx-glass input[type="range"] { width: 90px; accent-color: #fff; cursor: ew-resize; }
 .sbx-glass output {
   min-width: 34px;
   font-variant-numeric: tabular-nums;

@@ -48,6 +48,13 @@
 
 body:has(.hero) .nav:not(.is-scrolled) { pointer-events: auto; }
 
+/* 子页（Uni / Our Games）导航是 sticky，在文档流里：sticky 的 top 只在贴住后生效，
+   不补 margin-top 的话一滚动胶囊会往下跳一下。导航是 fixed 的两种页面要清掉，
+   否则 margin 和 top 叠加，胶囊会掉下去一倍。 */
+.nav { margin-top: var(--nav-pill-top); }
+body:has(.hero) .nav,
+body:has(.uni-copy > .uni-step--lead:only-child) .nav { margin-top: 0; }
+
 /* 深底上的字：品牌转白，链接用降透明度的白（不是 --ink-soft，灰在深底上会发脏） */
 .brand { color: #fff; }
 .nav-links { color: rgba(255, 255, 255, 0.70); }
@@ -96,7 +103,7 @@ body:has(.hero) .nav:not(.is-scrolled) { pointer-events: auto; }
   }
 }
 
-/* ---- 沙盒页自己的切换器，正式上线时不要带走 ---- */
+/* ---- 下面只是沙盒页自己的切换器，正式上线时不要带走 ---- */
 .sbx-switch {
   position: fixed;
   z-index: 99;
@@ -105,22 +112,49 @@ body:has(.hero) .nav:not(.is-scrolled) { pointer-events: auto; }
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  max-width: calc(100vw - 24px);
+  padding: 6px 10px;
   border-radius: 999px;
   background: rgba(16, 24, 40, 0.88);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   font-family: var(--font);
   font-size: 0.8rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.65);
 }
-.sbx-switch span { padding-left: 6px; letter-spacing: 0.02em; }
+.sbx-tag { padding: 0 4px; letter-spacing: 0.02em; white-space: nowrap; }
+.sbx-row { display: flex; align-items: center; gap: 2px; }
+.sbx-sep {
+  width: 1px;
+  height: 18px;
+  margin: 0 4px;
+  background: rgba(255, 255, 255, 0.16);
+}
 .sbx-switch a {
-  padding: 5px 12px;
+  padding: 5px 11px;
   border-radius: 999px;
   color: rgba(255, 255, 255, 0.72);
+  white-space: nowrap;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 .sbx-switch a:hover { color: #fff; background: rgba(255, 255, 255, 0.14); }
 .sbx-switch a.is-on { background: #fff; color: #101828; }
+.sbx-switch a.sbx-live { color: rgba(255, 255, 255, 0.5); }
+.sbx-glass {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.sbx-glass input[type="range"] { width: 90px; accent-color: #fff; cursor: ew-resize; }
+.sbx-glass output {
+  min-width: 34px;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}

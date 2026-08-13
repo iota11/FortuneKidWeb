@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SANDBOX A · Fortune Kid Inc. · Interactive Entertainment Studio</title>
-  <meta name="description" content="Fortune Kid Inc. is a New Jersey interactive-entertainment company building original mobile games, 3D-printed collectibles tied to its own IP, and UNI, an app for making small 3D worlds with AI." />
+  <title>SANDBOX A · Our Games · Fortune Kid Inc.</title>
+  <meta name="description" content="Original mobile titles from Fortune Kid Inc. — short-session games built on a fast cadence, each with tie-in collectibles printed from the same models." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" />
@@ -21,17 +21,17 @@
   <div class="sbx-switch">
     <span class="sbx-tag">Header sandbox</span>
     <span class="sbx-row">
-      <a href="sandbox-header-a.html" class="is-on">A · Glass</a>
-      <a href="sandbox-header-b.html">B · Ink</a>
+      <a href="sandbox-header-a-games.html" class="is-on">A · Glass</a>
+      <a href="sandbox-header-b-games.html">B · Ink</a>
     </span>
     <span class="sbx-sep"></span>
     <span class="sbx-row">
-      <a href="sandbox-header-a.html" class="is-on">Home</a>
+      <a href="sandbox-header-a.html">Home</a>
       <a href="sandbox-header-a-uni.html">Uni</a>
-      <a href="sandbox-header-a-games.html">Our Games</a>
+      <a href="sandbox-header-a-games.html" class="is-on">Our Games</a>
     </span>
     <span class="sbx-sep"></span>
-    <a href="index.html" class="sbx-live">Live page</a>
+    <a href="games.html" class="sbx-live">Live page</a>
     <span class="sbx-sep"></span>
     <label class="sbx-glass">
       Glass
@@ -54,132 +54,92 @@
     })();
   </script>
 
-  <!-- 顶部导航（全站统一：About / Our Games / Uni / Contact；News 暂时隐藏） -->
   <header class="nav" id="nav">
-    <a class="brand" href="#top">
+    <a class="brand" href="index.html#top">
       <img class="brand-mark" src="assets/StudioLogo_180.png" alt="Fortune Kid logo" />
       <span class="brand-name">FortuneKid</span>
     </a>
     <nav class="nav-links" aria-label="Primary">
-      <a href="#top" class="is-current" aria-current="page">About</a>
+      <a href="index.html#top">About</a>
       <a href="uni.html">Uni</a>
-      <a href="games.html">Our Games</a>
+      <a href="games.html" class="is-current" aria-current="page">Our Games</a>
       <!-- TODO 暂时隐藏 News（暂无内容），有第一篇文章后取消注释：<a href="news.html">News</a> -->
-      <a href="#contact" class="nav-cta">Contact Us</a>
+      <a href="index.html#contact" class="nav-cta">Contact Us</a>
     </nav>
   </header>
 
-  <!-- 01 Intro：定位语 + 进入页面的入口 -->
-  <section class="hero" id="top">
-    <!-- hero 背景：跑在 WebGPU 上的棱纹玻璃，颜色跟着光标走（见 js/hero-shader.js）。
-         纯装饰，对读屏软件隐藏；显卡跑不动时 JS 会加 .is-fallback 换成 CSS 渐变。 -->
-    <div class="hero-shader" aria-hidden="true">
-      <canvas id="hero-canvas"></canvas>
+  <section class="page-hero page-hero--center">
+    <div class="section-inner">
+      <h1 class="reveal" data-split>Our Games</h1>
     </div>
-    <div class="hero-inner">
-      
-      <h1 class="reveal" data-split>Play &amp; Build<br /> with heart.</h1>
-      <p class="lede reveal" data-split>
-        Fortune Kid is expanding the boundaries of play through original mobile games that aim to inspire curiosity, foster community, and spark joy.
-      </p>
-      <!-- 两个入口都指向本页已有的锚点，不新增页面 -->
-      <div class="hero-actions reveal" style="--delay: 110ms">
-        <a class="btn btn-primary" href="#build">
-          See what we build
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M5 12h14" />
-            <path d="m13 6 6 6-6 6" />
-          </svg>
+  </section>
+
+  <section class="section section--tiles">
+    <div class="section-inner">
+      <!--
+        每加一款游戏：复制一个 .tile，指向新的详情页（可直接复制 hua.html 或 backyard.html 改写）。
+        网格固定两栏，如果新游戏让最后一行空出一格，就补一张 .tile-soon 占位卡（样式还在 style.css 里）。
+        PRE-LAUNCH：.tile-status 只能写 "Upcoming" / "In development" 这类未发布措辞，不得暗示已上架。
+        极简版：卡片留封面 + 状态标签 + 名字 + 一句话，完整说明放在各自的详情页。
+        .tile-desc 固定裁到两行，多写的字会被截断，卡片高度才对得齐。
+      -->
+      <div class="tiles">
+        <a class="tile reveal" href="hua.html" style="--delay: 0ms">
+          <div class="tile-art tile-art--band" aria-hidden="true">
+            <img class="tile-art-img" src="assets/games/roof-band/cover.jpg" alt=""
+                 width="960" height="720" />
+          </div>
+          <p class="tile-status">Upcoming</p>
+          <div class="tile-body">
+            <div class="tile-text">
+              <h2 class="tile-title">Hua</h2>
+              <p class="tile-desc">
+                A cozy harmonica game. Play it slow, play it your way, play it again.
+              </p>
+            </div>
+            <span class="tile-more" aria-hidden="true">&rarr;</span>
+          </div>
         </a>
-        <a class="btn btn-ghost" href="#contact">Get in touch</a>
+
+        <a class="tile reveal" href="backyard.html" style="--delay: 90ms">
+          <div class="tile-art" aria-hidden="true">
+            <img class="tile-art-img" src="assets/games/backyard/cover.jpg" alt=""
+                 width="960" height="720" />
+          </div>
+          <p class="tile-status">Upcoming</p>
+          <div class="tile-body">
+            <div class="tile-text">
+              <h2 class="tile-title">Backyard</h2>
+              <p class="tile-desc">
+                Drive off the road and into the wild. Every mile hides something you didn't see coming.
+              </p>
+            </div>
+            <span class="tile-more" aria-hidden="true">&rarr;</span>
+          </div>
+        </a>
+
+        <!--
+        <a class="tile reveal" href="game-NEXT.html" style="--delay: 180ms">
+          <div class="tile-art" aria-hidden="true"><span class="tile-art-mark">XX</span></div>
+          <p class="tile-status">In development</p>
+          <div class="tile-body">
+            <h2 class="tile-title">Title</h2>
+            <span class="tile-more" aria-hidden="true">&rarr;</span>
+          </div>
+        </a>
+        -->
       </div>
     </div>
   </section>
 
-  <!-- 02 What we build：三根支柱 -->
-  <section class="section" id="build">
-    <div class="section-inner">
-      <h2 class="reveal" data-split>What we build</h2>
-      <div class="cards">
-        <article class="card reveal" style="--delay: 0ms">
-          <div class="card-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 20 20 4" />
-              <path d="M14 4h6v6" />
-              <path d="M4 10.5h4M6 8.5v4" />
-              <path d="M15.5 16h3M17 14.5v3" />
-            </svg>
-          </div>
-          <h3>Uni</h3>
-          <p>
-            An app for making small 3D worlds with AI, and playing the ones everyone else made.
-          </p>
-          <a class="card-link" href="uni.html">Check out Uni &rarr;</a>
-        </article>
-        <article class="card reveal" style="--delay: 90ms">
-          <div class="card-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="6" y="2" width="12" height="20" rx="2.5" />
-              <path d="M10 5.5h4" />
-              <path d="M9 12h3M10.5 10.5v3" />
-              <circle cx="15.5" cy="12" r="0.9" fill="currentColor" stroke="none" />
-            </svg>
-          </div>
-          <h3>Mobile Games</h3>
-          <p>
-            Develop and publish games for casual players worldwide.
-          </p>
-          <a class="card-link" href="games.html">Our Games &rarr;</a>
-        </article>
-        <article class="card reveal" style="--delay: 180ms">
-          <div class="card-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2.6 20.5 7v10L12 21.4 3.5 17V7z" />
-              <path d="M3.5 7 12 11.6 20.5 7" />
-              <path d="M12 11.6v9.8" />
-            </svg>
-          </div>
-          <h3>Collectibles</h3>
-          <p>
-            Made-to-order 3D-printed collectibles from our own game characters.
-          </p>
-          <span class="card-link card-link--soon" aria-disabled="true">Coming soon</span>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- 03 Our Team：团队 -->
-  <section class="section section-alt" id="about">
-    <div class="section-inner">
-      <h2 class="reveal" data-split>Meet The Team</h2>
-      <div class="prose reveal">
-        <p>
-          Our team is a mix of creatives, engineers, and dreamers who believe the best ideas start with a question nobody has answered yet. Together we build experiences that worth returning to.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- 04 Contact（锚点，页面底部）：面向投资人 -->
-  <section class="section" id="contact">
-    <!-- data-reveal-group：标题 / 说明 / 邮箱一起进场，邮箱不再单独慢半拍 -->
-    <div class="section-inner contact" data-reveal-group>
-      <h2 class="reveal" data-split>Get in Touch</h2>
-      <p class="section-lead reveal" data-split>Business inquiries, partnerships, or press. We'd love to hear from you!</p>
-      <a class="contact-mail reveal" href="mailto:contact@fortunekidstudio.com" style="--delay: 120ms">contact@fortunekidstudio.com</a>
-    </div>
-  </section>
-
-  <!-- 页脚 -->
   <footer class="footer">
     <div class="footer-inner">
       <nav class="footer-links" aria-label="Footer">
-        <a href="#top">About</a>
+        <a href="index.html#top">About</a>
         <a href="uni.html">Uni</a>
         <a href="games.html">Our Games</a>
         <!-- TODO 暂时隐藏 News（暂无内容），有第一篇文章后取消注释：<a href="news.html">News</a> -->
-        <a href="#contact">Contact</a>
+        <a href="index.html#contact">Contact</a>
       </nav>
       <div class="footer-bottom">
         <p class="footer-copy">
@@ -210,7 +170,5 @@
   </footer>
 
   <script src="js/main.js?v=20260813g" defer></script>
-  <!-- 只有首页加载着色器：bundle 有 2.5MB，条款页和新闻页不该为它买单 -->
-  <script type="module" src="js/hero-shader.js?v=20260813g"></script>
 </body>
 </html>
