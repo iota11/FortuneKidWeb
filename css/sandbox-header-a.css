@@ -1,0 +1,175 @@
+/* ============================================================
+   SANDBOX A — "Glass Capsule"
+   悬浮胶囊导航：一整条圆角药丸，浅色磨砂玻璃，链接居中，右端深色 CTA。
+   这份文件只覆盖导航的形状/底色，不动配色变量、字体、页面名。
+   纯 CSS，不需要改任何 HTML —— 定稿后把这段并进 style.css 的 "导航" 区即可。
+   ============================================================ */
+
+/* 胶囊自己的几个参数，方便试大小和通透度 */
+:root {
+  --nav-pill-maxw: 1080px;   /* 跟 --maxw 对齐，导航和正文同一条边界 */
+  --nav-pill-gutter: clamp(16px, 4vw, 40px); /* 距屏幕左右的留白 */
+  --nav-pill-top: 14px;      /* 距屏幕顶的留白 */
+
+  /* 玻璃的通透度只由这一个数决定，滚动后自动加 0.18。
+     0.34 是"能看见底下在动、但字还站得住"的位置：再往下走到 0.2 以下，
+     着色器扫过深蓝那一块时 --ink-soft 的链接会开始发灰。 */
+  --nav-glass: 0.26;
+  /* Apple 那种玻璃靠的不是白色多，是背景被"磨"得够狠：
+     大半径模糊 + 提饱和 + 稍微提亮。提亮压在 1.03 这一档很关键——提得再多，
+     底下透上来的颜色会被洗成白，白色一多就不通透了，等于把 --nav-glass 的活抢了。 */
+  --nav-glass-filter: blur(26px) saturate(200%) brightness(1.03);
+}
+
+.nav {
+  /* 首页里 body:has(.hero) 已经把它设成 fixed + left/right:0；
+     这里给非首页（sticky）也补上同样的居中收窄，两边行为一致。 */
+  margin-left: auto;
+  margin-right: auto;
+  top: var(--nav-pill-top);
+  width: calc(100% - 2 * var(--nav-pill-gutter));
+  max-width: var(--nav-pill-maxw);
+
+  /* 形状：药丸。左侧给品牌留 22px，右侧只留 10px —— CTA 自己带 padding，
+     两边视觉留白才配得平。 */
+  padding: 9px 11px 9px 22px;
+  border-radius: 999px;
+
+  /* 通透玻璃：白色只铺很薄一层，形状靠"边"而不是靠"底"立起来。
+     边分三道，缺一道就露馅：
+       1. border 用高透白 —— 玻璃的边缘是迎光面，不是暗线；
+       2. 外圈一道 0.5px 的极淡墨环（box-shadow 的第一层）—— 滚过 hero 之后
+          胶囊落在 #efefef 上，纯白的边在那里等于没有边，得有这道环定形；
+       3. inset 顶部高光 + 底部极淡暗边 —— 给这片玻璃一点厚度，
+          否则薄到这个程度会读成"一块脏了的区域"而不是一块玻璃。 */
+  background: rgba(255, 255, 255, var(--nav-glass));
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  backdrop-filter: var(--nav-glass-filter);
+  -webkit-backdrop-filter: var(--nav-glass-filter);
+  box-shadow:
+    0 0 0 0.5px rgba(20, 22, 26, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -1px 0 rgba(20, 22, 26, 0.03),
+    0 2px 6px rgba(20, 22, 26, 0.04),
+    0 12px 34px rgba(20, 22, 26, 0.10);
+
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    top 0.3s var(--ease-ui);
+}
+
+/* 滚动后：仍是同一颗玻璃胶囊，只是厚一档、贴顶一点、投影更沉。
+   加 0.18 而不是直接给死值，是为了让上面那个 --nav-glass 一改，两个状态一起动。 */
+.nav.is-scrolled {
+  top: 10px;
+  background: rgba(255, 255, 255, calc(var(--nav-glass) + 0.18));
+  border-color: rgba(255, 255, 255, 0.55);
+  /* 必须在这里重申一遍：style.css 的 .nav.is-scrolled 自己写了 backdrop-filter，
+     选择器权重（0,2,0）比上面的 .nav（0,1,0）高，不重申的话一滚动就退回
+     它那档 blur(14px)，玻璃会"薄"一下——这个跳变在滚动到阈值时看得很清楚。 */
+  backdrop-filter: var(--nav-glass-filter);
+  -webkit-backdrop-filter: var(--nav-glass-filter);
+  box-shadow:
+    0 0 0 0.5px rgba(20, 22, 26, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -1px 0 rgba(20, 22, 26, 0.03),
+    0 2px 6px rgba(20, 22, 26, 0.05),
+    0 16px 40px rgba(20, 22, 26, 0.13);
+}
+
+/* 玻璃跑不动就退回半实心：backdrop-filter 没有的话，0.34 的白等于什么都没有，
+   导航会直接消失在 hero 上。Safari 老版本和关掉合成的环境都会走这条。 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .nav { background: rgba(255, 255, 255, 0.82); }
+  .nav.is-scrolled { background: rgba(255, 255, 255, 0.92); }
+}
+
+/* 胶囊现在是一块看得见的实体，指针不该再从它中间穿过去（原规则是为了让
+   ChromaFlow 的光标色能晕到导航那一条）。只在胶囊范围内收回事件。 */
+body:has(.hero) .nav:not(.is-scrolled) { pointer-events: auto; }
+
+/* 链接居中：nav-links 吃掉中间所有余量，右侧预留一个 CTA 的宽度，
+   这样链接组的视觉中心才落在胶囊正中，而不是被 CTA 推偏。 */
+.nav-links {
+  flex: 1;
+  justify-content: center;
+  gap: clamp(12px, 2.4vw, 30px);
+  padding-right: clamp(96px, 12vw, 132px);
+}
+
+/* CTA 脱离流、贴住胶囊右端（包含块是 .nav —— fixed/sticky 都已定位） */
+.nav-links a.nav-cta {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 9px 20px;
+}
+
+/* 窄屏：链接不再居中，改成从左排开、可横向滑动；CTA 继续钉在胶囊右端，
+   不跟着链接滑走——这是比现在更稳的一点，Contact Us 永远在原地。
+   min-width:0 是给那条 overflow-x:auto 兜底的：.nav-links 是 flex 子项，
+   默认 min-width:auto 会以内容宽为下限，胶囊比整宽的导航窄，留不住这个下限。 */
+@media (max-width: 760px) {
+  :root { --nav-pill-top: 10px; --nav-pill-gutter: 12px; }
+  .nav { padding: 8px 8px 8px 14px; }
+  .nav-links {
+    flex: 1;
+    min-width: 0;
+    justify-content: flex-start;
+    gap: 16px;
+    margin-left: 14px;
+    padding-right: 104px;  /* 给钉住的 CTA 留位，链接不会滑到它底下 */
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .nav-links::-webkit-scrollbar { display: none; }
+  .nav-links a.nav-cta { right: 8px; padding: 7px 14px; }
+}
+
+/* ---- 下面只是沙盒页自己的切换器，正式上线时不要带走 ---- */
+.sbx-switch {
+  position: fixed;
+  z-index: 99;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: rgba(16, 24, 40, 0.88);
+  backdrop-filter: blur(10px);
+  font-family: var(--font);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.65);
+}
+.sbx-switch span { padding-left: 6px; letter-spacing: 0.02em; }
+.sbx-switch a {
+  padding: 5px 12px;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.72);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.sbx-switch a:hover { color: #fff; background: rgba(255, 255, 255, 0.14); }
+.sbx-switch a.is-on { background: #fff; color: #101828; }
+.sbx-glass {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 4px;
+  padding-left: 10px;
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
+  cursor: pointer;
+}
+.sbx-glass input[type="range"] { width: 96px; accent-color: #fff; cursor: ew-resize; }
+.sbx-glass output {
+  min-width: 34px;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}

@@ -1,15 +1,21 @@
 /* ===== FortuneKid 官网样式 ===== */
 
 :root {
-  --bg: #f2f3fb;          /* 冷调米白底色，无渐变 */
-  --bg-alt: #eaecf7;      /* 次级分区底色 */
-  --surface: #ffffff;     /* 卡片：纯白 —— 没有描边了，全靠这层白跟冷灰底分开 */
-  --surface-tint: #e5e8f6;/* 数据卡片浅灰底 */
+  /* 底色从冷调米白挪到中性灰：hero 的着色器本身偏冷（白玻璃 + 蓝），
+     底色再带蓝就整页发青，中性灰能把那支蓝衬出来。 */
+  --bg: #f6f6f6;          /* 中性灰白底色，无渐变 */
+  --bg-alt: #f2f2f4;      /* 次级分区底色，只比主底暗一档，用来给长页面断句 */
+  --surface: #ffffff;     /* 卡片：纯白 —— 没有描边了，全靠这层白跟灰底分开 */
+  --surface-tint: #e4e5e9;/* 数据卡片浅灰底 */
   --ink: #14161a;         /* 标题：近黑炭灰 */
   --ink-soft: #5b6068;    /* 正文：中灰 */
-  --accent: #0C26FF;      /* 主色：蓝 */
+  --accent: #0C26FF;      /* 主色：蓝 —— 品牌色不动，着色器里用的也是这一支 */
   --accent-strong: #0a1fcc;
   --accent-soft: rgba(12, 38, 255, 0.08);
+  /* 行动按钮的填充色：深墨蓝，不是品牌蓝。蓝底胶囊压在 hero 那层带蓝的玻璃上
+     会跟背景抢，深色块才立得住；蓝仍然是链接和悬停的颜色，只是不再当按钮底。 */
+  --btn-dark: #101828;
+  --btn-dark-hover: #1d2739;
   --mint: #4ec3b0;        /* 次级点缀，仅用于标签/悬停 */
   --line: rgba(20, 22, 26, 0.10);   /* 仅用于分隔线（页脚、列表、表格），不画轮廓 */
   /* 卡片一律无描边：层级只由"白色卡面 + 柔和投影"给。
@@ -17,9 +23,14 @@
      悬停时只加深第二层，抬升读起来才是"浮上来"而不是"变粗了"。 */
   --shadow: 0 1px 2px rgba(20, 22, 26, 0.05), 0 8px 24px rgba(20, 22, 26, 0.06);
   --shadow-hover: 0 1px 2px rgba(20, 22, 26, 0.05), 0 18px 40px rgba(20, 22, 26, 0.10);
-  --radius: 14px;         /* 无描边的卡片圆角可以再圆一档，边缘更柔 */
-  --radius-sm: 8px;       /* 图标块 / 按钮等小元素 */
+  /* 圆角整体放大一档：hero 那层玻璃是圆润的，方角卡片贴上去会显得是两套东西 */
+  --radius: 22px;         /* 卡片 */
+  --radius-sm: 999px;     /* 按钮一律做成胶囊 */
   --maxw: 1080px;
+  /* 交互动效统一这条缓动和时长。比原来的 0.15s ease 慢得多是故意的：
+     hero 的颜色是缓慢晕开的，按钮"啪"地变色会显得比背景急躁。 */
+  --ease-ui: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --dur-ui: 0.5s;
   /* 全站唯一字体：Poppins；CJK 与系统字体仅作兜底 */
   --font: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI",
     "PingFang SC", "Microsoft YaHei", Roboto, Helvetica, Arial, sans-serif;
@@ -88,8 +99,8 @@ h1, h2, h3 {
   transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 .nav.is-scrolled {
-  /* 跟 --bg (#f2f3fb) 同一冷色调，否则滚动时导航条会泛黄 */
-  background: rgba(242, 243, 251, 0.86);
+  /* 跟 --bg (#f6f6f6) 同一支中性灰，否则滚动时导航条会跟底色分层 */
+  background: rgba(246, 246, 246, 0.86);
   backdrop-filter: saturate(180%) blur(14px);
   border-bottom-color: var(--line);
 }
@@ -122,31 +133,110 @@ h1, h2, h3 {
    没有轮廓时，"是个按钮"这件事得靠填充来说。 */
 .nav-links a.nav-cta {
   color: #fff;
-  background: var(--accent);
+  background: var(--btn-dark);
   border-radius: 999px;
-  padding: 6px 16px;
+  padding: 8px 18px;
   line-height: 1.4;
-  transition: background-color 0.15s ease;
+  transition: background-color var(--dur-ui) var(--ease-ui);
 }
-.nav-links a.nav-cta:hover { background: var(--accent-strong); }
+.nav-links a.nav-cta:hover { background: var(--btn-dark-hover); }
 
 /* ===== Hero ===== */
 .hero {
-  padding: clamp(72px, 13vw, 160px) clamp(20px, 5vw, 48px) clamp(64px, 10vw, 120px);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  /* 满屏：着色器要一路铺到屏幕的四条边。导航在首页是浮在上面的（见下面那条
+     :has 规则），所以 hero 从 y=0 开始，顶上不会再留一条灰边。
+     svh 是给移动端的：100vh 在地址栏收起前会算成比可视区更高，底部被切掉一截。 */
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: flex-end;
+  padding: clamp(120px, 16vw, 200px) clamp(20px, 5vw, 48px) clamp(72px, 10vw, 116px);
   background: var(--bg);
 }
-.hero-inner { max-width: var(--maxw); margin: 0 auto; text-align: center; }
-/* 居中版 hero：lede 的 620px 限宽要左右都留白，且下方已无按钮 */
-.hero .lede { margin-left: auto; margin-right: auto; margin-bottom: 0; }
-.hero h1 {
-  font-size: clamp(2.4rem, 6.4vw, 4.2rem);
-  letter-spacing: -0.035em;
-  margin-bottom: 24px;
+
+/* 首页的导航浮在 hero 上，不占文档流的高度——否则顶上会有一条 nav 高的灰带，
+   着色器就不是"铺满"而是"从导航下面开始"。用 :has 限定只在有 .hero 的页面
+   生效：子页的 .page-hero 没有背景图，导航仍然按原来的 sticky 走。 */
+body:has(.hero) .nav {
+  position: fixed;
+  left: 0;
+  right: 0;
 }
+/* 透明状态下让指针穿过去：ChromaFlow 的蓝是跟着光标走的，导航条横在最上面
+   会留一条颜色永远晕不到的死区。链接各自把事件收回来，只有空隙放行。
+   滚动后导航变成实心玻璃条，压在正常内容上，事件就该归它。 */
+body:has(.hero) .nav:not(.is-scrolled) { pointer-events: none; }
+body:has(.hero) .nav:not(.is-scrolled) .brand,
+body:has(.hero) .nav:not(.is-scrolled) .nav-links a { pointer-events: auto; }
+
+/* 着色器画布：铺满 hero，压在文字下面 */
+.hero-shader {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.hero-shader canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* WebGPU 跑不起来时的静态替身。取的是着色器实际出图的那几个色：右上一团品牌蓝、
+   左下一团淡蓝、整体压在白到浅灰的斜向渐变上。不追求一模一样，只要版面别塌成纯灰。 */
+.hero-shader.is-fallback {
+  background:
+    radial-gradient(120% 90% at 78% 12%, rgba(12, 38, 255, 0.20), transparent 58%),
+    radial-gradient(90% 70% at 12% 88%, rgba(12, 38, 255, 0.09), transparent 60%),
+    linear-gradient(160deg, #ffffff 0%, #f4f4f5 55%, #e8e8ea 100%);
+}
+.hero-shader.is-fallback canvas { display: none; }
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  /* ChromaFlow 那层蓝是跟着光标走的，文字层挡住指针的话，标题上方会留一块
+     颜色永远晕不到的死区。文字本身也没有可点的东西，直接放行。 */
+  pointer-events: none;
+}
+.hero .lede { margin-bottom: 0; }
+.hero h1 {
+  /* 满屏 hero 撑得住更大的字。字距收紧、行距压到 0.95：两行之间几乎不留缝，
+     标题成为一整块，才压得住背后那层玻璃。 */
+  font-size: clamp(2.8rem, 9vw, 6.2rem);
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  margin-bottom: 26px;
+}
+
+/* Hero 行动按钮 */
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 38px;
+  /* .hero-inner 整体让出了指针，按钮得自己收回来才点得到 */
+  pointer-events: auto;
+}
+/* 箭头随悬停往外走一点：间距变大读起来是"往前一步"，比整颗按钮位移更克制 */
+.hero-actions .btn { gap: 8px; }
+.hero-actions .btn svg {
+  width: 17px;
+  height: 17px;
+  display: block;
+  transition: transform var(--dur-ui) var(--ease-ui);
+}
+.hero-actions .btn:hover svg { transform: translateX(4px); }
 .lede {
-  font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+  font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+  line-height: 1.45;
+  letter-spacing: -0.01em;
   color: var(--ink-soft);
-  max-width: 620px;
+  max-width: 46ch;
   margin-bottom: 36px;
 }
 
@@ -160,26 +250,42 @@ h1, h2, h3 {
   margin-bottom: 16px;
 }
 
+/* 按钮：全部胶囊。--radius-sm 现在就是 999px，图标块那类小方块另行指定圆角。 */
 .btn {
-  display: inline-block;
-  padding: 12px 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 28px;
   border-radius: var(--radius-sm);
   font-size: 0.98rem;
   font-weight: 600;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  transition:
+    background-color var(--dur-ui) var(--ease-ui),
+    border-color var(--dur-ui) var(--ease-ui),
+    color var(--dur-ui) var(--ease-ui);
 }
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: var(--accent-strong); }
-/* 次级按钮：原来是描边款，改成浅灰实心块——同样是"无轮廓"那套语言 */
-.btn-ghost { background: rgba(20, 22, 26, 0.055); color: var(--ink); }
-.btn-ghost:hover { background: rgba(20, 22, 26, 0.10); }
+.btn-primary { background: var(--btn-dark); color: #fff; }
+.btn-primary:hover { background: var(--btn-dark-hover); }
+/* 次级按钮：压在 hero 那层玻璃上时，浅灰实心块会糊成一团看不见边；
+   改回细描边胶囊——玻璃透上来当填充，轮廓只负责说明"这是个按钮"。 */
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid rgba(20, 22, 26, 0.20);
+}
+.btn-ghost:hover {
+  border-color: rgba(20, 22, 26, 0.50);
+  background: rgba(255, 255, 255, 0.40);
+}
 
 /* ===== 通用 section ===== */
 .section { padding: clamp(64px, 9vw, 112px) clamp(20px, 5vw, 48px); }
 .section-alt { background: var(--bg-alt); }
 .section-inner { max-width: var(--maxw); margin: 0 auto; }
 .section h2 {
-  font-size: clamp(1.7rem, 3.6vw, 2.5rem);
+  font-size: clamp(1.85rem, 4vw, 3rem);
+  letter-spacing: -0.035em;
+  line-height: 1.04;
   margin-bottom: 20px;
   max-width: 20ch;
 }
@@ -223,41 +329,104 @@ h1, h2, h3 {
   flex-direction: column;
   background: var(--surface);
   border-radius: var(--radius);
-  padding: 30px 26px;
+  padding: 32px 28px;
   box-shadow: var(--shadow);
-  transition: box-shadow 0.18s ease, transform 0.18s ease;
+  transition:
+    box-shadow var(--dur-ui) var(--ease-ui),
+    transform var(--dur-ui) var(--ease-ui);
 }
-.card:hover { box-shadow: var(--shadow-hover); transform: translateY(-3px); }
+.card:hover { box-shadow: var(--shadow-hover); transform: translateY(-4px); }
+/* 图标块：卡片圆角放大后，这个小方块跟着圆一档才是同一套语言；
+   底色从 8% 的淡蓝换成实心品牌蓝——三张卡片的图标是页面上唯一的彩色块，
+   实心才立得住，淡蓝在白卡上几乎看不见。 */
 .card-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
-  margin-bottom: 18px;
-  border-radius: 10px;
-  background: var(--accent-soft);
-  color: var(--accent);
+  width: 44px;
+  height: 44px;
+  margin-bottom: 20px;
+  border-radius: 14px;
+  background: var(--accent);
+  color: #fff;
   align-self: flex-start;
+  transition: transform var(--dur-ui) var(--ease-ui);
 }
+.card:hover .card-icon { transform: scale(1.05); }
 .card-icon svg { width: 22px; height: 22px; display: block; }
 .card h3 { font-size: 1.15rem; margin-bottom: 10px; }
 .card p { color: var(--ink-soft); font-size: 0.98rem; }
 
 /* ===== 联系 ===== */
 .contact .section-lead { margin-bottom: 24px; }
+/* 邮箱做成描边胶囊，跟 hero 的次级按钮 .btn-ghost 同一套语言。
+   之前是放大加粗的实心黑块：一个邮箱地址本来就长，再撑到 1.2rem/600 就成了
+   整页最重的一块，比上面的标题还抢眼。这里只需要"可以点"，不需要喊。 */
 .contact-mail {
-  display: inline-block;
+  /* position:relative 是给下面那颗"已复制"气泡当定位参照的 */
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 11px 22px;
+  border-radius: 999px;
   font-family: var(--display);
-  font-size: clamp(1.15rem, 3vw, 1.6rem);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: var(--accent);
-  border-bottom: 1px solid rgba(12, 38, 255, 0.3);
-  padding-bottom: 2px;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  font-size: 0.98rem;
+  font-weight: 500;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid rgba(20, 22, 26, 0.20);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-ui) var(--ease-ui),
+    border-color var(--dur-ui) var(--ease-ui);
 }
-.contact-mail:hover { color: var(--accent-strong); border-bottom-color: var(--accent-strong); }
+.contact-mail:hover {
+  border-color: rgba(20, 22, 26, 0.50);
+  background: rgba(255, 255, 255, 0.40);
+}
+
+/* 点击复制的反馈：气泡浮在胶囊上方，不改按钮里的文字——
+   把邮箱换成"Copied!"会让胶囊宽度突然缩一截，整屏跟着抖一下。
+   文案由 JS 写进 data-copy-msg（复制失败时是另一句）。 */
+.contact-mail::after {
+  content: attr(data-copy-msg);
+  position: absolute;
+  left: 50%;
+  /* 放在胶囊下方：上方紧挨着那行说明文字，气泡浮上去会盖住它 */
+  top: calc(100% + 12px);
+  transform: translate(-50%, -6px);
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.3;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s var(--ease-ui), transform 0.22s var(--ease-ui);
+}
+.contact-mail.is-copied::after { opacity: 1; transform: translate(-50%, 0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-mail::after { transition: none; transform: translate(-50%, 0); }
+}
+
+/* 只给读屏软件的播报区：视觉上不占位，但不能用 display:none（那样不会被念出来） */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
 
 /* ===== 页脚 ===== */
 .footer {
@@ -313,7 +482,7 @@ h1, h2, h3 {
   transition: color 0.15s ease;
 }
 .footer-social a:hover { color: var(--accent); }
-/* 两个图标的图形都正好顶满各自 24×24 的视框（YouTube 是铺满的圆角方块，
+/* 三个图标的图形都正好顶满各自 24×24 的视框（YouTube 和 LinkedIn 是铺满的圆角方块，
    Instagram 外框也贴着 0 和 24），所以锁成正方形就等高等宽，不用再单独微调 */
 .footer-social svg { width: 20px; height: 20px; display: block; fill: currentColor; }
 /* YouTube 的播放三角用页脚底色"挖"出来：页脚背景是纯色 var(--bg) 没有渐变，
@@ -329,11 +498,11 @@ h1, h2, h3 {
 
 .js .reveal {
   opacity: 0;
-  transform: translate3d(0, 32px, 0) scale(0.985);
+  transform: translate3d(0, 28px, 0) scale(0.985);
   will-change: opacity, transform;
   transition:
-    opacity 0.85s var(--ease-out-soft) var(--delay, 0ms),
-    transform 0.95s var(--ease-out-soft) var(--delay, 0ms);
+    opacity 0.5s var(--ease-out-soft) var(--delay, 0ms),
+    transform 0.6s var(--ease-out-soft) var(--delay, 0ms);
 }
 .js .reveal.is-visible { opacity: 1; transform: none; }
 
@@ -357,8 +526,8 @@ h1, h2, h3 {
   transform: translate3d(0, 112%, 0);
   will-change: opacity, transform;
   transition:
-    opacity 0.8s var(--ease-out-soft) var(--d, 0ms),
-    transform 0.95s var(--ease-out-soft) var(--d, 0ms);
+    opacity 0.5s var(--ease-out-soft) var(--d, 0ms),
+    transform 0.62s var(--ease-out-soft) var(--d, 0ms);
 }
 [data-split].is-in .split-line > i { opacity: 1; transform: none; }
 /* 动画结束后撤掉合成层提示，别让每一行常驻显存 */
@@ -373,8 +542,9 @@ h1, h2, h3 {
   padding: clamp(56px, 9vw, 108px) clamp(20px, 5vw, 48px) clamp(32px, 5vw, 56px);
 }
 .page-hero h1 {
-  font-size: clamp(2.1rem, 5.2vw, 3.4rem);
-  letter-spacing: -0.035em;
+  font-size: clamp(2.2rem, 5.6vw, 3.8rem);
+  letter-spacing: -0.04em;
+  line-height: 1.0;
   margin-bottom: 22px;
 }
 /* 极简子页头部：只留一个标题，居中，直接压着下面的内容 */
@@ -390,6 +560,24 @@ h1, h2, h3 {
   transition: color 0.15s ease;
 }
 .backlink:hover { color: var(--accent); }
+
+/* ===== Meet The Team：标题与正文分两栏 =====
+   标题独占左栏、正文推到右栏，中间那道空白就是这一段的呼吸。宽屏下标题
+   叠在正文正上方会显得头重脚轻——一句话的段落撑不起一个满宽的大标题。
+   只挑 #about，不动 backyard / hua 里同样用 .prose 的正文。
+   纯 CSS 改栅格，HTML 一个字都不用动。 */
+@media (min-width: 900px) {
+  #about .section-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: clamp(40px, 6vw, 72px);
+    align-items: start;
+  }
+  #about .section-inner h2 { margin-bottom: 0; }
+  /* 正文比标题矮一点起步，视觉上跟大写字母的顶线对齐 */
+  #about .prose { margin-bottom: 0; padding-top: 6px; max-width: 52ch; }
+  #about .prose p { font-size: clamp(1.05rem, 1.6vw, 1.3rem); line-height: 1.5; }
+}
 
 /* ===== 正文段落组 ===== */
 .prose { max-width: 640px; margin-bottom: 44px; }
@@ -685,9 +873,8 @@ h1, h2, h3 {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  margin-bottom: 22px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--line);
+  margin-bottom: 11px;
+  padding-bottom: 10px;
   font-weight: 500;
 }
 .footer-links a { transition: color 0.15s ease; }
@@ -726,6 +913,7 @@ h1, h2, h3 {
   .split-line > i { opacity: 1; transform: none; transition: none; }
   .js .hero-inner { will-change: auto; }
   .card:hover { transform: none; }
+  .card:hover .card-icon { transform: none; }
   .tile:hover { transform: none; }
   .tile:hover .tile-art-mark,
   .tile:hover .tile-art-img,
@@ -1154,12 +1342,22 @@ h1, h2, h3 {
 }
 .legal li { margin-bottom: 8px; }
 .legal strong { color: var(--ink); font-weight: 600; }
+/* 条款/隐私正文里的链接不再上蓝色加下划线：这两页每段都挂着几条外链和邮箱，
+   一整页蓝色下划线读起来全是噪点。静止时只比正文重一档（近黑 + 500），
+   悬停才浮出下划线，指出"这条是能点的"。 */
 .legal a {
-  color: var(--accent);
+  color: var(--ink);
+  font-weight: 500;
+  text-decoration: none;
+  transition: text-decoration-color 0.15s ease;
+}
+.legal a:hover {
   text-decoration: underline;
   text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
 }
-.legal a:hover { color: var(--accent-strong); }
+/* 联系邮箱是纯文本，不可点也不该有悬停反馈：同样比正文重一档，但没有下划线动作。 */
+.legal-mail { color: var(--ink); font-weight: 500; }
 
 /* 各游戏收集情况一览表：窄屏放不下时表格自己横向滚，页面不会被撑宽 */
 .legal-table-wrap {

@@ -1,0 +1,126 @@
+/* ============================================================
+   SANDBOX B — "Ink Capsule"
+   同一颗悬浮胶囊，但换成深墨色（--btn-dark 那一支，不是新颜色），
+   链接和 CTA 一起靠右成组，胶囊也窄一档。
+   纯 CSS，不需要改任何 HTML。
+   ============================================================ */
+
+:root {
+  --nav-pill-maxw: 960px;    /* 比 A 窄一档：深色块面积大，收窄才不压顶 */
+  --nav-pill-gutter: clamp(16px, 4vw, 40px);
+  --nav-pill-top: 16px;
+  /* 深墨底：跟 --btn-dark (#101828) 同一支，带透明度让着色器的蓝透上来一点 */
+  --nav-ink: rgba(16, 24, 40, 0.72);
+  --nav-ink-solid: rgba(16, 24, 40, 0.90);
+}
+
+.nav {
+  margin-left: auto;
+  margin-right: auto;
+  top: var(--nav-pill-top);
+  width: calc(100% - 2 * var(--nav-pill-gutter));
+  max-width: var(--nav-pill-maxw);
+
+  padding: 8px 8px 8px 20px;
+  border-radius: 999px;
+
+  background: var(--nav-ink);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  backdrop-filter: saturate(140%) blur(18px);
+  -webkit-backdrop-filter: saturate(140%) blur(18px);
+  box-shadow: 0 12px 34px rgba(16, 24, 40, 0.22);
+
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease,
+    top 0.3s var(--ease-ui);
+}
+
+.nav.is-scrolled {
+  top: 12px;
+  background: var(--nav-ink-solid);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 40px rgba(16, 24, 40, 0.28);
+  /* 重申模糊：style.css 的 .nav.is-scrolled 权重更高，不写这两行滚动后会退回它那档 */
+  backdrop-filter: saturate(140%) blur(18px);
+  -webkit-backdrop-filter: saturate(140%) blur(18px);
+}
+
+body:has(.hero) .nav:not(.is-scrolled) { pointer-events: auto; }
+
+/* 深底上的字：品牌转白，链接用降透明度的白（不是 --ink-soft，灰在深底上会发脏） */
+.brand { color: #fff; }
+.nav-links { color: rgba(255, 255, 255, 0.70); }
+.nav-links a:hover { color: #fff; }
+.nav-links a.is-current { color: #fff; font-weight: 600; }
+
+/* 链接 + CTA 一起靠右成组 */
+.nav-links {
+  flex: 1;
+  justify-content: flex-end;
+  gap: clamp(14px, 2.6vw, 28px);
+}
+
+/* CTA 反色：深胶囊里放白胶囊。蓝在这里会跟着色器抢，白最干净。 */
+.nav-links a.nav-cta {
+  background: #fff;
+  color: var(--ink);
+  padding: 9px 20px;
+  font-weight: 600;
+}
+.nav-links a.nav-cta:hover { background: #e9ecf4; color: var(--ink); }
+
+/* 窄屏：链接从左排开、可横向滑动，CTA 钉在胶囊右端，不跟着链接滑走。
+   min-width:0 是给 overflow-x:auto 兜底：.nav-links 是 flex 子项，默认
+   min-width:auto 以内容宽为下限，胶囊比整宽导航窄，留不住这个下限。 */
+@media (max-width: 760px) {
+  :root { --nav-pill-top: 10px; --nav-pill-gutter: 12px; }
+  .nav { padding: 7px 7px 7px 14px; }
+  .nav-links {
+    min-width: 0;
+    justify-content: flex-start;
+    gap: 16px;
+    margin-left: 14px;
+    padding-right: 104px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .nav-links::-webkit-scrollbar { display: none; }
+  .nav-links a.nav-cta {
+    position: absolute;
+    right: 7px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 7px 14px;
+  }
+}
+
+/* ---- 沙盒页自己的切换器，正式上线时不要带走 ---- */
+.sbx-switch {
+  position: fixed;
+  z-index: 99;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: rgba(16, 24, 40, 0.88);
+  backdrop-filter: blur(10px);
+  font-family: var(--font);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.65);
+}
+.sbx-switch span { padding-left: 6px; letter-spacing: 0.02em; }
+.sbx-switch a {
+  padding: 5px 12px;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.72);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.sbx-switch a:hover { color: #fff; background: rgba(255, 255, 255, 0.14); }
+.sbx-switch a.is-on { background: #fff; color: #101828; }

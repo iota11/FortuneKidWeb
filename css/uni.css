@@ -30,6 +30,24 @@
   padding-top: clamp(64px, 11vh, 120px);
 }
 
+/* ===== 整页只剩 Hero 时：Hero 独占第一屏，footer 要滚一下才出现 =====
+   :has(.uni-copy > .uni-step--lead:only-child) 就是"只剩 Hero"这个条件，
+   恢复 02–06 之后 Hero 不再是独子，下面几条自动失效，回到原来的 80vh。
+
+   导航跟首页一样改成 fixed、不占文档流：sticky 的话导航那 70px 也算在页面
+   高度里，Hero 想满屏就得写 calc(100svh - 导航高度)，而导航高度是内容撑出来的，
+   写死早晚对不上。浮起来之后 Hero 从 y=0 开始，100svh 正好是一屏，
+   footer 紧接在一屏之后，不滚就看不见。 */
+body:has(.uni-copy > .uni-step--lead:only-child) .nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+}
+.uni-copy > .uni-step--lead:only-child {
+  min-height: 100vh;
+  min-height: 100svh;   /* 移动端地址栏收起/展开时都不留缝，不支持 svh 的退回上一行 */
+}
+
 .step-lead {
   font-family: var(--display);
   font-size: clamp(3.2rem, 11vw, 6.4rem);
