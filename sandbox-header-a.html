@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fortune Kid Inc. · Interactive Entertainment Studio</title>
+  <title>SANDBOX A · Glass Capsule · FortuneKid</title>
   <meta name="description" content="Fortune Kid Inc. is a New Jersey interactive-entertainment company building original mobile games, 3D-printed collectibles tied to its own IP, and UNI, an app for making small 3D worlds with AI." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,9 +14,35 @@
        浏览器就会拿旧样式去配新 HTML（社交图标变巨大、Our Games 栅格错位就是这么来的）。
        每次改 css/ 或 js/ 里的文件，把全部页面上的 v= 一起换成当天日期。 -->
   <link rel="stylesheet" href="css/style.css?v=20260813g" />
+  <link rel="stylesheet" href="css/sandbox-header-a.css?v=sbx1" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
+  <div class="sbx-switch">
+    <span>Header sandbox</span>
+    <a href="sandbox-header-a.html" class="is-on">A · Glass</a>
+    <a href="sandbox-header-b.html">B · Ink</a>
+    <a href="index.html">Current</a>
+    <label class="sbx-glass">
+      Glass
+      <input id="sbx-glass" type="range" min="8" max="70" step="2" value="26" aria-label="Glass opacity" />
+      <output id="sbx-glass-out">0.26</output>
+    </label>
+  </div>
+  <script>
+    /* 沙盒专用：拖滑块即时改 --nav-glass，挑定数值后再写回 css 里那一行。 */
+    (function () {
+      var range = document.getElementById('sbx-glass');
+      var out = document.getElementById('sbx-glass-out');
+      function apply() {
+        var v = (range.value / 100).toFixed(2);
+        document.documentElement.style.setProperty('--nav-glass', v);
+        out.textContent = v;
+      }
+      range.addEventListener('input', apply);
+      apply();
+    })();
+  </script>
 
   <!-- 顶部导航（全站统一：About / Our Games / Uni / Contact；News 暂时隐藏） -->
   <header class="nav" id="nav">

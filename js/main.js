@@ -9,6 +9,75 @@
   var year = document.getElementById('year');
   if (year) year.textContent = new Date().getFullYear();
 
+  // ===== 联系邮箱：点击即复制 =====
+  // 没配默认邮件客户端的机器上，mailto 点了像坏了一样毫无反应。改成把地址复制到
+  // 剪贴板并弹一条提示。href 保留不动：这段 JS 没跑起来时仍然退回原来的 mailto。
+  // 注意必须写在下面 reduceMotion 那条 return 之前，否则关掉动效的用户点了没反应。
+  var COPY_FEEDBACK_MS = 2200;
+
+  function copyText(text) {
+    // 异步剪贴板要求安全上下文（https / localhost）
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+    // 兜底：http 打开的页面和老 Safari 拿不到 navigator.clipboard
+    return new Promise(function (resolve, reject) {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0;';
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, text.length); // iOS 上 select() 不够
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
+      document.body.removeChild(ta);
+      if (ok) resolve(); else reject(new Error('copy failed'));
+    });
+  }
+
+  var mailLinks = document.querySelectorAll('.contact-mail');
+  if (mailLinks.length) {
+    // 气泡是 CSS 伪元素，读屏软件读不到，另开一个 live region 播报
+    var copyStatus = document.createElement('p');
+    copyStatus.className = 'sr-only';
+    copyStatus.setAttribute('role', 'status');
+    copyStatus.setAttribute('aria-live', 'polite');
+    document.body.appendChild(copyStatus);
+
+    Array.prototype.forEach.call(mailLinks, function (link) {
+      var address = (link.getAttribute('href') || '').replace(/^mailto:/i, '').split('?')[0] ||
+        link.textContent.trim();
+      var timer = null;
+
+      // 行为已经不是"打开邮件"了，标签跟着改；JS 没跑时标签保持链接原样
+      link.setAttribute('aria-label', 'Copy email address ' + address);
+
+      function flash(msg) {
+        link.setAttribute('data-copy-msg', msg);
+        link.classList.add('is-copied');
+        copyStatus.textContent = msg;
+        window.clearTimeout(timer);
+        timer = window.setTimeout(function () {
+          link.classList.remove('is-copied');
+          copyStatus.textContent = '';
+        }, COPY_FEEDBACK_MS);
+      }
+
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        copyText(address).then(
+          function () { flash('Email copied!'); },
+          function () {
+            // 两条通道都被浏览器挡了，退回打开邮件客户端，别让这一下点了没结果
+            flash("Couldn't copy - opening your mail app");
+            window.location.href = link.href;
+          }
+        );
+      });
+    });
+  }
+
   // ===== 单一 rAF 调度器 =====
   // 所有滚动相关的读写都挂在这里，一帧只跑一次，避免多个 scroll 监听各自触发布局。
   var frameJobs = [];
@@ -97,7 +166,7 @@
   // ===== 标题分行 + 遮罩上推 =====
   // 把 [data-split] 的文字按实际换行位置切成若干行，每行套一个 overflow:hidden 的
   // 容器，内层从下方推上来，逐行错峰。行数依赖真实排版，所以要等字体加载完再切。
-  var LINE_STAGGER = 90; // ms / 行
+  var LINE_STAGGER = 70; // ms / 行
 
   function splitIntoLines(el) {
     if (el._splitSrc == null) el._splitSrc = el.innerHTML;
@@ -187,13 +256,19 @@
 
   // 动画跑完后拆掉 .reveal / --delay，否则这条 transition 会一直压过
   // .card 自己的 hover 过渡（0.95s + 最多 240ms 延迟 = 悬停发黏）。
-  var CLEANUP_MS = 1500; // > 最大 --delay + 时长
+  var CLEANUP_MS = 1100; // > 最大 --delay + 时长
   function settle(el) {
     // 移除 .reveal 后 opacity / transform / will-change 一并回到默认值
     el.classList.remove('reveal', 'is-visible');
   }
 
   function show(el) {
+    // 分行还在等字体：先记一笔，切好后立刻补播。
+    // 否则这次触发会落空，元素永远停在 opacity:0。
+    if (el.hasAttribute('data-split') && !el.classList.contains('split')) {
+      el._showPending = true;
+      return;
+    }
     if (el.classList.contains('split')) {
       el.classList.add('is-in');
       // 分行元素的 will-change 在动画结束后撤掉，别让每行常驻合成层
@@ -227,7 +302,8 @@
     }
   }, { passive: true });
 
-  // -18% 让元素真正进入阅读位置再动，而不是在屏幕最底下擦边触发
+  // 刚过视口下沿就起步（-5% 只是躲开擦边抖动）：动画在元素滚进阅读位置的
+  // 途中跑完，既不用等，也还看得见它动。触发点再往前提动画就在屏幕外播完了。
   var observer = new IntersectionObserver(function (entries) {
     entries.forEach(function (entry) {
       if (!entry.isIntersecting) return;
@@ -237,7 +313,30 @@
       var nums = entry.target.querySelectorAll('[data-count-to]');
       for (var i = 0; i < nums.length; i++) countUp(nums[i]);
     });
-  }, { rootMargin: '0px 0px -18% 0px', threshold: 0 });
+  }, { rootMargin: '0px 0px -5% 0px', threshold: 0 });
+
+  // ===== 成组进场 =====
+  // 竖着排的一小块内容（"联系"那三行：标题 / 说明 / 邮箱）各自观察的话，
+  // 会按各自越线的先后拖成三拍，邮箱总是最后才冒出来。给容器加
+  // data-reveal-group，整块一起触发，块内节奏交给各自的 --delay。
+  var groups = Array.prototype.slice.call(document.querySelectorAll('[data-reveal-group]'));
+
+  function grouped(el) { return !!el.closest('[data-reveal-group]'); }
+
+  var groupObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      groupObserver.unobserve(entry.target);
+      // 现查而不是提前缓存：分行会把成员节点整个换掉
+      var members = entry.target.querySelectorAll('.reveal, [data-split]');
+      for (var i = 0; i < members.length; i++) show(members[i]);
+
+      var nums = entry.target.querySelectorAll('[data-count-to]');
+      for (var j = 0; j < nums.length; j++) countUp(nums[j]);
+    });
+  }, { rootMargin: '0px 0px -5% 0px', threshold: 0 });
+
+  groups.forEach(function (g) { groupObserver.observe(g); });
 
   // 分行会重排 DOM，必须先切好再交给 observer，否则观察到的是被替换掉的节点
   function prepareSplits(targets) {
@@ -253,14 +352,36 @@
         if (el._splitSrc != null) el.innerHTML = el._splitSrc;
         el.removeAttribute('data-split');
         el.classList.remove('split');
-        observer.observe(el);
+        if (el._showPending) show(el);
+        else if (!grouped(el)) observer.observe(el);
         return false;
       }
       // 分行接管入场动画，普通淡入的初始态要让位
       el.classList.remove('reveal');
-      observer.observe(el);
+      // 切好之前就已经越线的（成组触发 / 直接跳锚点），这里补播
+      if (el._showPending) show(el);
+      else if (!grouped(el)) observer.observe(el);
       return true;
     });
+  }
+
+  // 已经播完入场的元素也要能重切：.split-line 是块级裁切框，行内容在切的那一刻
+  // 就定死了，宽度变了也不会重新断——窗口从窄拉宽（比如先开小窗再最大化）之后，
+  // 标题还按旧宽度分行，1080px 的容器里挤着几个窄行。这里原地重切，
+  // is-in / split-done 留在元素上，新行直接是终态，不会再播一遍动画。
+  function resplitPlayed(el) {
+    var ok = false;
+    try {
+      ok = splitIntoLines(el);
+    } catch (err) {
+      ok = false;
+    }
+    if (ok) return true;
+    // 重切失败：还原文字退回普通显示，别把内容留在半拆状态
+    if (el._splitSrc != null) el.innerHTML = el._splitSrc;
+    el.removeAttribute('data-split');
+    el.classList.remove('split');
+    return false;
   }
 
   // 行的断点取决于最终字体，用 Poppins 之前量出来的行是错的（会切在错误的词上，
@@ -284,11 +405,10 @@
   }
 
   revealables.forEach(function (el) {
-    if (!el.hasAttribute('data-split')) observer.observe(el);
+    if (!el.hasAttribute('data-split') && !grouped(el)) observer.observe(el);
   });
 
-  // 视口宽度变了断行就变了：还没播过的重新切，已经播过的保持原样（此时行框
-  // 已经不再裁切内容，内部自然折行即可）。
+  // 视口宽度变了断行就变了：还没播过的重新切，已经播过的原地重切并保持可见。
   var lastWidth = window.innerWidth;
   var resizeTimer = null;
   window.addEventListener('resize', function () {
@@ -296,11 +416,14 @@
     lastWidth = window.innerWidth;
     window.clearTimeout(resizeTimer);
     resizeTimer = window.setTimeout(function () {
-      var pending = splitTargets.filter(function (el) { return !el.classList.contains('is-in'); });
-      if (!pending.length) return;
+      var played = [];
+      var pending = [];
+      splitTargets.forEach(function (el) {
+        if (el.classList.contains('is-in')) played.push(el);
+        else pending.push(el);
+      });
       pending.forEach(function (el) { observer.unobserve(el); });
-      var kept = splitTargets.filter(function (el) { return pending.indexOf(el) === -1; });
-      splitTargets = kept.concat(prepareSplits(pending));
+      splitTargets = played.filter(resplitPlayed).concat(prepareSplits(pending));
     }, 200);
   });
 
