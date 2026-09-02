@@ -37,7 +37,7 @@
       <a class="backlink" href="games.html">&larr; Our Games</a>
       <h1>Privacy Policy</h1>
       <p class="legal-meta">All games published by Fortune Kid Inc.</p>
-      <p class="legal-meta">Effective August 3, 2026 &middot; Last updated September 2, 2026</p>
+      <p class="legal-meta">Effective September 2, 2026 &middot; Last updated September 2, 2026</p>
     </div>
   </section>
 
@@ -49,9 +49,15 @@
         <p>
           This policy applies <strong>only to the mobile games listed in the table below</strong>,
           published by <strong>Fortune Kid Inc.</strong> (&ldquo;Fortune Kid,&rdquo;
-          &ldquo;we,&rdquo; &ldquo;us&rdquo;), a company registered in New Jersey, USA. The table
-          also shows what each game collects.
+          &ldquo;we,&rdquo; &ldquo;us&rdquo;), a corporation organized under the laws of the State
+          of New Jersey, USA. The table also shows what each game collects.
         </p>
+
+        <!--
+          TODO 补一个可寄信的地址（注册地址或信箱都行），补完就把这段注释删掉。
+          GDPR Art. 13(1)(a) 要求给出控制者的"身份和联系方式"，只有 email 在欧盟口径下算不齐；
+          地址填在 §13，紧跟在 contact@ 那一行后面。地址是法律事实，不要编。
+        -->
 
         <!--
           发新游戏时在这张表里加一行。只要新游戏同样不收集任何数据，这一页就能继续共用；
@@ -128,8 +134,10 @@
           <li>Browsing history, search history, or any advertising profile</li>
         </ul>
         <p>
-          Because we collect nothing, there is no personal information for us to lose, misuse,
-          disclose, or hand over to anyone else.
+          Because our games collect nothing, there is no personal information for us to lose,
+          misuse, disclose, or hand over to anyone else. The one exception is what you send us
+          yourself: if you choose to email us, we will of course have your message and your email
+          address. Section 13 explains what we do with it.
         </p>
         <p>
           Song sharing touches your photo library in two narrow ways: it can add a song card to
@@ -142,8 +150,9 @@
         <p>
           We make music games, so players sometimes ask whether a game listens to them play or sing.
           It does not. All performance input is made through on-screen touch controls. Our games
-          contain no microphone code, never request microphone permission, and never record audio
-          from your surroundings. The same is true of the camera and of location services.
+          never request microphone permission, never switch the microphone on, and never record
+          audio from your surroundings or anywhere else. The same is true of the camera and of
+          location services.
         </p>
 
         <h2>4. Data on your device</h2>
@@ -174,8 +183,8 @@
         </p>
         <p>
           You can erase this data at any time by deleting the game from your device. Note that, like
-          any app&rsquo;s local storage, it may be included in the encrypted device backups you make
-          through iCloud, Google, or your computer. Those backups are handled entirely by the
+          any app&rsquo;s local storage, it may be included in the device backups you make through
+          iCloud, Google, or your computer. Those backups are handled entirely by the
           platform that provides them, under that platform&rsquo;s own privacy policy, and remain
           inaccessible to us.
         </p>
@@ -190,6 +199,12 @@
              读图走 PHPicker，进程外选图，连读取权限都不申请。
              哪天 Info.plist 里出现 NSPhotoLibraryUsageDescription（读权限），
              下面 photos 那两段作废，§2 的指引段也要一起改。
+             ⚠ iOS 13 上这句话目前是**假的**：HGSongShare_SaveToPhotos 的 else 分支走
+             旧 API [PHPhotoLibrary requestAuthorization:]，那是**读写全权限**，不是 add-only
+             （而且 plist 里只写了 AddUsageDescription，真机到这一步会直接闪退）。
+             修法二选一：把 iOSTargetOSVersionString 提到 14.0（PHPicker 本来就要 14，
+             低于 14 收卡已经直接返回 needs_ios14），或给存图路径加上
+             if (@available(iOS 14.0, *)) 守卫，低版本直接 cb(0)。改完删掉这五行。
           ③ 游戏里**没有摄像头**，没有实时扫一扫 —— 收卡只有相册选图这一条路。
              哪天加了实时扫码，最后两段要改，§2 的 "Camera or microphone input"
              和 §3 整节也要一起改。
@@ -256,8 +271,8 @@
           <a href="https://www.apple.com/legal/privacy/" target="_blank" rel="noopener">Apple&rsquo;s
           Privacy Policy</a> or
           <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google&rsquo;s
-          Privacy Policy</a>. The stores provide us with aggregated, anonymous reports on downloads,
-          regions, and device types. These reports never identify individual users, and we cannot use
+          Privacy Policy</a>. The stores provide us with aggregated reports on downloads, regions,
+          and device types. These reports never identify individual users, and we have no way to use
           them to contact or re-identify anyone.
         </p>
 
@@ -268,10 +283,12 @@
           Play&rsquo;s Designed for Families program.
         </p>
         <p>
-          Because our games collect no personal information from anyone, we do not knowingly
-          collect personal information from children under 13 &mdash; or from any user &mdash; as
-          those terms are used in the U.S. Children&rsquo;s Online Privacy Protection Act (COPPA)
-          and comparable laws elsewhere.
+          Our games collect no personal information from anyone, and that includes children. We do
+          not collect personal information from children under 13 &mdash; not knowingly, and not
+          unknowingly either, because there is no collection at all &mdash; as those terms are used
+          in the U.S. Children&rsquo;s Online Privacy Protection Act (COPPA) and comparable laws
+          elsewhere. That covers the persistent identifiers COPPA treats as personal information:
+          our games use none.
         </p>
         <p>
           If you are a parent or guardian and believe your child has somehow provided us with
@@ -287,24 +304,39 @@
           object to its sale or sharing.
         </p>
         <p>
-          We honor all of these rights in the simplest possible way: we hold no personal data about
-          you, so there is nothing to access, export, correct, or delete on our side, and nothing
-          that could be sold or shared. We have never sold or shared personal information, and we do
-          not use personal information for targeted advertising or automated decision-making. You can
-          remove a game&rsquo;s locally stored progress at any moment by deleting the game.
+          We honor all of these rights in the simplest possible way: our games give us no personal
+          data about you to begin with, so there is nothing to access, export, correct, or delete on
+          our side, and nothing that could be sold or shared. We have never sold or shared personal
+          information, and we do not use personal information for targeted advertising or automated
+          decision-making. You can remove a game&rsquo;s locally stored progress at any moment by
+          deleting the game. If you have written to us, you can ask us to delete that correspondence
+          and we will.
+        </p>
+        <p>
+          We will never charge you, withhold anything, degrade a game, or treat you differently in
+          any way for exercising these rights.
         </p>
         <p>
           If you would like written confirmation of any of the above for your own records, email us
-          and we will provide it.
+          and we will provide it. If you are ever unhappy with how we answer a privacy request, you
+          may reply to ask us to reconsider, and we will respond in writing with our reasoning. You
+          can also complain to your data protection authority &mdash; in the EU, your national
+          supervisory authority; in the UK, the Information Commissioner&rsquo;s Office; in the
+          United States, your state Attorney General.
         </p>
 
         <h2>10. Security and retention</h2>
         <p>
           The strongest protection we can offer is not to gather the data in the first place. Since
-          no information ever leaves your device, there is no server, database, or backup of ours
-          that could be breached, and no retention period to describe. Data stored on your device is
+          no information ever leaves your device through a game, there is no server, database, or
+          backup of ours that could be breached. Data stored on your device is
           protected by your device&rsquo;s own security, including your passcode, your biometric lock,
           and your operating system&rsquo;s file encryption.
+        </p>
+        <p>
+          The one thing we do hold is email you send us. That correspondence stays in our mailbox
+          for as long as it takes to answer you and to keep a record of what we answered, and then
+          we delete it. It goes on no list and is used for nothing else.
         </p>
 
         <h2>11. Changes to this policy</h2>
@@ -313,14 +345,18 @@
           add cloud saves, leaderboards, or in-app purchases &mdash; we will update this policy and
           that game&rsquo;s App Store privacy disclosures <em>before</em> the version is released, and
           we will revise the effective date at the top of this page. Material changes will also be
-          noted on this website. Continuing to play after an update means you accept the revised
-          policy.
+          noted on this website. Where the law requires your consent for a change &mdash; and for
+          anything that would start collecting data about you, it generally does &mdash; we will ask
+          you for it and wait for your answer. We will not treat you carrying on playing as
+          consent.
         </p>
 
         <h2>12. Governing law</h2>
         <p>
           This policy is governed by the laws of the State of New Jersey and the United States,
-          without regard to conflict-of-law principles.
+          without regard to conflict-of-law principles. This does not take away any right you have
+          under the data protection laws of the country you live in, and it does not limit those
+          laws where they apply to us.
         </p>
 
         <h2>13. Contact us</h2>
@@ -329,6 +365,14 @@
         </p>
         <p>
           <span class="legal-mail">contact@fortunekidstudio.com</span>
+        </p>
+        <p>
+          Writing to us is the one moment this policy&rsquo;s &ldquo;we collect nothing&rdquo; stops
+          being literally true, so here is what happens. We receive your email address, your name if
+          you sign one, and whatever you put in the message. We use it to answer you and for nothing
+          else. We do not add you to a mailing list, we do not pass it to anyone, and we delete the
+          correspondence once it has served its purpose. You are welcome to write from an address
+          that does not identify you.
         </p>
         <p>
           We aim to respond to every privacy inquiry within 30 days, and in all cases within the
