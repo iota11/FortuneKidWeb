@@ -37,7 +37,7 @@
       <a class="backlink" href="games.html">&larr; Our Games</a>
       <h1>Privacy Policy</h1>
       <p class="legal-meta">All games published by Fortune Kid Inc.</p>
-      <p class="legal-meta">Effective August 3, 2026 &middot; Last updated August 3, 2026</p>
+      <p class="legal-meta">Effective August 3, 2026 &middot; Last updated September 2, 2026</p>
     </div>
   </section>
 
@@ -101,12 +101,12 @@
              registerForRemoteNotifications 拿到的 device token 要上传到服务器存着，
              那就是实打实的"收集设备标识符"：
                §2 第二条当场作废，必须重写；
-               §5 要把 Apple APNs / Firebase 写成第三方处理方；
-               §9 "没有服务器可被攻破"不再成立，要写服务器、留存期限、安全措施；
-               §8 要给出删除 token 的实际途径，不能再说"我们手上没有数据"。
+               §6 要把 Apple APNs / Firebase 写成第三方处理方；
+               §10 "没有服务器可被攻破"不再成立，要写服务器、留存期限、安全措施；
+               §9 要给出删除 token 的实际途径，不能再说"我们手上没有数据"。
              隐私标签要从 Data Not Collected 改成 Identifiers → Device ID。
 
-          §10 承诺的是"在该版本发布之前"更新本页，不是提前预告没定的事。
+          §11 承诺的是"在该版本发布之前"更新本页，不是提前预告没定的事。
         -->
 
         <h2>2. What we do not collect</h2>
@@ -121,7 +121,7 @@
               or any other advertising or tracking identifier &mdash; our games do not use
               Apple&rsquo;s App Tracking Transparency framework because they perform no tracking</li>
           <li>Location data of any kind, precise or coarse</li>
-          <li>Contacts, calendars, photos, or files</li>
+          <li>Contacts, calendars, or files</li>
           <li>Camera or microphone input</li>
           <li>Health, fitness, financial, or purchase information</li>
           <li>Usage analytics, gameplay telemetry, crash reports, or performance diagnostics</li>
@@ -130,6 +130,12 @@
         <p>
           Because we collect nothing, there is no personal information for us to lose, misuse,
           disclose, or hand over to anyone else.
+        </p>
+        <p>
+          Song sharing touches your photo library in two narrow ways: it can add a song card to
+          your photos, and it can read the single card picture you choose to import. Neither one
+          gives us access to your photo library, and neither sends anything to us. Section 5
+          explains this in full.
         </p>
 
         <h2>3. About the microphone</h2>
@@ -150,12 +156,21 @@
           <li>Which tutorial steps you have completed, and where you last played</li>
           <li>Any performances you record in-game, stored as note-and-timing data used to replay
               your take inside the game</li>
+          <li>Any song a friend sent you that you chose to import &mdash; kept alongside the songs
+              you make yourself, together with the performance your friend recorded, also as
+              note-and-timing data</li>
         </ul>
         <p>
           This data is written using the standard local storage provided by your device&rsquo;s
           operating system and stays inside the game&rsquo;s own storage container. It is never
           uploaded to us or to anyone else, and we have no ability to read it. It is not linked to
           your identity, and it does not contain any personal information.
+        </p>
+        <p>
+          Sharing a song also writes the song card as an image file. On iOS that file goes into the
+          app&rsquo;s temporary cache, which the operating system clears on its own. If you choose
+          to save a card to your Photos, that copy is yours and stays in your photo library until
+          you delete it.
         </p>
         <p>
           You can erase this data at any time by deleting the game from your device. Note that, like
@@ -165,7 +180,63 @@
           inaccessible to us.
         </p>
 
-        <h2>5. Third-party software</h2>
+        <!--
+          分享功能 = 二维码卡片。这一节站在三条底线上，改代码前先回来看一眼：
+
+          ① 码里装的是**曲子本身**，不是网址（格式见 Songs/Share/SongCode.cs）。
+             哪天改成放链接、加服务器托管，"Nothing is uploaded" 当场作废，
+             §10「没有服务器可被攻破」也跟着倒，§1 表格里 Hua 那行不能再写 None。
+          ② 相册只申请 **add-only**（PHAccessLevelAddOnly，见 HGSongShare.mm）；
+             读图走 PHPicker，进程外选图，连读取权限都不申请。
+             哪天 Info.plist 里出现 NSPhotoLibraryUsageDescription（读权限），
+             下面 photos 那两段作废，§2 的指引段也要一起改。
+          ③ 游戏里**没有摄像头**，没有实时扫一扫 —— 收卡只有相册选图这一条路。
+             哪天加了实时扫码，最后两段要改，§2 的 "Camera or microphone input"
+             和 §3 整节也要一起改。
+        -->
+
+        <h2>5. Sharing songs</h2>
+        <p>
+          You can turn a song you made into a song card &mdash; a picture with a QR code on it. A
+          friend adds that song to their own game by opening the picture. Here is exactly what that
+          does.
+        </p>
+        <p>
+          <strong>What is in the code.</strong> The QR code holds the song&rsquo;s name and its
+          notes. That is all it holds. There is nothing about you in it: no name, no account, no
+          device identifier, no location. Do keep in mind that the song name is whatever you typed,
+          so leave personal details out of it if you plan to share the card.
+        </p>
+        <p>
+          <strong>Nothing is uploaded.</strong> The code holds the song itself, not a web link.
+          Making a card and reading a card both happen on your device. Nothing is uploaded, nothing
+          is downloaded, and the game does not go online for any part of this.
+        </p>
+        <p>
+          <strong>Photos, when you send.</strong> To send a song, you can save the card to your
+          Photos. iOS asks your permission first. That permission lets us add a picture and nothing
+          else &mdash; it does not let us read your photos.
+        </p>
+        <p>
+          <strong>Photos, when you receive.</strong> To open a song from a friend, you pick the card
+          in the iOS photo picker. That picker runs outside the game, so we never request access to
+          your photo library and never hold it. We receive only the one picture you pick, and we
+          cannot see any other photo.
+        </p>
+        <p>
+          <strong>Sending a card on.</strong> The card is an ordinary picture. You can send it any
+          way you would send a picture &mdash; a messaging app, email, AirDrop, a social post,
+          Files, or by saving it to your Photos and sending it from there. Whichever way you choose,
+          that service has its own privacy rules, not ours.
+        </p>
+        <p>
+          <strong>Once a card is out, it is out.</strong> We cannot see it, change it, or take it
+          back. Anyone who has the picture can open it in the game and get the song, and they can
+          keep it and pass it on. If you post a card in public, anyone can do this. Treat sharing a
+          card the way you would treat posting any other picture.
+        </p>
+
+        <h2>6. Third-party software</h2>
         <p>
           Our games are built with the Unity engine and the Wwise audio engine from Audiokinetic.
           Both are used purely as on-device software for rendering graphics and playing sound;
@@ -178,7 +249,7 @@
           social-media SDKs. They do not display ads and do not offer in-app purchases.
         </p>
 
-        <h2>6. What the stores collect</h2>
+        <h2>7. What the stores collect</h2>
         <p>
           When you download, buy, or update one of our games, the app store handles that transaction
           under its own privacy policy, not this one &mdash; see
@@ -190,7 +261,7 @@
           them to contact or re-identify anyone.
         </p>
 
-        <h2>7. Children&rsquo;s privacy</h2>
+        <h2>8. Children&rsquo;s privacy</h2>
         <p>
           Our games carry a 4+ age rating and are suitable for players of all ages, including
           young children. They are not listed in the App Store Kids Category or in Google
@@ -208,7 +279,7 @@
           delete anything we find.
         </p>
 
-        <h2>8. Your privacy rights</h2>
+        <h2>9. Your privacy rights</h2>
         <p>
           Privacy laws such as the California Consumer Privacy Act as amended by the CPRA, the
           New Jersey Data Privacy Act, the EU General Data Protection Regulation (GDPR), and the
@@ -227,7 +298,7 @@
           and we will provide it.
         </p>
 
-        <h2>9. Security and retention</h2>
+        <h2>10. Security and retention</h2>
         <p>
           The strongest protection we can offer is not to gather the data in the first place. Since
           no information ever leaves your device, there is no server, database, or backup of ours
@@ -236,7 +307,7 @@
           and your operating system&rsquo;s file encryption.
         </p>
 
-        <h2>10. Changes to this policy</h2>
+        <h2>11. Changes to this policy</h2>
         <p>
           If a future version of any game listed above ever collects data &mdash; for example, if we
           add cloud saves, leaderboards, or in-app purchases &mdash; we will update this policy and
@@ -246,13 +317,13 @@
           policy.
         </p>
 
-        <h2>11. Governing law</h2>
+        <h2>12. Governing law</h2>
         <p>
           This policy is governed by the laws of the State of New Jersey and the United States,
           without regard to conflict-of-law principles.
         </p>
 
-        <h2>12. Contact us</h2>
+        <h2>13. Contact us</h2>
         <p>
           Questions about this policy or about privacy in our games are always welcome.
         </p>
