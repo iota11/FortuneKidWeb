@@ -13,7 +13,7 @@
   <!-- ?v= 是缓存戳：GitHub Pages 给 css/js 的 Cache-Control 是 max-age=600，改了样式却不换这个数字，
        浏览器就会拿旧样式去配新 HTML（社交图标变巨大、Our Games 栅格错位就是这么来的）。
        每次改 css/ 或 js/ 里的文件，把全部页面上的 v= 一起换成当天日期。 -->
-  <link rel="stylesheet" href="css/style.css?v=20260813h" />
+  <link rel="stylesheet" href="css/style.css?v=20260903c" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -128,10 +128,13 @@
   <!-- 04 Contact（锚点，页面底部）：面向投资人 -->
   <section class="section" id="contact">
     <!-- data-reveal-group：标题 / 说明 / 邮箱一起进场，邮箱不再单独慢半拍 -->
-    <div class="section-inner contact" data-reveal-group>
+    <div class="section-inner contact contact-split" data-reveal-group>
       <h2 class="reveal" data-split>Get in Touch</h2>
-      <p class="section-lead reveal" data-split>Business inquiries, partnerships, or press. We'd love to hear from you!</p>
-      <a class="contact-mail reveal" href="mailto:contact@fortunekidstudio.com" style="--delay: 120ms">contact@fortunekidstudio.com</a>
+      <!-- 说明文字和邮箱按钮打包成右栏，跟 Meet The Team 一样：标题在左，正文在右 -->
+      <div class="contact-body">
+        <p class="section-lead reveal" data-split>Business inquiries, partnerships, or press. We'd love to hear from you!</p>
+        <a class="contact-mail reveal" href="mailto:contact@fortunekidstudio.com" style="--delay: 120ms">contact@fortunekidstudio.com</a>
+      </div>
     </div>
   </section>
 
@@ -173,8 +176,8 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=20260813h" defer></script>
+  <script src="js/main.js?v=20260903" defer></script>
   <!-- 只有首页加载着色器：bundle 有 2.5MB，条款页和新闻页不该为它买单 -->
-  <script type="module" src="js/hero-shader.js?v=20260813h"></script>
+  <script type="module" src="js/hero-shader.js?v=20260903"></script>
 </body>
 </html>
