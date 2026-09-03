@@ -1,0 +1,500 @@
+/* ===== 沙盒：hero 背景换成循环视频 =====
+   只给 sandbox-hero-video.html 用。style.css 里 .hero / .hero-inner / .nav 那些规则
+   全部照旧生效——这个文件只做两件事：
+     1. 把 .hero-shader 那一层（WebGPU 玻璃）换成一支铺满的循环视频；
+     2. 补上换背景之后必然出现的对比度问题——着色器是可控的浅色，视频不是。
+   工具条（.sbx-*）是沙盒自己的东西，定稿时连同这个文件一起丢掉，不要带进 index.html。 */
+
+:root {
+  /* 不铺遮罩，视频保持原样——可读性全部由文字自己扛。做法是给每个字加一圈
+     反色的柔光：浅色字垫黑影，深色字垫白光。这样只有笔画周围那几个像素被压暗
+     或提亮，画面本身一点没动，而遮罩是把整幅画都拉灰。 */
+  --sbx-halo: 0.55;               /* 柔光强度，0 = 完全不加，1 = 吃满。工具条滑块改写这个数 */
+  --sbx-halo-rgb: 255, 255, 255;  /* 柔光一律用白，两个方案都不再翻色 */
+}
+
+/* ---- 视频层：等价于 .hero-shader，同样 inset:0 / z-index:0，压在 .hero-inner 下面 ---- */
+.hero-video {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  /* 视频解码出第一帧之前这里是空的。给一个跟 poster 同调的底色，
+     避免开局闪一下页面的灰底（--bg 是浅灰，视频多半不是）。 */
+  background: #0b0d12;
+}
+.hero-video video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* 横版素材是 1920×1080，视口从 390px 竖屏到超宽屏都有。cover 保证四条边
+     永远铺满、比例不变形，代价是窄屏会从左右各裁掉一块——沙盒里用 Fit 开关
+     切到 contain 就能看见到底裁走了什么。
+     手机上裁掉的那部分太多，所以 js/hero-video.js 会直接换成竖版片源，
+     那一份是从源里裁 9:16 压的，cover 到这里几乎不再二次裁切。 */
+  object-fit: cover;
+  object-position: center;
+}
+/* 切到 YouTube 时 JS 会置 hidden。必须显式写这条：上面那句 display:block
+   是作者样式，权重压过浏览器默认的 [hidden]{display:none}，不补的话 hidden 置了也白置。 */
+.hero-video video[hidden] { display: none; }
+
+/* ---- YouTube 方案 ----
+   iframe 不吃 object-fit，铺满只能靠"撑到比容器大再居中，多出来的裁掉"。
+   16:9 的两条边：宽铺满时高是 56.25%，高铺满时宽是 177.78%，两条都写成下限，
+   谁大取谁。用 cq 单位而不是 vw/vh，量的才是这个盒子本身——hero 在移动端是
+   100svh，跟 100vh 差一条地址栏，用 vh 算会漏出一道缝。 */
+.hero-video { container-type: size; }
+.hero-video iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100cqw;
+  height: 56.25cqw;
+  min-width: 177.7778cqh;
+  min-height: 100cqh;
+  border: 0;
+  /* 不关掉指针，点 hero 上任何一处都会跳去 YouTube */
+  pointer-events: none;
+}
+/* 挡板压在播放器之上、正文之下。.hero-video 自己是 z-index:0 的层叠上下文，
+   所以这个 2 只在这一层里排序，不会越过 .hero-inner。 */
+.hero-video-shield {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+/* ===== 颗粒层：不花一个字节的消 banding =====
+   天空、光晕这种大片平缓渐变，在任何有损编码下都会断成一圈圈台阶。正规解法是
+   加码率或者上 10bit——前者要钱，后者只有 AV1 那一档吃得到（VP9 的 10bit 硬解
+   覆盖差，Safari 的 H.264 根本不认）。
+   而 banding 本质是量化误差，抖动（dither）就能打散它：在画面上盖一层极淡的噪点，
+   台阶的边界被随机化，眼睛就拼不出那道线了。这层是 CSS 画的，不进视频文件，
+   所以三档编码同时受益，体积零增长。
+   噪点用 feTurbulence 现生成，不是贴图——一张 PNG 噪点至少几十 KB，
+   而这段 data URI 压缩后不到 300 字节。
+   overlay 混合保对比度（暗的更暗、亮的更亮），比直接盖半透明灰不伤画面。 */
+:root { --sbx-grain: 0.07; }   /* 0 = 关掉。工具条那根 Grain 滑块改写它 */
+.hero-video::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;                  /* 压在视频上、挡板下 */
+  pointer-events: none;
+  opacity: var(--sbx-grain);
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+  /* 静态噪点就够了：底下的画面在动，颗粒本身不用再动。
+     真让它逐帧跳会好看一点，但那是每帧一次全屏重绘，不值得。 */
+}
+/* 开了"减少动态效果"的人通常对闪烁也敏感，颗粒一并收掉 */
+@media (prefers-reduced-motion: reduce) {
+  .hero-video::after { opacity: calc(var(--sbx-grain) * 0.5); }
+}
+
+/* ===== 文字的可读性：两层影，不是一层 =====
+   近处那层（2px）贴着笔画，负责把字从背景里"切"出来，是真正管用的一层；
+   远处那层（30px）铺得很开、很淡，负责在字周围压出一小片过渡，
+   免得近影看起来像给字描了一道硬边。
+   只写一遍，两个方案共用——颜色差异全部由 --sbx-halo-rgb 承担。 */
+.hero--video h1,
+.hero--video .lede {
+  text-shadow:
+    0 1px 2px rgba(var(--sbx-halo-rgb), calc(var(--sbx-halo) * 0.62)),
+    0 6px 30px rgba(var(--sbx-halo-rgb), calc(var(--sbx-halo) * 0.78));
+}
+/* 按钮的投影不跟着柔光走，永远是深色：柔光是"把字从背景里挑出来"，
+   投影是"这块东西浮在画面上方"——后者是重力，白色投影没有这个意思。 */
+.hero--video .btn {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, calc(var(--sbx-halo) * 0.34));
+}
+
+/* ===== 标题的位置 =====
+   style.css 里 .hero 是 align-items:flex-end——整块文字贴着底边排，上面那片天
+   全空着。换成着色器背景时这样是对的（那层渐变本来就没有主体），但这支片子
+   的主体在右侧偏下，标题压在底边就跟人物挤在同一条水平线上了。
+
+   加在 .hero 自己的 padding-bottom 上，不要动 .hero-inner 的 transform：
+   那个 transform 是 js/main.js 的滚动淡出在用，每帧都会重写成
+   translate3d(...) scale(...)，行内样式盖过任何选择器——写在 css 里的
+   translateY 会在第一帧被抹掉，看起来就像"这条规则没生效"。
+
+   .hero 本来就是 align-items:flex-end，底部 padding 撑多少，整块文字就抬多少。
+   权重跟 style.css 里那条 .hero 一样（0,1,0），靠这个文件在后面加载取胜；
+   padding-bottom 是长写法，盖得住那边 padding 简写里的第三个值。
+   单位用 svh 不用 px，矮屏（横过来的手机只有 390 高）才不会把标题顶到导航后面。 */
+body { --sbx-title-y: 24svh; }
+.hero--video {
+  padding-bottom: calc(clamp(72px, 10vw, 116px) + var(--sbx-title-y));
+}
+
+/* 横向同理：padding 加在 .hero-inner 自己身上，标题和下面那颗按钮
+   是整块一起往右走的，也一样绕开了那个会被每帧重写的 transform。
+   百分比量的是 hero 内容区的宽，换窗口尺寸时比固定 px 稳。
+   box-sizing 是 border-box，推得远了可用行宽会变窄，标题可能提前折行——
+   那是真实结果，不是滑块坏了；定稿前把读数拿去宽屏窄屏各看一遍。 */
+body { --sbx-title-x: 0%; }
+.hero--video .hero-inner { padding-left: var(--sbx-title-x); }
+
+/* ===== 标题色 =====
+   抽成 --sbx-title 一个变量，两个文字方案各给一个默认值，工具条上那颗色轮
+   再用行内样式盖掉（行内权重最高，跟几根滑块是同一套做法）。
+
+   候选色不是凭感觉挑的，是从这支片子里取的：把标题实际压着的那块区域
+   （画面左侧 x10%~52% / y52%~78%）逐帧采样，176 帧的亮度只在
+   L=0.629~0.653 之间晃——背景稳得出奇，所以选定一个色就能管住整个循环。
+   底色平均 #E6CBC9，是一片偏暖的亮粉。对着最暗那一帧算 WCAG 对比度：
+
+     #14161a  ink，现在的深色方案      11.71:1  AAA
+     #2B1A4A  紫罗兰                   10.06:1  AAA
+     #1A2547  靛蓝，取自天空            9.70:1  AAA
+     #3A1B3D  深梅，取自云的紫          9.67:1  AAA
+     #3B2419  可可，取自头发和猫        9.35:1  AAA
+     #0F3A36  墨绿，取自草叶            8.09:1  AAA
+     #0a1fcc  accent-strong             6.52:1  AA
+     #0C26FF  accent 品牌蓝             4.96:1  AA
+     #FFFFFF  纯白，现在的浅色方案      1.55:1  不合格
+
+   最后一行就是浅色方案上标题看不见的原因——1.55:1 不是"淡了点"，
+   是低于任何一档门槛。这支片子太亮，白字在它上面没有能成立的版本。
+
+   上面这张表现在不再是工具条上的预设项了（色块换成了色轮），但它还是最快的
+   参照：轮盘底下那行实时对比度算的就是同一个公式、同一个底色。 */
+body { --sbx-title: #fff; }
+body.sbx-text-dark { --sbx-title: var(--ink); }
+
+/* ---- 方案 A（默认）：浅色字 ---- */
+.hero--video h1 { color: var(--sbx-title); }
+.hero--video .lede { color: rgba(255, 255, 255, 0.88); }
+/* 主按钮原本是深墨块（--btn-dark）。视频多半偏暗，深块压上去就没了，翻成白块 */
+.hero--video .btn-primary { background: #fff; color: #101828; }
+.hero--video .btn-primary:hover { background: rgba(255, 255, 255, 0.86); }
+.hero--video .btn-ghost {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.55);
+}
+.hero--video .btn-ghost:hover {
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+/* ---- 方案 B：深色字。柔光已经是白的，这里只翻文字和按钮 ----
+   h1 的颜色不在这里写了，交给上面的 --sbx-title —— 写在这里的话
+   色块要盖过它得再抬一级权重，不如让两边都走同一个变量。 */
+body.sbx-text-dark .hero--video .lede { color: #2c3138; }
+body.sbx-text-dark .hero--video .btn-primary {
+  background: var(--btn-dark);
+  color: #fff;
+}
+body.sbx-text-dark .hero--video .btn-primary:hover { background: var(--btn-dark-hover); }
+body.sbx-text-dark .hero--video .btn-ghost {
+  color: var(--ink);
+  border-color: rgba(20, 22, 26, 0.42);
+}
+body.sbx-text-dark .hero--video .btn-ghost:hover {
+  border-color: rgba(20, 22, 26, 0.70);
+  background: rgba(255, 255, 255, 0.45);
+}
+/* .lede 在深色方案里从 --ink-soft(#5b6068) 提到 #2c3138：那支中灰是配浅灰底的，
+   压在活动的画面上会第一个糊掉，深一档才站得住。 */
+
+/* ===== 主按钮的三档轻重，工具条上 Solid / Tint / Glass 切 =====
+   起因是实心块在这支片子上太重。style.css 里给导航 CTA 写过同一句话：
+   "整条导航薄成一片玻璃之后，一块 100% 的黑压在上面是这条里唯一的重量，
+   读起来像贴了张贴纸"——hero 这颗按钮现在是一样的毛病，而且它比导航更大。
+
+   三档由轻到重：
+     Glass  跟导航同一块玻璃（直接复用 --nav-glass-filter，不另调一套参数）。
+            页面上就有两颗玻璃胶囊，一颗在顶一颗在中间，读起来是一套东西。
+     Tint   只有半透明和描边，不磨背景。给 backdrop-filter 跑不动的场合当保底，
+            也是"还想再轻一点"时的选项——代价是背景越花，字越站不住。
+     Solid  原来那个，留着对照。
+
+   权重提醒：这几条跟上面 body.sbx-text-dark 那组都是 (0,3,1)，同权重靠顺序分胜负，
+   所以必须写在它们后面；两个 class 叠起来的那几条是 (0,4,1)，本来就压得住。 */
+
+/* ---- Glass ---- */
+body.sbx-btn-glass .hero--video .btn-primary {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.50);
+  color: #fff;
+  backdrop-filter: var(--nav-glass-filter);
+  -webkit-backdrop-filter: var(--nav-glass-filter);
+  /* 顶部一道 inset 高光给它厚度，外面一层软投影把它从画面里托起来。
+     跟导航的做法一致，只是薄一档——按钮比导航小，同样的参数会显得腻。 */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 2px 6px rgba(20, 22, 26, 0.06),
+    0 10px 28px rgba(20, 22, 26, 0.14);
+  /* 自己占一层合成层。底下是一支每帧都在变的视频，不提升的话这条
+     backdrop-filter 每帧都要重采样背景，Windows/Chrome 上会闪——
+     导航那边踩过同一个坑，注释在 style.css 里。 */
+  transform: translateZ(0);
+}
+body.sbx-btn-glass .hero--video .btn-primary:hover {
+  background: rgba(255, 255, 255, 0.28);
+  border-color: rgba(255, 255, 255, 0.70);
+}
+/* 深色字方案：玻璃要厚一档才托得住墨色的字。
+   0.18 那档配 --ink 在亮画面上是灰糊的，0.42 才有"白玻璃上写字"的关系。 */
+body.sbx-btn-glass.sbx-text-dark .hero--video .btn-primary {
+  background: rgba(255, 255, 255, 0.42);
+  border-color: rgba(255, 255, 255, 0.62);
+  color: var(--ink);
+}
+body.sbx-btn-glass.sbx-text-dark .hero--video .btn-primary:hover {
+  background: rgba(255, 255, 255, 0.56);
+  border-color: rgba(255, 255, 255, 0.78);
+}
+
+/* ---- Tint：同样的配色，去掉磨砂 ---- */
+body.sbx-btn-tint .hero--video .btn-primary {
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  color: #fff;
+  box-shadow: 0 8px 22px rgba(20, 22, 26, 0.12);
+}
+body.sbx-btn-tint .hero--video .btn-primary:hover {
+  background: rgba(255, 255, 255, 0.34);
+  border-color: rgba(255, 255, 255, 0.72);
+}
+body.sbx-btn-tint.sbx-text-dark .hero--video .btn-primary {
+  background: rgba(255, 255, 255, 0.52);
+  border-color: rgba(255, 255, 255, 0.66);
+  color: var(--ink);
+}
+body.sbx-btn-tint.sbx-text-dark .hero--video .btn-primary:hover {
+  background: rgba(255, 255, 255, 0.66);
+  border-color: rgba(255, 255, 255, 0.82);
+}
+
+/* 玻璃跑不动就退回 Tint 那一档的实度：没有 backdrop-filter 的话 0.18 的白
+   等于什么都没有，按钮会直接消失在画面上。跟 style.css 里导航那条一个道理。 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  body.sbx-btn-glass .hero--video .btn-primary { background: rgba(255, 255, 255, 0.30); }
+  body.sbx-btn-glass.sbx-text-dark .hero--video .btn-primary { background: rgba(255, 255, 255, 0.62); }
+}
+
+/* 导航一条覆盖都没有，是故意的：它自己就是一层带 backdrop-filter 的玻璃，
+   已经有衬底，不需要跟着正文翻色。白膜厚度由工具条的 Nav 滑块调。 */
+body { --nav-glass: 0.62; }
+
+/* ---- Fit 开关：contain 用来核对 cover 在窄屏到底裁掉了画面的哪一块 ---- */
+body.sbx-contain .hero-video video {
+  object-fit: contain;
+  background: #0b0d12;
+}
+/* iframe 那边没有 object-fit 可切，把上面的下限换成上限就是 contain：
+   两条边都取"不超过容器"的那个值 */
+body.sbx-contain .hero-video iframe {
+  width: min(100cqw, 177.7778cqh);
+  height: min(56.25cqw, 100cqh);
+  min-width: 0;
+  min-height: 0;
+}
+
+
+/* ===== 以下是沙盒工具条，跟 sandbox-header-a.css 同一套，正式上线不要带走 ===== */
+.sbx-switch {
+  position: fixed;
+  z-index: 99;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  max-width: calc(100vw - 24px);
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(16, 24, 40, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-family: var(--font);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.65);
+}
+.sbx-tag { padding: 0 4px; letter-spacing: 0.02em; white-space: nowrap; }
+.sbx-row { display: flex; align-items: center; gap: 2px; }
+.sbx-sep {
+  width: 1px;
+  height: 18px;
+  margin: 0 4px;
+  background: rgba(255, 255, 255, 0.16);
+}
+.sbx-switch a,
+.sbx-switch button {
+  padding: 5px 11px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font: inherit;
+  color: rgba(255, 255, 255, 0.72);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.sbx-switch a:hover,
+.sbx-switch button:hover { color: #fff; background: rgba(255, 255, 255, 0.14); }
+.sbx-switch a.is-on,
+.sbx-switch button.is-on { background: #fff; color: #101828; }
+.sbx-switch a.sbx-live { color: rgba(255, 255, 255, 0.5); }
+.sbx-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.sbx-range input[type="range"] { width: 90px; accent-color: #fff; cursor: ew-resize; }
+.sbx-range output {
+  min-width: 34px;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+
+/* ---- 标题色：一颗色轮 ----
+   原来是七颗预设色块。色块快，但只能在七个定点之间跳，想往旁边挪半步
+   就得回来改 css。换成轮盘之后色相、饱和度、明度都是连续的，而且只占
+   工具条上一颗 20px 的位置——盘面收在弹层里，点开才展。
+
+   盘面本身就是两层渐变，不是图也不是 canvas：
+     conic  —— 色相，从正上方 0° 顺时针转一圈（跟 JS 里的 atan2 映射对得上）
+     radial —— 中心一团白淡到边缘，就是饱和度从 0 到 100
+   再加一层 ::after 当明度（--sbx-wheel-tint 由 JS 写）。 */
+.sbx-switch .sbx-swatch {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 50%;
+  /* 外圈留一道透明边，选中时才填白——不预留的话选中会把整条挤宽一点 */
+  border: 2px solid transparent;
+  /* 深色块压在深色工具条上几乎看不见边界，垫一圈内描边把它切出来 */
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.30);
+  background-clip: padding-box;
+}
+.sbx-switch .sbx-swatch:hover { border-color: rgba(255, 255, 255, 0.45); }
+/* 跟随方案时的样子：一半白一半 ink，就是原来第一颗色块那块双色斑。
+   一旦从轮盘上挑了颜色，JS 写行内 background 盖掉它。 */
+.sbx-switch .sbx-swatch.is-auto {
+  background: linear-gradient(135deg, #fff 50%, #14161a 50%);
+}
+.sbx-switch .sbx-swatch[aria-expanded="true"] { border-color: #fff; }
+
+.sbx-color { position: relative; display: flex; align-items: center; }
+/* 弹层往上开：工具条自己就贴在屏底，往下没地方 */
+.sbx-pop {
+  position: absolute;
+  z-index: 1;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 152px;
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(16, 24, 40, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.38);
+}
+.sbx-wheel {
+  position: relative;
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  cursor: crosshair;
+  /* 拖动取色时别让浏览器把手势当成滚页拿走，触屏上没这行就选不了色 */
+  touch-action: none;
+  background:
+    radial-gradient(circle closest-side, #fff, rgba(255, 255, 255, 0) 100%),
+    conic-gradient(
+      hsl(0 100% 50%), hsl(60 100% 50%), hsl(120 100% 50%),
+      hsl(180 100% 50%), hsl(240 100% 50%), hsl(300 100% 50%), hsl(360 100% 50%));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+.sbx-wheel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background: var(--sbx-wheel-tint, transparent);
+}
+/* 当前色的小圆点。它自己填的就是挑中的那个色，白圈 + 外面一道黑描边，
+   两头的极白极黑都看得见。pointer-events 关掉，不然拖到它自己上面会卡一下。 */
+.sbx-wheel-dot {
+  position: absolute;
+  z-index: 1;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+.sbx-lum { display: flex; align-items: center; gap: 6px; width: 100%; }
+.sbx-lum input[type="range"] { flex: 1; accent-color: #fff; cursor: ew-resize; }
+.sbx-pop-foot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+/* 对比度靠右排，跟十六进制拉开；低于 AA 直接变红，不靠人去读那个数 */
+#sbx-color-cr { margin-left: auto; color: rgba(255, 255, 255, 0.6); }
+#sbx-color-cr.is-bad { color: #ff8b8b; }
+.sbx-switch .sbx-pop button { padding: 3px 8px; font-size: 0.72rem; }
+
+/* ---- 收起工具条 ----
+   不是 display:none，是挪出去 + 淡出：留着过渡才看得出它是被收起来了，
+   而不是页面出了问题。pointer-events 必须一起关，否则收起来之后
+   那块区域还在吃点击，点 hero 会点不到。 */
+.sbx-switch {
+  transition:
+    opacity 0.28s var(--ease-ui),
+    transform 0.28s var(--ease-ui);
+}
+body.sbx-hidden .sbx-switch {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(26px);
+}
+/* 收起后右下角留一颗小圆点，不然就没有回来的路了（键盘 H 也能开，
+   但不能指望第一次看这页的人知道）。 */
+.sbx-show {
+  position: fixed;
+  z-index: 99;
+  right: 16px;
+  bottom: 16px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(16, 24, 40, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: rgba(255, 255, 255, 0.85);
+  font: 600 0.9rem/1 var(--font);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.sbx-show:hover { background: rgba(16, 24, 40, 0.8); }
+body.sbx-hidden .sbx-show { display: inline-flex; }

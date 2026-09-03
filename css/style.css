@@ -18,6 +18,7 @@
   --btn-dark-hover: #1d2739;
   --mint: #4ec3b0;        /* 次级点缀，仅用于标签/悬停 */
   --line: rgba(20, 22, 26, 0.10);   /* 仅用于分隔线（页脚、列表、表格），不画轮廓 */
+  --rail-pad: 4px;        /* 胶片条的上下内边距，详情页右栏靠它对齐徽章 */
   /* 卡片一律无描边：层级只由"白色卡面 + 柔和投影"给。
      两层阴影是常规做法——第一层近距离压出边缘，第二层大范围铺开做浮起感。
      悬停时只加深第二层，抬升读起来才是"浮上来"而不是"变粗了"。 */
@@ -41,6 +42,9 @@
      饱和停在 170%：Our Games 那页的卡片是整幅游戏原画，200% 会把画面里的
      绿和橙放大到跟导航文字抢，170% 既有玻璃味又压得住。 */
   --nav-glass-filter: blur(26px) saturate(170%) brightness(1.03);
+  /* 导航里未选中链接的默认色。抽成变量是因为游戏详情页要在横幅上把它换成白，
+     换回来的时机（滚过阈值）也只改这一个数，.nav-links 那条规则不用动。 */
+  --nav-link-ink: var(--ink-soft);
   /* CTA 的墨色：不是实心 --btn-dark。整条导航薄成一片玻璃之后，
      一块 100% 的黑压在上面是这条里唯一的重量，读起来像贴了张贴纸；
      压到 0.78 让玻璃从它底下透一点上来，它就跟这条导航是一套的了。 */
@@ -96,6 +100,14 @@ h1, h2, h3 {
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.1;
+}
+/* 「花 HUA」这类"一个汉字 + 一个拉丁词"的名字：标题上的负字距是给拉丁大写字
+   收紧用的，压在汉字和词中间那个空格上会把它吃干净，两边黏成「花HUA」。
+   汉字单独包一层，把这一处的字距还原、再补一点点右边距——只作用在这一个字上，
+   标题其余部分的收紧不受影响。用 em，跟着字号缩放。 */
+.name-cjk {
+  letter-spacing: 0;
+  margin-right: 0.16em;
 }
 
 /* ===== 导航 =====
@@ -194,7 +206,7 @@ h1, h2, h3 {
   padding-right: clamp(92px, 11vw, 126px);
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--ink-soft);
+  color: var(--nav-link-ink);
 }
 .nav-links a { transition: color 0.15s ease; white-space: nowrap; }
 .nav-links a:hover { color: var(--accent); }
@@ -236,16 +248,30 @@ h1, h2, h3 {
   background: var(--bg);
 }
 
-/* 首页的导航浮在 hero 上，不占文档流的高度——否则顶上会有一条 nav 高的灰带，
-   着色器就不是"铺满"而是"从导航下面开始"。用 :has 限定只在有 .hero 的页面
-   生效：子页的 .page-hero 没有背景图，导航仍然按原来的 sticky 走。 */
-body:has(.hero) .nav {
+/* 有整幅背景图打头的页面，导航一律浮在图上、不占文档流的高度——否则顶上会留一条
+   nav 高的灰带，图就不是"铺满"而是"从导航下面开始"。首页是 .hero（着色器），
+   游戏详情页是 .hero-band（横幅图），两者走同一套。用 :has 限定：news /
+   privacy / terms 这些子页只有 .page-hero，没有背景图，导航仍按原来的 sticky 走。 */
+body:has(.hero) .nav,
+body:has(.hero-band) .nav {
   position: fixed;
   left: 0;
   right: 0;
   /* fixed 的位置由 top 给，再叠一个 margin-top 会掉到 28px */
   margin-top: 0;
 }
+/* 首页的着色器顶上本来就是接近白的，0.26 那层薄玻璃足够托住深色字；
+   横幅图不是——游戏截图顶到胶囊底下是大片饱和色（Backyard 的青绿最糟），
+   薄玻璃会被染透，About / Uni 这两个中灰链接直接读不出来。所以这几页
+   把白色加厚一档。只改变量，.nav 和 .nav.is-scrolled 会一起跟着走。 */
+body:has(.hero-band) { --nav-glass: 0.58; }
+/* 游戏详情页停在页顶时，未选中的链接走白色，不走中灰。横幅顶上是大片高饱和的
+   画面，中灰在上面既不够重也不够轻，是那条导航唯一读起来发脏的地方；换成白之后
+   About / Uni 退成一层轻的白字，只剩 Our Games 和 Contact Us 是深色，一眼看得出
+   当前在哪一页。只在没滚动时给：滚过阈值导航就落到白底正文上了，白字会消失，
+   所以用 :not(.is-scrolled) 限定，交回 :root 的中灰。
+   两个状态之间的过渡由 .nav-links a 那条 color 0.15s 负责，不会硬切。 */
+body:has(.hero-band) .nav:not(.is-scrolled) { --nav-link-ink: #fff; }
 /* 原来这里有一组 pointer-events:none —— 那时导航是条通栏透明带，横在最上面会给
    ChromaFlow 留一条光标永远晕不到的死区，所以让指针穿过去、链接各自收回事件。
    现在导航只有胶囊那一小块，顶部两侧的空隙根本不属于 .nav，光标本来就能过去；
@@ -656,6 +682,21 @@ body:has(.hero) .nav {
   /* 正文比标题矮一点起步，视觉上跟大写字母的顶线对齐 */
   #about .prose { margin-bottom: 0; padding-top: 6px; max-width: 52ch; }
   #about .prose p { font-size: clamp(1.05rem, 1.6vw, 1.3rem); line-height: 1.5; }
+
+  /* Get in Touch 走同一套栅格：标题左、说明+邮箱右，字号也跟 Meet The Team 一致 */
+  .contact-split {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: clamp(40px, 6vw, 72px);
+    align-items: start;
+  }
+  .contact-split h2 { margin-bottom: 0; }
+  .contact-split .contact-body { padding-top: 6px; }
+  .contact-split .section-lead {
+    max-width: 52ch;
+    font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+    line-height: 1.5;
+  }
 }
 
 /* ===== 正文段落组 ===== */
@@ -1106,10 +1147,80 @@ body:has(.hero) .nav {
    所以打开这一页不会有任何第三方请求。 */
 /* 下内边距归零：紧跟着的 About 区自己有上内边距，两段叠在一起
    会在胶片条和标题之间空出两百多像素的死区。 */
-.gallery-section {
-  /* 徽章挪到页尾之后，横幅和画廊之间没有别的东西了，上内边距要补回来 */
-  padding-top: clamp(46px, 7vw, 84px);
-  padding-bottom: 0;
+/* ===== 游戏详情主体：左媒体 / 右文字 =====
+   左栏给画廊，右栏给 About + 参数 + 徽章。比例参考稿是 1.28:1，这里给到 1.5:1——
+   稿子的正文栏是按 1920 画的，落到本站 1080 的 --maxw 上按原比例分，画廊会小一圈，
+   把宽度往画廊挪一点更配得上它是这一页的主角。
+   这里要的就是 stretch：右栏拉到和左栏等高，徽章用 margin-top: auto 落到栏底，
+   下沿跟胶片条那排缩略图对齐。（早先按 align-items: start 排过，徽章跟在参数行
+   后面，位置随文案长短浮动，跟左栏没有任何对齐关系。） */
+/* 横幅和主体之间收一档：84px 时正文离横幅太远，中间空出一条没内容的浅色带。
+   只动上内边距，下边留给 .section 的原值，页尾节奏不变。 */
+.game-layout { padding-top: clamp(28px, 3.8vw, 52px); }
+.game-layout-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  /* 间距翻倍：54px 时画廊右缘离正文太近，读起来像同一栏里的两块 */
+  gap: clamp(60px, 7.6vw, 108px);
+  align-items: stretch;
+}
+/* 右栏当成一根竖直的弹性列，好让徽章吃掉剩余高度沉到底。
+   padding-bottom 抵掉胶片条的下内边距，徽章下沿才跟缩略图的下沿齐，
+   而不是跟胶片条的盒子底齐（会低 4px）。 */
+.game-info {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: var(--rail-pad);
+}
+/* 右栏只有 ~400px，通用的 .section h2（最大 3rem）会把标题挤成两三行，
+   这一栏单独降一档；20ch 的上限在这儿也没用了，去掉。 */
+.game-info h2 {
+  font-size: clamp(1.5rem, 2.2vw, 1.9rem);
+  max-width: none;
+  margin-bottom: 16px;
+}
+/* 26 -> 28：跟徽章上方的 padding 对齐，参数行上下的最小间距一样宽，
+   两条 auto 外边距均分剩余高度后它才真的落在正中间。 */
+.game-info .prose { max-width: none; margin-bottom: 28px; }
+/* 参数行原来是给通栏排的，210px 的名字列在窄栏里会把值挤到换行，改成按内容取宽。
+   margin-top: auto 是跟徽章那条配套的：一列里出现两条 auto 外边距时，剩余高度
+   在它们之间对半分，参数行就停在正文和徽章的正中间，而不是贴着正文吊在上面。
+   窄屏单栏没有多余高度，auto 归零，回落成 .prose 的 28px，间距不变。 */
+.game-info .game-meta {
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  gap: 8px 20px;
+  margin-top: auto;
+  max-width: none;
+}
+/* 徽章进了右栏：不再是通栏居中的一段，左对齐跟上面的文字排齐。
+   margin-top: auto 把它顶到栏底；28px 改挂在 padding 上，这样窄屏单栏时
+   （没有多余高度可吃，auto 归零）参数行和徽章之间的呼吸还在。 */
+.game-info .store-block {
+  padding: 28px 0 0;
+  margin-top: auto;
+  text-align: left;
+}
+/* 胶片条：左栏只有 ~615px，六张定宽缩略图（最大 152px）横着排要 972px，
+   末尾那张会被切一半，看着像坏了而不像"可以横滑"。改成按栏宽均分，
+   上限压到 108px——张数少（Backyard 只有两张）也不会胀成大方块，
+   张数再多时 min-width 兜底，超了仍旧横滑。
+   :not(.is-theater) 是必须的：剧场模式下 .gallery 变成 fixed 铺满视口，
+   但 DOM 还在 .game-media 里，不排除的话缩略图会被拉到整屏宽。 */
+.game-media .gallery:not(.is-theater) .gallery-rail { gap: 10px; }
+.game-media .gallery:not(.is-theater) .gallery-thumb {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 56px;
+  max-width: 108px;
+}
+
+/* 窄屏落回上下两段：画廊在上、文字在下，跟原来的阅读顺序一致 */
+@media (max-width: 900px) {
+  .game-layout-inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(30px, 5vw, 44px);
+  }
+  .game-info h2 { font-size: clamp(1.6rem, 4vw, 2.1rem); }
 }
 
 /* 剧场模式下 .gallery 会脱离文档流，这个壳子负责把原来的高度撑住，
@@ -1124,6 +1235,15 @@ body:has(.hero) .nav {
   position: relative;
   aspect-ratio: 16 / 9;
 }
+
+/* Hua 的截图是手机横放的取景（43:20 ≈ 2.15:1），比 16:9 宽一截。用 cover 塞进
+   16:9 会把贴边的 UI 切掉（右上的 ?、两侧箭头、最外侧的 G3 / E7 音键），所以给
+   那一页单独换比例。这个修饰类加在 .gallery 上，Backyard 的 16:9 不受影响；
+   哪天某页换回 16:9 的原图，把 gallery--wide 去掉即可。
+   注意：改了比例，剧场模式那条高度预算也要跟着换（见下面 .gallery--wide.is-theater）。 */
+.gallery--wide .gallery-frame { aspect-ratio: 43 / 20; }
+/* 胶片条跟着舞台走，缩略图和大图的取景才对得上 */
+.gallery--wide .gallery-thumb { aspect-ratio: 43 / 20; }
 .gallery-stage {
   position: absolute;
   inset: 0;
@@ -1265,7 +1385,9 @@ body:has(.hero) .nav {
   display: flex;
   gap: 12px;
   margin-top: 14px;
-  padding: 4px 2px;
+  /* 下内边距要留：胶片条是 overflow-x: auto，缩略图的聚焦轮廓贴着边会被切掉。
+     它同时是右栏徽章的对齐补偿量，所以提成变量，两边不会走散。 */
+  padding: var(--rail-pad) 2px;
   overflow-x: auto;
   scroll-behavior: smooth;
   scrollbar-width: none;
@@ -1333,6 +1455,11 @@ body:has(.hero) .nav {
   width: min(94vw, calc((100vh - 210px) * 16 / 9));
   margin: 0 auto;
 }
+/* 宽画幅同样宽度下更矮，所以能吃到更宽的上限。这条必须排在上面那条之后：
+   两者特异性相同，靠先后顺序决出胜负。 */
+.gallery--wide.is-theater .gallery-frame {
+  width: min(94vw, calc((100vh - 210px) * 43 / 20));
+}
 .gallery.is-theater .gallery-stage { border-radius: 12px; box-shadow: none; }
 .gallery.is-theater .gallery-rail { justify-content: center; margin-top: 18px; }
 .gallery.is-theater .gallery-slide img { object-fit: contain; }
@@ -1376,6 +1503,9 @@ body:has(.hero) .nav {
 /* ===== 返回按钮 ===== */
 .back-block {
   padding: 0 clamp(20px, 5vw, 48px) clamp(56px, 8vw, 96px);
+  /* 往上提一档：上一段 .section 的下内边距留得偏满，返回链接跟正文离得太远，
+     负外边距只收这一处的间距，不动 .section 本身（别的页面还在用）。 */
+  margin-top: clamp(-32px, -3vw, -16px);
   text-align: center;
 }
 

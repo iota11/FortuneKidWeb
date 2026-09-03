@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SANDBOX · Hero video · Fortune Kid Inc.</title>
+  <meta name="description" content="Fortune Kid Inc. is a New Jersey interactive-entertainment company building original mobile games, 3D-printed collectibles tied to its own IP, and UNI, an app for making small 3D worlds with AI." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/StudioLogo_32.png" />
+  <link rel="apple-touch-icon" sizes="96x96" href="assets/StudioLogo_96.png" />
+  <!-- ?v= 是缓存戳：GitHub Pages 给 css/js 的 Cache-Control 是 max-age=600，改了样式却不换这个数字，
+       浏览器就会拿旧样式去配新 HTML（社交图标变巨大、Our Games 栅格错位就是这么来的）。
+       每次改 css/ 或 js/ 里的文件，把全部页面上的 v= 一起换成当天日期。 -->
+  <link rel="stylesheet" href="css/style.css?v=20260903c" />
+  <link rel="stylesheet" href="css/sandbox-hero-video.css?v=sbx13" />
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<!-- 开局是浅色字方案；工具条切到 Dark text 看另一套 -->
+<body>
+
+  <!-- 沙盒工具条：只用来挑参数，定稿后连同 css/sandbox-hero-video.css 一起删掉 -->
+  <div class="sbx-switch">
+    <span class="sbx-tag">Hero video</span>
+    <!-- Auto 就是上线后真正跑的那条路（js/hero-video.js 挑的）。后面几颗是手动指定，
+         用来一档一档比画质——三档的 VMAF 都在 95 上下，正常看应该分不出来，
+         分得出来就说明哪一档的参数还得调。 -->
+    <span class="sbx-row">
+      <button type="button" id="sbx-auto" class="is-on">Auto</button>
+      <button type="button" id="sbx-av1">AV1 2.0M</button>
+      <button type="button" id="sbx-vp9">VP9 2.8M</button>
+      <button type="button" id="sbx-h264">H.264 5.0M</button>
+      <button type="button" id="sbx-portrait">竖版 0.8M</button>
+      <button type="button" id="sbx-yt">YouTube</button>
+    </span>
+    <span class="sbx-sep"></span>
+    <span class="sbx-row">
+      <button type="button" id="sbx-light" class="is-on">Light text</button>
+      <button type="button" id="sbx-dark">Dark text</button>
+    </span>
+    <span class="sbx-sep"></span>
+    <!-- 标题色：一颗色轮。原来那排预设色块只有七个定点，而这支片的背景亮度
+         在整个循环里几乎不动（采样过程见 css/sandbox-hero-video.css 里那段），
+         所以任何色相都可以试，真正卡人的只有够不够暗。换成连续取色之后，
+         原来写在每颗色块 tooltip 里的对比度就改成实时算：弹层底下那行是对最暗
+         一帧的底色 #E6CBC9 算的 WCAG 对比度，掉到 4.5 以下会自己变红。 -->
+    <div class="sbx-color" id="sbx-color">
+      <button type="button" id="sbx-color-btn" class="sbx-swatch is-auto"
+              aria-expanded="false" title="标题色（点开取色轮）"></button>
+      <div class="sbx-pop" id="sbx-color-pop" hidden>
+        <!-- 圆盘本身就是取色区：角度 = 色相（12 点方向是 0°，顺时针走），
+             半径 = 饱和度（圆心是灰）。明度在下面那根滑块上，圆盘会跟着一起
+             压暗或提亮，所见即所得。 -->
+        <div class="sbx-wheel" id="sbx-wheel" aria-label="Hue and saturation wheel">
+          <span class="sbx-wheel-dot" id="sbx-wheel-dot"></span>
+        </div>
+        <label class="sbx-lum">
+          L
+          <input id="sbx-lum" type="range" min="0" max="100" step="1" value="100" aria-label="Lightness" />
+        </label>
+        <div class="sbx-pop-foot">
+          <output id="sbx-color-hex">#FFFFFF</output>
+          <output id="sbx-color-cr">1.55:1</output>
+          <button type="button" id="sbx-color-auto" title="交还给 Light/Dark 方案的默认色">Auto</button>
+        </div>
+      </div>
+    </div>
+    <span class="sbx-sep"></span>
+    <!-- 主按钮的轻重。Glass 用的就是导航那块玻璃，页面上会有两颗同料的胶囊 -->
+    <span class="sbx-row">
+      <button type="button" id="sbx-btn-glass" class="is-on">Glass</button>
+      <button type="button" id="sbx-btn-tint">Tint</button>
+      <button type="button" id="sbx-btn-solid">Solid</button>
+    </span>
+    <span class="sbx-sep"></span>
+    <span class="sbx-row">
+      <button type="button" id="sbx-cover" class="is-on">Cover</button>
+      <button type="button" id="sbx-contain">Contain</button>
+    </span>
+    <span class="sbx-sep"></span>
+    <label class="sbx-range">
+      Halo
+      <input id="sbx-halo" type="range" min="0" max="100" step="2" value="55" aria-label="Text halo strength" />
+      <output id="sbx-halo-out">0.55</output>
+    </label>
+    <label class="sbx-range">
+      Nav
+      <input id="sbx-nav" type="range" min="10" max="95" step="2" value="62" aria-label="Nav glass opacity" />
+      <output id="sbx-nav-out">0.62</output>
+    </label>
+    <!-- 颗粒：拖到 0 看原始编码的 banding，往上推看它被抖散。渐变多的镜头差别最明显 -->
+    <label class="sbx-range">
+      Grain
+      <input id="sbx-grain" type="range" min="0" max="40" step="1" value="7" aria-label="Film grain strength" />
+      <output id="sbx-grain-out">0.07</output>
+    </label>
+    <!-- 标题和按钮是整块一起走的：两根滑块都动 .hero / .hero-inner 的盒子，
+         不分开控标题和按钮，否则两者之间那段距离会跨屏幕尺寸飘。
+         X 是往右挪多少，占 hero 内容宽的百分比；0 = 贴左。 -->
+    <label class="sbx-range">
+      Title X
+      <input id="sbx-titlex" type="range" min="0" max="50" step="1" value="0" aria-label="Title horizontal offset" />
+      <output id="sbx-titlex-out">0%</output>
+    </label>
+    <!-- 标题往上抬多少（单位 svh）。0 = 回到 style.css 原来贴底的位置 -->
+    <label class="sbx-range">
+      Title Y
+      <input id="sbx-titley" type="range" min="0" max="40" step="1" value="24" aria-label="Title vertical offset" />
+      <output id="sbx-titley-out">24svh</output>
+    </label>
+    <span class="sbx-sep"></span>
+    <a href="index.html" class="sbx-live">Live page</a>
+    <button type="button" id="sbx-hide" title="收起工具条（H / Esc）">Hide</button>
+  </div>
+  <!-- 工具条收起后唯一的入口。放右下角，避开 hero 左侧的标题和按钮 -->
+  <button type="button" id="sbx-show" class="sbx-show" title="展开工具条（H）" aria-label="展开工具条">☰</button>
+
+  <!-- 顶部导航（全站统一：About / Our Games / Uni / Contact；News 暂时隐藏） -->
+  <header class="nav" id="nav">
+    <a class="brand" href="#top">
+      <img class="brand-mark" src="assets/StudioLogo_180.png" alt="Fortune Kid logo" />
+      <span class="brand-name">FortuneKid</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#top" class="is-current" aria-current="page">About</a>
+      <a href="uni.html">Uni</a>
+      <a href="games.html">Our Games</a>
+      <!-- TODO 暂时隐藏 News（暂无内容），有第一篇文章后取消注释：<a href="news.html">News</a> -->
+      <a href="#contact" class="nav-cta">Contact Us</a>
+    </nav>
+  </header>
+
+  <!-- 01 Intro：定位语 + 进入页面的入口 -->
+  <section class="hero hero--video" id="top">
+    <!-- hero 背景：铺满的循环视频，替掉原来那层 WebGPU 棱纹玻璃。纯装饰，对读屏软件隐藏。
+         片源是 tools/encode-hero.sh 压的，三档编码 × 横竖两种画幅共六个文件，
+         每个访客只下其中一个（AV1 2.0M / VP9 2.8M / H.264 5.0M，竖版再小一半）。 -->
+    <div class="hero-video" aria-hidden="true">
+      <!-- 这里故意不写 src 和 <source>，全部交给 js/hero-video.js：
+           横竖版要按 orientation 选，而 <source media="..."> 在 <video> 里已经被
+           浏览器废掉了（只有 <picture> 还认），本来就得走 JS。
+           顺带也躲开 <source type="codecs=..."> 那个坑——串写错的话浏览器是选中之后
+           解码失败停在黑屏，而不是跳过去试下一条。
+           poster 同样由 JS 按画幅补上。muted + playsinline 一个都不能少：
+           少任何一个，Safari/iOS 和 Chrome 都会拒绝自动播放，开局就是一张定格。 -->
+      <video id="hero-video" autoplay loop muted playsinline></video>
+      <!-- 透明挡板，永远盖在播放器上面。iframe 那边已经 pointer-events:none 了，
+           这层是第二道：任何指针事件都到不了 YouTube 播放器，它那套悬停 UI
+           （暂停键、播放列表的上一个/下一个）就没有机会冒出来。 -->
+      <div class="hero-video-shield"></div>
+    </div>
+    <div class="hero-inner">
+      
+      <h1 class="reveal" data-split>Play &amp; Build<br /> with heart.</h1>
+      <!-- 沙盒里砍掉了 lede 那段和 Get in touch：视频背景下 hero 只留标题 + 一个入口。
+           css 里 .lede 那几条留着没删，段落要是加回来就还生效。 -->
+      <div class="hero-actions reveal" style="--delay: 110ms">
+        <a class="btn btn-primary" href="#build">
+          See what we build
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14" />
+            <path d="m13 6 6 6-6 6" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 What we build：三根支柱 -->
+  <section class="section" id="build">
+    <div class="section-inner">
+      <h2 class="reveal" data-split>What we build</h2>
+      <div class="cards">
+        <article class="card reveal" style="--delay: 0ms">
+          <div class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 20 20 4" />
+              <path d="M14 4h6v6" />
+              <path d="M4 10.5h4M6 8.5v4" />
+              <path d="M15.5 16h3M17 14.5v3" />
+            </svg>
+          </div>
+          <h3>Uni</h3>
+          <p>
+            An app for making small 3D worlds with AI, and playing the ones everyone else made.
+          </p>
+          <a class="card-link" href="uni.html">Check out Uni &rarr;</a>
+        </article>
+        <article class="card reveal" style="--delay: 90ms">
+          <div class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="6" y="2" width="12" height="20" rx="2.5" />
+              <path d="M10 5.5h4" />
+              <path d="M9 12h3M10.5 10.5v3" />
+              <circle cx="15.5" cy="12" r="0.9" fill="currentColor" stroke="none" />
+            </svg>
+          </div>
+          <h3>Mobile Games</h3>
+          <p>
+            Develop and publish games for casual players worldwide.
+          </p>
+          <a class="card-link" href="games.html">Our Games &rarr;</a>
+        </article>
+        <article class="card reveal" style="--delay: 180ms">
+          <div class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2.6 20.5 7v10L12 21.4 3.5 17V7z" />
+              <path d="M3.5 7 12 11.6 20.5 7" />
+              <path d="M12 11.6v9.8" />
+            </svg>
+          </div>
+          <h3>Collectibles</h3>
+          <p>
+            Made-to-order 3D-printed collectibles from our own game characters.
+          </p>
+          <span class="card-link card-link--soon" aria-disabled="true">Coming soon</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 Our Team：团队 -->
+  <section class="section section-alt" id="about">
+    <div class="section-inner">
+      <h2 class="reveal" data-split>Meet The Team</h2>
+      <div class="prose reveal">
+        <p>
+          Our team is a mix of creatives, engineers, and dreamers who believe the best ideas start with a question nobody has answered yet. Together we build experiences that worth returning to.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 Contact（锚点，页面底部）：面向投资人 -->
+  <section class="section" id="contact">
+    <!-- data-reveal-group：标题 / 说明 / 邮箱一起进场，邮箱不再单独慢半拍 -->
+    <div class="section-inner contact" data-reveal-group>
+      <h2 class="reveal" data-split>Get in Touch</h2>
+      <p class="section-lead reveal" data-split>Business inquiries, partnerships, or press. We'd love to hear from you!</p>
+      <a class="contact-mail reveal" href="mailto:contact@fortunekidstudio.com" style="--delay: 120ms">contact@fortunekidstudio.com</a>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <nav class="footer-links" aria-label="Footer">
+        <a href="#top">About</a>
+        <a href="uni.html">Uni</a>
+        <a href="games.html">Our Games</a>
+        <!-- TODO 暂时隐藏 News（暂无内容），有第一篇文章后取消注释：<a href="news.html">News</a> -->
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="footer-bottom">
+        <p class="footer-copy">
+          <span>Copyright © <span id="year">2026</span> Fortune Kid Inc. All rights reserved.</span>
+          <a href="terms.html">Terms of Use</a>
+          <a href="privacy.html">Privacy Policy</a>
+        </p>
+        <!-- 社交入口：右下角，与版权行同一条横线上 -->
+        <ul class="footer-social">
+          <li>
+            <a href="https://www.youtube.com" target="_blank" rel="noopener" aria-label="YouTube">
+              <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="24" height="24" rx="6"/><path class="cut-fill" d="M9.5 7.4v9.2L17.3 12z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.instagram.com/fortunekidstudio/" target="_blank" rel="noopener" aria-label="Instagram">
+              <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.209 0-4-1.79-4-4 0-2.209 1.79-4 4-4 2.209 0 4 1.79 4 4 0 2.209-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/company/fortune-kid-inc/" target="_blank" rel="noopener" aria-label="LinkedIn">
+              <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="24" height="24" rx="6"/><g class="cut-fill" transform="scale(1.5)"><path d="M4.943 13.394V6.169H2.542v7.225zM3.743 5.182c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248z"/><path d="M8.651 13.394V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193V6.169h-2.4c.03.678 0 7.225 0 7.225z"/></g></svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js?v=20260903" defer></script>
+  <!-- 这页不加载 js/hero-shader.js：背景已经不是着色器了，那 2.5MB 的 bundle 白下 -->
+  <!-- 挑源 + 播放兜底都在这里，沙盒和 index.html 用的是同一个文件。
+       不能加 defer：下面的工具条要读它挑完的结果（video.src）来点亮 Auto。 -->
+  <script src="js/hero-video.js?v=20260903"></script>
+
+  <script>
+    /* 沙盒专用脚本：只剩工具条。播放兜底、reduced-motion、后台暂停
+       全部搬进 js/hero-video.js 了——沙盒要验的就是上线那份代码本身，
+       在这里再抄一遍只会让两边慢慢跑偏。 */
+    (function () {
+      var video = document.getElementById('hero-video');
+      var body = document.body;
+
+      /* hero-video.js 已经跑完了，这里把它的选择记下来，Auto 按钮要用 */
+      var AUTO_SRC = video ? video.getAttribute('src') : '';
+
+      /* --- 工具条 --- */
+      function pair(onId, offId, apply) {
+        var on = document.getElementById(onId);
+        var off = document.getElementById(offId);
+        function pick(active, other, state) {
+          active.classList.add('is-on');
+          other.classList.remove('is-on');
+          apply(state);
+        }
+        on.addEventListener('click', function () { pick(on, off, true); });
+        off.addEventListener('click', function () { pick(off, on, false); });
+      }
+
+      /* 两根滑块共用一套读写：值写到 body 的行内样式上，行内权重高于
+         css 里 :root / body 那两条，拖动才盖得住预设值。 */
+      /* 不给 unit 就是原来那套：滑块 0~100 映射成 0~1 的无量纲值（透明度用）。
+         给了 unit 就原样带单位写出去（Title Y 用 svh）——那种值除以 100 没有意义。 */
+      function slider(rangeId, outId, prop, unit) {
+        var range = document.getElementById(rangeId);
+        var out = document.getElementById(outId);
+        function sync() {
+          var v = unit ? range.value + unit : (range.value / 100).toFixed(2);
+          body.style.setProperty(prop, v);
+          out.textContent = v;
+        }
+        range.addEventListener('input', sync);
+        sync();
+        return function (n) { range.value = unit ? n : Math.round(n * 100); sync(); };
+      }
+
+      /* 挑定数值后，把读数写回 css/sandbox-hero-video.css 里对应那一行就是结论 */
+      slider('sbx-halo', 'sbx-halo-out', '--sbx-halo');
+      slider('sbx-nav', 'sbx-nav-out', '--nav-glass');
+      slider('sbx-grain', 'sbx-grain-out', '--sbx-grain');
+      slider('sbx-titlex', 'sbx-titlex-out', '--sbx-title-x', '%');
+      slider('sbx-titley', 'sbx-titley-out', '--sbx-title-y', 'svh');
+
+      /* --- 片源开关：YouTube / 本地 mp4 ---
+         只在 src 里写 autoplay=1&mute=1 是不够的：浏览器认的是"这一帧到底静没静音"，
+         而播放器要先把自己初始化完才知道。中间那一小段空档里自动播放就被拒了，
+         结果就是停在封面上那颗红色播放键。所以改用官方的 IFrame Player API：
+         等 onReady 再显式 mute() 一次、然后 playVideo()，这时静音是已经生效的事实。 */
+      var YT_ID = 'P_CYzXzjJb4';   /* FortuneKids_website loop */
+      var stage = document.querySelector('.hero-video');
+      var player = null;
+      var apiPending = false;
+
+      function buildPlayer() {
+        var host = document.createElement('div');
+        stage.appendChild(host);   /* API 会把这个 div 原地换成 iframe */
+        player = new YT.Player(host, {
+          /* 尺寸给足。YouTube 是按播放器的像素大小挑清晰度的，
+             不写就用默认的 640×390，它会照着这个尺寸发一路低分辨率过来。 */
+          width: 1920,
+          height: 1080,
+          videoId: YT_ID,
+          playerVars: {
+            autoplay: 1, mute: 1, controls: 0, playsinline: 1,
+            rel: 0, iv_load_policy: 3, disablekb: 1, fs: 0
+            /* 这里故意不写 loop / playlist：loop=1 必须配一个 playlist 才生效，
+               而一旦成了播放列表，播放器就会多出"上一个/下一个"那两颗键——
+               截图里中间那排就是它。循环改在下面 onStateChange 里自己做。 */
+          },
+          events: {
+            onReady: function (e) {
+              e.target.mute();
+              e.target.playVideo();
+            },
+            onStateChange: function (e) {
+              /* 放完自己回到 0 再播一遍，等价于 loop，但不引入播放列表 */
+              if (e.data === YT.PlayerState.ENDED) {
+                e.target.seekTo(0, true);
+                e.target.playVideo();
+              }
+            }
+          }
+        });
+      }
+
+      function mountYouTube() {
+        if (window.YT && window.YT.Player) { buildPlayer(); return; }
+        /* API 脚本只加载一次；它就绪后会回调这个全局函数 */
+        window.onYouTubeIframeAPIReady = buildPlayer;
+        if (!apiPending) {
+          apiPending = true;
+          var s = document.createElement('script');
+          s.src = 'https://www.youtube.com/iframe_api';
+          document.head.appendChild(s);
+        }
+      }
+
+      function useYouTube(on) {
+        if (on) {
+          if (!player) mountYouTube();
+          if (video) video.pause();
+        } else if (player) {
+          /* 只是隐藏的话播放器还在后台跑，destroy 掉才真的停 */
+          player.destroy();
+          player = null;
+        }
+        if (video) video.hidden = on;
+      }
+
+      /* 五个片源轮着看，都走同一个 <video>，只换 src。
+         Auto 用的是 hero-video.js 在当前浏览器/画幅下挑出来的那一个——
+         也就是访客真正会拿到的文件；后面四颗强制指定，用来横向对比。
+         注意"竖版"那颗在桌面上看是被 object-fit:cover 裁过的，
+         真要验手机效果还是得把窗口拖窄到 768px 以内再刷新。 */
+      var SOURCES = {
+        'sbx-auto':     AUTO_SRC,
+        'sbx-av1':      'assets/video/hero-1080.av1.webm',
+        'sbx-vp9':      'assets/video/hero-1080.webm',
+        'sbx-h264':     'assets/video/hero-1080.mp4',
+        'sbx-portrait': 'assets/video/hero-portrait.av1.webm'
+      };
+
+      function setSource(id) {
+        var isYT = (id === 'sbx-yt');
+        useYouTube(isYT);
+
+        video.hidden = isYT;
+        if (isYT) {
+          video.pause();
+        } else {
+          video.src = SOURCES[id];
+          video.load();
+          video.play().catch(function () {});
+        }
+      }
+
+      function group(ids, apply) {
+        var btns = ids.map(function (id) { return document.getElementById(id); });
+        btns.forEach(function (b, i) {
+          b.addEventListener('click', function () {
+            btns.forEach(function (x) { x.classList.remove('is-on'); });
+            b.classList.add('is-on');
+            apply(ids[i]);
+          });
+        });
+      }
+
+      group(['sbx-auto', 'sbx-av1', 'sbx-vp9', 'sbx-h264', 'sbx-portrait', 'sbx-yt'], setSource);
+      /* 开局不调 setSource：hero-video.js 已经把源设好、也已经在播了，
+         再 load() 一次等于把刚下的那份重下一遍。工具条上 Auto 的 is-on
+         是写在 HTML 里的，本来就对齐。 */
+
+      /* 导航在两个方案里是同一颗浅色玻璃胶囊，切文字方案时不动它 */
+      pair('sbx-light', 'sbx-dark', function (light) {
+        body.classList.toggle('sbx-text-dark', !light);
+      });
+      pair('sbx-cover', 'sbx-contain', function (cover) {
+        body.classList.toggle('sbx-contain', !cover);
+      });
+
+      /* 按钮轻重：Solid 是"什么 class 都不加"的那一档，所以两个 class 一起摘掉 */
+      group(['sbx-btn-glass', 'sbx-btn-tint', 'sbx-btn-solid'], function (id) {
+        body.classList.toggle('sbx-btn-glass', id === 'sbx-btn-glass');
+        body.classList.toggle('sbx-btn-tint', id === 'sbx-btn-tint');
+      });
+      body.classList.add('sbx-btn-glass');   /* 开局跟工具条上的 is-on 对齐 */
+
+      /* --- 标题色：取色轮 ---
+         预设色块换成了连续取色，但写出去的东西没变：还是行内的 --sbx-title，
+         盖掉 css 里两个方案的默认值；Auto 把这条声明整个删掉，颜色交还给当前方案。
+
+         轮盘不画在 canvas 上，就是两层 CSS 渐变（conic 管色相、radial 管饱和度），
+         所以取色是反算出来的而不是拾像素：图层总能和数值对得上，也不用等一帧
+         才能读到颜色。角度 = 色相（正上方是 0°，顺时针），半径 = 饱和度。
+
+         对比度是实时算的，底色取标题压着那块区域最暗一帧的均色 #E6CBC9
+         （采样范围写在 css 里），公式是 WCAG 那套 relative luminance。
+         这一行就是原来每颗色块 tooltip 里那个数，只是现在能追着指针走。 */
+      var BACKDROP = [230, 203, 201];   /* #E6CBC9，最暗一帧的底色 */
+      var heroTitle = document.querySelector('.hero--video h1');
+      var colorWrap = document.getElementById('sbx-color');
+      var colorBtn  = document.getElementById('sbx-color-btn');
+      var colorPop  = document.getElementById('sbx-color-pop');
+      var wheel     = document.getElementById('sbx-wheel');
+      var wheelDot  = document.getElementById('sbx-wheel-dot');
+      var lumRange  = document.getElementById('sbx-lum');
+      var hexOut    = document.getElementById('sbx-color-hex');
+      var crOut     = document.getElementById('sbx-color-cr');
+
+      function hslToRgb(h, s, l) {
+        h = ((h % 360) + 360) % 360 / 360; s = s / 100; l = l / 100;
+        if (s === 0) { var v = Math.round(l * 255); return [v, v, v]; }
+        var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        var p2 = 2 * l - q;
+        function ch(t) {
+          if (t < 0) t += 1;
+          if (t > 1) t -= 1;
+          if (t < 1 / 6) return p2 + (q - p2) * 6 * t;
+          if (t < 1 / 2) return q;
+          if (t < 2 / 3) return p2 + (q - p2) * (2 / 3 - t) * 6;
+          return p2;
+        }
+        return [ch(h + 1 / 3), ch(h), ch(h - 1 / 3)].map(function (c) { return Math.round(c * 255); });
+      }
+      function rgbToHsl(rgb) {
+        var r = rgb[0] / 255, g = rgb[1] / 255, b = rgb[2] / 255;
+        var mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+        var l = (mx + mn) / 2, h = 0, s = 0;
+        if (mx !== mn) {
+          var d = mx - mn;
+          s = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+          if (mx === r) h = (g - b) / d + (g < b ? 6 : 0);
+          else if (mx === g) h = (b - r) / d + 2;
+          else h = (r - g) / d + 4;
+          h *= 60;
+        }
+        return { h: h, s: Math.round(s * 100), l: Math.round(l * 100) };
+      }
+      function toHex(rgb) {
+        return '#' + rgb.map(function (c) {
+          return ('0' + Math.max(0, Math.min(255, c)).toString(16)).slice(-2);
+        }).join('');
+      }
+      function relLum(rgb) {
+        var a = rgb.map(function (c) {
+          c = c / 255;
+          return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+        });
+        return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+      }
+      function contrast(rgb) {
+        var a = relLum(rgb), b = relLum(BACKDROP);
+        return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+      }
+      /* Auto 档下读的是 h1 算出来的颜色，不是猜一个：这样切 Light/Dark
+         后轮盘和对比度都能自己对齐新方案的默认色。 */
+      function schemeRgb() {
+        var m = getComputedStyle(heroTitle).color.match(/\d+/g);
+        return m ? [+m[0], +m[1], +m[2]] : [255, 255, 255];
+      }
+
+      var picked = { h: 0, s: 0, l: 100 };
+      var isAuto = true;
+
+      function render() {
+        var rgb = isAuto ? schemeRgb() : hslToRgb(picked.h, picked.s, picked.l);
+        var css = toHex(rgb);
+
+        colorBtn.classList.toggle('is-auto', isAuto);
+        /* Auto 档把行内背景摸掉，不然行内权重会压住 .is-auto 那块双色斑 */
+        if (isAuto) colorBtn.style.removeProperty('background');
+        else colorBtn.style.background = css;
+
+        hexOut.textContent = css.toUpperCase();
+        var cr = contrast(rgb);
+        crOut.textContent = cr.toFixed(2) + ':1 ' + (cr >= 7 ? 'AAA' : cr >= 4.5 ? 'AA' : 'fail');
+        crOut.classList.toggle('is-bad', cr < 4.5);
+
+        var rad = picked.h * Math.PI / 180;
+        var r = picked.s / 2;                       /* 饱和度 0~100 换算成 0~50%（半径） */
+        wheelDot.style.left = (50 + r * Math.sin(rad)) + '%';
+        wheelDot.style.top = (50 - r * Math.cos(rad)) + '%';
+        wheelDot.style.background = toHex(hslToRgb(picked.h, picked.s, picked.l));
+        /* 明度那一层：往下拖压黑、往上拖提白。封顶只到 0.85，两头走到头时
+           盘面还看得出色相，不会变成一块死白或死黑让人以为它坏了。 */
+        var t = (picked.l - 50) / 50 * 0.85;
+        wheel.style.setProperty('--sbx-wheel-tint',
+          t === 0 ? 'transparent'
+                  : (t > 0 ? 'rgba(255,255,255,' + t.toFixed(3) + ')'
+                           : 'rgba(0,0,0,' + (-t).toFixed(3) + ')'));
+        lumRange.value = picked.l;
+      }
+
+      function commit() {
+        isAuto = false;
+        body.style.setProperty('--sbx-title', toHex(hslToRgb(picked.h, picked.s, picked.l)));
+        render();
+      }
+      /* 回到跟随方案：摸掉行内声明，再把轮盘摆到新默认色的位置上 */
+      function toAuto() {
+        body.style.removeProperty('--sbx-title');
+        isAuto = true;
+        picked = rgbToHsl(schemeRgb());
+        render();
+      }
+
+      function pickAt(e) {
+        var box = wheel.getBoundingClientRect();
+        var rad = box.width / 2;
+        var dx = e.clientX - box.left - rad;
+        var dy = e.clientY - box.top - box.height / 2;
+        /* 拖出盘外不断控，只把饱和度夹到 100：没这一下，在满饱和那圈附近
+           微调色相会因为手拖出了边界而断掉。 */
+        var dist = Math.min(1, Math.sqrt(dx * dx + dy * dy) / rad);
+        picked.h = (Math.atan2(dx, -dy) * 180 / Math.PI + 360) % 360;
+        picked.s = Math.round(dist * 100);
+        commit();
+      }
+      wheel.addEventListener('pointerdown', function (e) {
+        e.preventDefault();
+        wheel.setPointerCapture(e.pointerId);
+        pickAt(e);
+      });
+      wheel.addEventListener('pointermove', function (e) {
+        if (e.buttons) pickAt(e);
+      });
+      lumRange.addEventListener('input', function () {
+        picked.l = +lumRange.value;
+        commit();
+      });
+      document.getElementById('sbx-color-auto').addEventListener('click', toAuto);
+
+      /* 弹层默认收着：一颗 132px 的盘常驻在工具条上会遮住 hero 左下角 */
+      function openPop(on) {
+        colorPop.hidden = !on;
+        colorBtn.setAttribute('aria-expanded', on ? 'true' : 'false');
+      }
+      colorBtn.addEventListener('click', function () { openPop(colorPop.hidden); });
+      document.addEventListener('pointerdown', function (e) {
+        if (!colorPop.hidden && !colorWrap.contains(e.target)) openPop(false);
+      });
+
+      /* 切 Light/Dark 时退回跟随方案。不退的话会很怪：明明点了 Light text，
+         标题还是刚才挑的那支深紫。pair() 那两个监听先注册，class 已经换完，
+         这里 getComputedStyle 读到的就是新方案的颜色。 */
+      ['sbx-light', 'sbx-dark'].forEach(function (id) {
+        document.getElementById(id).addEventListener('click', toAuto);
+      });
+      toAuto();
+
+      /* --- 收起 / 展开工具条 ---
+         留在 localStorage 里：调参数的时候会反复刷新，每次刷完都要再点一下收起
+         很烦人。键盘 H 是给截图用的——鼠标要是停在工具条上，收起来的动画里
+         还会带一个 hover 高亮。 */
+      var KEY = 'sbx-panel-hidden';
+      function setHidden(on) {
+        body.classList.toggle('sbx-hidden', on);
+        if (on) openPop(false);   /* 工具条都滑走了，取色弹层不能留在半空 */
+        try { localStorage.setItem(KEY, on ? '1' : '0'); } catch (e) {}
+      }
+      document.getElementById('sbx-hide').addEventListener('click', function () { setHidden(true); });
+      document.getElementById('sbx-show').addEventListener('click', function () { setHidden(false); });
+      document.addEventListener('keydown', function (e) {
+        /* 焦点在滑块上时 H 也该生效，但别抢走输入框里的按键 */
+        if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) && e.key !== 'Escape') return;
+        if (e.key === 'h' || e.key === 'H') setHidden(!body.classList.contains('sbx-hidden'));
+        else if (e.key === 'Escape') {
+          /* 取色轮开着时 Esc 先收它，别一下把整条工具条也收了 */
+          if (!colorPop.hidden) openPop(false);
+          else setHidden(true);
+        }
+      });
+      try {
+        if (localStorage.getItem(KEY) === '1') body.classList.add('sbx-hidden');
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>

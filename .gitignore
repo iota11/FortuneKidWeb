@@ -1,0 +1,13 @@
+# hero 视频：压好的成品要进版本库（一共六个文件，加起来约 14MB，
+# 离 Pages 那 1GB 的上限还很远），只有工作副本不进。
+#
+# 成品是 tools/encode-hero.sh 从 4K/1080p 原档压出来的：
+#   hero-1080.{av1.webm,webm,mp4}      横版，桌面
+#   hero-portrait.{av1.webm,webm,mp4}  竖版，手机
+#   hero-poster*.webp                  第 0 帧，同时也是这一屏的 LCP 元素
+# 每个访客只下其中一个（js/hero-video.js 挑），不是全都发。
+#
+# 原档不要提交：git 的历史是删不干净的，31MB 进去一次就永远在 clone 里。
+assets/video/*-master.*
+assets/video/*-src.*
+assets/video/0903.*

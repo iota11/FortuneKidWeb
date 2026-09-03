@@ -63,6 +63,28 @@ body:has(.uni-copy > .uni-step--lead:only-child) .nav {
   font-size: clamp(1.8rem, 3.8vw, 2.7rem);
   margin-bottom: 18px;
 }
+
+/* Hero 下面的「Coming soon」：描边胶囊，跟 .btn-ghost / .contact-mail 同一套语言，
+   但它只是个状态标签，不做 hover、不接收点击。
+   align-self:flex-start 是必须的——.uni-step 是竖排 flex，不加会横向拉满整段宽度。 */
+.uni-soon {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  /* 上面那行 .step-body 自带 14px 下边距，这里再给 14px，合起来是一档正常的段间距 */
+  margin-top: 14px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(20, 22, 26, 0.20);
+  font-family: var(--display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  cursor: default;
+  user-select: none;
+}
 .step-body {
   font-size: clamp(1.05rem, 1.6vw, 1.22rem);
   color: var(--ink-soft);

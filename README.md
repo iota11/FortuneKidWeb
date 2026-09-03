@@ -138,7 +138,7 @@ python3 -m http.server 8000   # 然后访问 http://localhost:8000
       `TODO 暂时隐藏 News`（每个文件顶部导航 + 页脚各一处），把注释里的链接放回去
 - [ ] `terms.html` 上线前请律师过一遍（尤其 §8 来稿条款、§9 证券免责、§14 责任上限）。
       当前版本是按公司现状写的，不是法律意见
-- [ ] 商标：`Fortune Kid` / `Hua` / `UNI` 目前在 `terms.html` §5 按未注册商标主张
+- [ ] 商标：`Fortune Kid` / `花 HUA` / `UNI` 目前在 `terms.html` §5 按未注册商标主张
       （TM 而非 ®）。真去 USPTO 注册后再改措辞
 - [ ] 考虑把 Poppins 自托管到 `assets/`：第三方请求归零，`terms.html` §11 可以简化
 - [ ] 加新游戏：复制 `games.html` 里注释掉的 `.tile` 模板，另建 `game-<slug>.html`
