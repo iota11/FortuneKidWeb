@@ -13,7 +13,7 @@
   <!-- ?v= 是缓存戳：GitHub Pages 给 css/js 的 Cache-Control 是 max-age=600，改了样式却不换这个数字，
        浏览器就会拿旧样式去配新 HTML（社交图标变巨大、Our Games 栅格错位就是这么来的）。
        每次改 css/ 或 js/ 里的文件，把全部页面上的 v= 一起换成当天日期。 -->
-  <link rel="stylesheet" href="css/style.css?v=20260903c" />
+  <link rel="stylesheet" href="css/style.css?v=20260908" />
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -21,8 +21,8 @@
   <!-- 顶部导航（全站统一：About / Our Games / Uni / Contact；News 暂时隐藏） -->
   <header class="nav" id="nav">
     <a class="brand" href="#top">
-      <img class="brand-mark" src="assets/StudioLogo_180.png" alt="Fortune Kid logo" />
-      <span class="brand-name">FortuneKid</span>
+      <img class="brand-mark" src="assets/StudioIcon_BlackOutline_180.png" alt="Fortune Kid logo" />
+      <span class="brand-name">Fortune Kid</span>
     </a>
     <nav class="nav-links" aria-label="Primary">
       <a href="#top" class="is-current" aria-current="page">About</a>
@@ -34,19 +34,24 @@
   </header>
 
   <!-- 01 Intro：定位语 + 进入页面的入口 -->
-  <section class="hero" id="top">
-    <!-- hero 背景：跑在 WebGPU 上的棱纹玻璃，颜色跟着光标走（见 js/hero-shader.js）。
-         纯装饰，对读屏软件隐藏；显卡跑不动时 JS 会加 .is-fallback 换成 CSS 渐变。 -->
-    <div class="hero-shader" aria-hidden="true">
-      <canvas id="hero-canvas"></canvas>
+  <section class="hero hero--video" id="top">
+    <!-- hero 背景：铺满的循环视频，替掉了原来那层 WebGPU 棱纹玻璃。纯装饰，对读屏软件隐藏。
+         片源是 tools/encode-hero.sh 压的，三档编码 × 横竖两种画幅共六个文件，
+         每个访客只下其中一个（AV1 2.0M / VP9 2.8M / H.264 5.0M，竖版再小一半）。 -->
+    <div class="hero-video" aria-hidden="true">
+      <!-- 这里故意不写 src 和 <source>，全部交给 js/hero-video.js：
+           横竖版要按 orientation 选，而 <source media="..."> 在 <video> 里已经被
+           浏览器废掉了（只有 <picture> 还认），本来就得走 JS。
+           poster 同样由 JS 按画幅补上。muted + playsinline 一个都不能少：
+           少任何一个，Safari/iOS 和 Chrome 都会拒绝自动播放，开局就是一张定格。 -->
+      <video id="hero-video" autoplay loop muted playsinline></video>
     </div>
     <div class="hero-inner">
       
       <h1 class="reveal" data-split>Play &amp; Build<br /> with heart.</h1>
-      <p class="lede reveal" data-split>
-        Fortune Kid is expanding the boundaries of play through original mobile games that aim to inspire curiosity, foster community, and spark joy.
-      </p>
-      <!-- 两个入口都指向本页已有的锚点，不新增页面 -->
+      <!-- 视频背景下 hero 只留标题 + 一个入口：lede 那段和 Get in touch 一起撤了。
+           画面本身已经在说话，再压一段正文上去两边都不得利；联系入口导航右上角
+           那颗 Contact Us 已经有了。css 里 .lede / .btn-ghost 那几条留着没删，加回来就还生效。 -->
       <div class="hero-actions reveal" style="--delay: 110ms">
         <a class="btn btn-primary" href="#build">
           See what we build
@@ -55,7 +60,6 @@
             <path d="m13 6 6 6-6 6" />
           </svg>
         </a>
-        <a class="btn btn-ghost" href="#contact">Get in touch</a>
       </div>
     </div>
   </section>
@@ -66,46 +70,58 @@
       <h2 class="reveal" data-split>What we build</h2>
       <div class="cards">
         <article class="card reveal" style="--delay: 0ms">
-          <div class="card-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 20 20 4" />
-              <path d="M14 4h6v6" />
-              <path d="M4 10.5h4M6 8.5v4" />
-              <path d="M15.5 16h3M17 14.5v3" />
-            </svg>
+          <div class="card-head">
+            <div class="card-icon card-icon--uni" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 6V2H8" />
+                <path d="M2 12h2" />
+                <path d="M20 12h2" />
+                <path class="icon-uni-face" d="M20 16a2 2 0 0 1-2 2H8.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 4 20.286V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z" />
+                <path class="icon-uni-eye" d="M9 11v2" />
+                <path class="icon-uni-eye" d="M15 11v2" />
+              </svg>
+            </div>
+            <h3>Uni</h3>
           </div>
-          <h3>Uni</h3>
           <p>
-            An app for making small 3D worlds with AI, and playing the ones everyone else made.
+            An app for playing and creating 3D worlds with AI
           </p>
           <a class="card-link" href="uni.html">Check out Uni &rarr;</a>
         </article>
         <article class="card reveal" style="--delay: 90ms">
-          <div class="card-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="6" y="2" width="12" height="20" rx="2.5" />
-              <path d="M10 5.5h4" />
-              <path d="M9 12h3M10.5 10.5v3" />
-              <circle cx="15.5" cy="12" r="0.9" fill="currentColor" stroke="none" />
-            </svg>
+          <div class="card-head">
+            <div class="card-icon card-icon--games" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <g class="icon-games-fan">
+                  <path d="M10.827 16.379a6.082 6.082 0 0 1-8.618-7.002l5.412 1.45a6.082 6.082 0 0 1 7.002-8.618l-1.45 5.412a6.082 6.082 0 0 1 8.618 7.002l-5.412-1.45a6.082 6.082 0 0 1-7.002 8.618l1.45-5.412Z" />
+                  <path d="M12 12v.01" />
+                </g>
+              </svg>
+            </div>
+            <h3>Mobile Games</h3>
           </div>
-          <h3>Mobile Games</h3>
           <p>
             Develop and publish games for casual players worldwide.
           </p>
           <a class="card-link" href="games.html">Our Games &rarr;</a>
         </article>
         <article class="card reveal" style="--delay: 180ms">
-          <div class="card-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2.6 20.5 7v10L12 21.4 3.5 17V7z" />
-              <path d="M3.5 7 12 11.6 20.5 7" />
-              <path d="M12 11.6v9.8" />
-            </svg>
+          <div class="card-head">
+            <div class="card-icon card-icon--pawn" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <g class="icon-pawn-body">
+                  <path d="M5 20a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z" />
+                  <path d="m14.5 10 1.5 8" />
+                  <path d="M7 10h10" />
+                  <path d="m8 18 1.5-8" />
+                </g>
+                <circle class="icon-pawn-head" cx="12" cy="6" r="4" />
+              </svg>
+            </div>
+            <h3>Collectibles</h3>
           </div>
-          <h3>Collectibles</h3>
           <p>
-            Made-to-order 3D-printed collectibles from our own game characters.
+            3D-printed collectibles from our own game characters.
           </p>
           <span class="card-link card-link--soon" aria-disabled="true">Coming soon</span>
         </article>
@@ -176,8 +192,9 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=20260903" defer></script>
-  <!-- 只有首页加载着色器：bundle 有 2.5MB，条款页和新闻页不该为它买单 -->
-  <script type="module" src="js/hero-shader.js?v=20260903"></script>
+  <script src="js/main.js?v=20260908" defer></script>
+  <!-- hero 背景换成视频之后不再加载 js/hero-shader.js，那个 bundle 有 2.5MB。
+       不加 defer：src 和 poster 都由它挑，跑得越早，首屏那张图越早出来。 -->
+  <script src="js/hero-video.js?v=20260908"></script>
 </body>
 </html>
