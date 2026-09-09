@@ -145,3 +145,44 @@
 
   tick();
 })();
+
+/* ===== Hero 里那个 3D 模型：入场淡入 + 转 45° =====
+   uni.html 里 camera-orbit 的初始水平角就写的是"歇着的角度减 45°"（HTML 属性只
+   决定第一帧画在哪，没有补间可言）；这里 load 完之后把它改回歇着的角度，
+   这一次赋值 model-viewer 才会真的补间过渡，转 45° 落定，跟 CSS 里
+   opacity 0→1 的过渡同时发生。改这个角记得连 uni.html 里的属性值一起改。
+   这一整段只挂 load 事件 + setTimeout，不听 scroll、也不用
+   IntersectionObserver——不管用户滚不滚页面，这段动画都只认时间，自己会播。 */
+(function () {
+  var frame = document.getElementById('uni-hero-frame');
+  var viewer = document.getElementById('uni-hero-model');
+  if (!frame || !viewer) return;
+
+  // 跟 uni.html 里 camera-orbit 的歇着角度对齐（HTML 上写的是这个数减 45°）
+  var REST_ORBIT = '65deg 68deg auto';
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    frame.classList.add('is-shown');
+    return;
+  }
+
+  var revealed = false;
+  function reveal() {
+    if (revealed) return;
+    revealed = true;
+    frame.classList.add('is-shown');   // 触发 CSS 里 opacity 0→1 的过渡
+    viewer.cameraOrbit = REST_ORBIT;   // 从 HTML 里那个 -45° 起始角补间转过来
+  }
+
+  viewer.addEventListener('load', function () {
+    // model-viewer 刚 load 完的头几百毫秒会有一条渲染没收敛的横线（跟 WebGL
+    // 着色器/环境贴图刚编译好有关，只在冷启动出现——拖动旋转试过很多次，
+    // 之后再转都不会再冒出来）。等这段隐藏期过去、彻底收敛了再揭幕，
+    // 用户就只会看到干净的转 45° + 淡入，玩不到那条线。
+    setTimeout(reveal, 900);
+  }, { once: true });
+
+  // 保底：万一模型这次异常慢（网络差/资源被拦），也别让 Hero 一直空着——
+  // 到点了不管 load 有没有触发都直接揭幕，用户不需要做任何操作（更不用滚动）。
+  setTimeout(reveal, 6000);
+})();

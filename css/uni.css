@@ -2,6 +2,14 @@
    段落按内容定高、上下留一档统一的间距；js/uni.js 把停在屏幕中间的那一段
    标成 .is-active，其余压暗。没有 JS 时所有段落都是正常亮度。 */
 
+/* 整页背景改天空蓝渐变，照参考截图来的——上深下浅，用 :has() 只吃带
+   <main class="uni"> 的这一页，不影响 style.css 里其它页的 --bg。
+   写法跟 style.css 里 body:has(.hero) 那几条是同一个思路。 */
+body:has(.uni) {
+  --bg: #aecbd9;
+  background: linear-gradient(180deg, #8fabbd 0%, #b7d2df 45%, #dbe8ed 100%);
+}
+
 /* ===== 布局 ===== */
 .uni-layout {
   max-width: 1240px;
@@ -74,6 +82,22 @@ body:has(.uni-copy > .uni-step--lead:only-child) .nav {
   font-size: clamp(1.8rem, 3.8vw, 2.7rem);
   margin-bottom: 18px;
 }
+
+/* Hero：文案在左，右边放可拖转的 3D 模型，跟 02–05 那种左右两栏段落是
+   同一套网格写法，只是右边从手机截图换成 model-viewer。
+   本来想让这一栏顶满 Hero 整个上下沿（align-items: stretch），试了才发现
+   model-viewer 在这么高的画布下天上会露一条很淡的横线——像是它自己内部
+   渲染的瑕疵，画布方正一点就消失（见下面 .uni-card-frame--hero 的
+   aspect-ratio）。所以退回 center，用一个更大的方形区域，不再是小卡片，
+   但也别撑到全屏那么高。 */
+.uni-step--hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 640px);
+  gap: clamp(32px, 5vw, 76px);
+  align-items: center;
+  max-width: none;
+}
+.uni-step--hero .step-media { margin-top: 0; }
 
 /* Hero 下面的「Coming soon」：描边胶囊，跟 .btn-ghost / .contact-mail 同一套语言，
    但它只是个状态标签，不做 hover、不接收点击。
@@ -242,6 +266,34 @@ body:has(.uni-copy > .uni-step--lead:only-child) .nav {
   will-change: transform;
 }
 
+/* Hero 的模型：不再是一张卡片——去掉圆角、投影和自己的背景块，直接跟页面
+   的天空蓝背景融在一起，模型本身就是可拖转的那块区域，边界感越弱越好。
+   方形、放大到比原来的手机卡片大不少，但没有撑满整栏高度——见上面
+   .uni-step--hero 的注释，画布太高太窄 model-viewer 天上会露一条淡线。
+   放在 .uni-card / .uni-card-frame 后面，才能覆盖掉手机竖屏卡片的默认值。 */
+.uni-card--hero { width: min(100%, 620px); }
+.uni-card-frame--hero {
+  aspect-ratio: 1 / 1;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  /* 这块是静态的，不参与 02–05 那套滚动淡入淡出的 --f/--p（Hero 不在
+     .uni-step--media 里，那两个变量在这没人写），transform 钉死不动。
+     opacity 反过来留给下面的入场动效：初始 0，js/uni.js 在模型 load 完
+     之后加 .is-shown，靠这条 transition 淡出来。 */
+  transform: none;
+  opacity: 0;
+  transition: opacity 0.9s var(--ease-ui, ease);
+}
+.uni-card-frame--hero.is-shown { opacity: 1; }
+.uni-card-frame--hero model-viewer {
+  width: 100%;
+  height: 100%;
+  display: block;
+  --poster-color: transparent;
+  --progress-bar-height: 0; /* 藏掉 model-viewer 自带那条加载进度条 */
+}
+
 /* ===== 07 投资人收尾卡片 ===== */
 .uni-callout {
   padding: clamp(72px, 10vw, 132px) clamp(20px, 5vw, 48px) clamp(64px, 9vw, 112px);
@@ -306,11 +358,13 @@ body:has(.uni-copy > .uni-step--lead:only-child) .nav {
 
   /* 单栏：文案在上、画面在下。窄屏没有并排的余地，
      视差也取消——屏幕就那么高，漂不出效果，只会晃。 */
-  .uni-step--media {
+  .uni-step--media,
+  .uni-step--hero {
     display: block;
     min-height: 0;
     padding: 52px 0 8px;   /* 窄屏不再给带画面的段落加码，跟其他段落同一档 */
   }
+  .uni-card--hero { width: min(100%, 380px); }
   .uni-step--media .step-copy,
   .uni-step--flip .step-copy,
   .uni-step--flip .step-media { max-width: none; grid-column: auto; grid-row: auto; }
@@ -326,4 +380,6 @@ body:has(.uni-copy > .uni-step--lead:only-child) .nav {
   /* 卡片保持常亮、画面不漂移：内容一样看得到，只是不动 */
   .uni-card-frame { opacity: 1; transform: none; }
   .uni-media { transform: none; }
+  /* Hero 那张不淡入、不带转场，直接是最终状态 */
+  .uni-card-frame--hero { transition: none; }
 }
