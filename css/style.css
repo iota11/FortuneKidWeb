@@ -1171,8 +1171,7 @@ body:has(.hero-band) .nav:not(.is-scrolled) { --nav-link-ink: #fff; }
 }
 
 /* ===== App Store 徽章 =====
-   未上架：只做视觉，不可点击。上架后把 .store-badge 换成
-   <a href="真实链接" class="store-badge store-badge--live">，并删掉下面的 caption。 */
+   已上架：.store-badge--live 是真正的 <a> 链接，点击跳转 App Store。 */
 /* 徽章放在页尾（About 之后、返回按钮之前）：上方的间距由 About 区自己的
    下内边距给足，这里只负责和返回按钮之间的距离。 */
 .store-block {
@@ -1187,9 +1186,18 @@ body:has(.hero-band) .nav:not(.is-scrolled) { --nav-link-ink: #fff; }
   border-radius: 10px;
   background: #14161a;
   color: #fff;
-  /* 未上架状态：不可点、不可选，但不做灰度处理——按设计稿是实心黑 */
-  cursor: default;
-  user-select: none;
+  text-decoration: none;
+}
+.store-badge--live {
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.store-badge--live:hover,
+.store-badge--live:focus-visible {
+  opacity: 0.85;
+}
+.store-badge--live:active {
+  transform: scale(0.97);
 }
 .store-badge svg { width: 24px; height: 28px; display: block; flex: none; fill: #fff; }
 .store-badge-text { text-align: left; line-height: 1.15; }
