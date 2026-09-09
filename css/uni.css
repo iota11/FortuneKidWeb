@@ -28,6 +28,17 @@
 .uni-step--lead {
   min-height: 80vh;
   padding-top: clamp(64px, 11vh, 120px);
+  /* 让 "UNI" 标题跟首页 hero 标题（"Play & Build"）在 x 轴上对齐。
+     两边是两套不同的居中容器：首页 .hero-inner 封顶 --maxw(1080px)，还叠了一条
+     --hero-title-x(1%) 的额外偏移；这边 .uni-layout 封顶 1240px，没有那道偏移。
+     宽度基准不一样，抄同一个 padding 数字对不上，这里按首页那条算法原样
+     重算一遍两条居中线的差值，把标题这一屏单独顶过去——02+ 那些两栏段落
+     还是照 1240 走，不受影响。 */
+  padding-left: calc(
+    max(0px, (100vw - 2 * clamp(20px, 5vw, 48px) - var(--maxw)) / 2)
+    + 0.01 * (100vw - 2 * clamp(20px, 5vw, 48px))
+    - max(0px, (100vw - 1240px) / 2)
+  );
 }
 
 /* ===== 整页只剩 Hero 时：Hero 独占第一屏，footer 要滚一下才出现 =====

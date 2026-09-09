@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SANDBOX · What we build icons</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" />
+<link rel="stylesheet" href="css/style.css?v=sbx-icons1" />
+<style>
+  /* ===== 沙盒专用：不影响 css/style.css，只在这个页面里叠加 ===== */
+  body { padding-bottom: 60vh; }
+  .sbx-note {
+    max-width: 640px;
+    margin: 100px auto 0;
+    padding: 0 24px;
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+  .sbx-note code { background: var(--surface-tint); padding: 1px 6px; border-radius: 6px; font-size: 0.85em; }
+
+  /* 卡片区：直接拿 .section-inner / .cards 的栅格，图标+标题换成可切换的 head 行 */
+  .sbx-stage { padding: 24px 0 40px; }
+  @media (min-width: 901px) {
+    .sbx-stage .section-inner { padding-right: 320px; }
+  }
+  .sbx-cards .card-head {
+    display: flex;
+    margin-bottom: 10px;
+  }
+  .sbx-cards.placement-stack .card-head { flex-direction: column; align-items: flex-start; }
+  .sbx-cards.placement-inline .card-head { flex-direction: row; align-items: center; }
+  .sbx-cards .card-head h3 { margin: 0; }
+  .sbx-cards.placement-stack .card-icon-slot { margin-bottom: var(--sbx-gap, 16px); }
+  .sbx-cards.placement-inline .card-icon-slot { margin-right: var(--sbx-gap, 8px); margin-bottom: 0; }
+  .card-icon-slot { display: inline-flex; flex: none; }
+  .card-icon-slot svg {
+    width: var(--sbx-size, 26px);
+    height: var(--sbx-size, 26px);
+    display: block;
+    color: var(--sbx-color, #8b9096);
+    transform: translate(var(--sbx-nudge-x, 0px), var(--sbx-nudge-y, 0px));
+  }
+  .card-icon-slot:empty { width: 0; }
+
+  /* ===== 控制面板：固定在右侧，滚动跟随 ===== */
+  .sbx-panel {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    width: 280px;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #e3e4e8;
+    border-radius: 16px;
+    box-shadow: 0 12px 32px rgba(20, 22, 26, 0.14);
+    padding: 18px 18px 20px;
+    font-size: 0.85rem;
+    color: var(--ink);
+    z-index: 999;
+  }
+  .sbx-panel h4 {
+    margin: 0 0 12px;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+  }
+  .sbx-field { margin-bottom: 14px; }
+  .sbx-field label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    margin-bottom: 6px;
+    gap: 8px;
+  }
+  .sbx-field label span.sbx-val { font-weight: 400; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .sbx-field input[type="range"] { width: 100%; }
+  .sbx-seg { display: flex; border: 1px solid #dcdde2; border-radius: 10px; overflow: hidden; }
+  .sbx-seg button {
+    flex: 1;
+    border: 0;
+    background: #fff;
+    padding: 7px 6px;
+    font: inherit;
+    font-weight: 600;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .sbx-seg button + button { border-left: 1px solid #dcdde2; }
+  .sbx-seg button.is-on { background: var(--accent); color: #fff; }
+  .sbx-row2 { display: flex; gap: 8px; }
+  .sbx-row2 .sbx-field { flex: 1; }
+  .sbx-swap { display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; }
+  .sbx-swap label { font-weight: 600; display: block; margin-bottom: 4px; }
+  .sbx-swap select {
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid #dcdde2;
+    font: inherit;
+    background: #fff;
+  }
+  .sbx-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    vertical-align: -2px;
+    margin-right: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  .sbx-reset {
+    width: 100%;
+    margin-top: 4px;
+    padding: 9px;
+    border-radius: 10px;
+    border: 1px solid #dcdde2;
+    background: var(--surface-tint);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .sbx-css {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #eceef1;
+  }
+  .sbx-css textarea {
+    width: 100%;
+    height: 150px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.72rem;
+    line-height: 1.5;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #dcdde2;
+    resize: vertical;
+    color: var(--ink);
+    background: #fafafb;
+  }
+  @media (max-width: 900px) {
+    .sbx-panel { position: static; width: auto; margin: 24px; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="sbx-note">
+    <strong>Icon placement sandbox.</strong> Not linked from the live site — use the panel
+    on the right to try icon size, placement (stacked above the title vs. inline to its left),
+    spacing, grey shade, and to swap which icon sits on which card. When something looks right,
+    copy the CSS block at the bottom of the panel into <code>css/style.css</code> and update
+    <code>index.html</code>'s markup to match (a <code>.card-head</code> wrapper around the
+    icon + <code>&lt;h3&gt;</code>).
+  </div>
+
+  <section class="section sbx-stage">
+    <div class="section-inner">
+      <h2 class="reveal">What we build</h2>
+      <div class="cards sbx-cards placement-inline" id="sbxCards">
+
+        <article class="card">
+          <div class="card-head">
+            <span class="card-icon-slot" data-slot="0" data-icon="bot" aria-hidden="true"></span>
+            <h3>Uni</h3>
+          </div>
+          <p>An app for making small 3D worlds with AI, and playing the ones everyone else made.</p>
+          <a class="card-link" href="uni.html">Check out Uni &rarr;</a>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <span class="card-icon-slot" data-slot="1" data-icon="hand" aria-hidden="true"></span>
+            <h3>Mobile Games</h3>
+          </div>
+          <p>Develop and publish games for casual players worldwide.</p>
+          <a class="card-link" href="games.html">Our Games &rarr;</a>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <span class="card-icon-slot" data-slot="2" data-icon="pawn" aria-hidden="true"></span>
+            <h3>Collectibles</h3>
+          </div>
+          <p>3D-printed collectibles from our own game characters.</p>
+          <span class="card-link card-link--soon" aria-disabled="true">Coming soon</span>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="sbx-panel">
+    <h4>Placement</h4>
+    <div class="sbx-field">
+      <div class="sbx-seg" id="sbxPlacement">
+        <button type="button" data-mode="inline" class="is-on">Inline · left of title</button>
+      </div>
+      <div class="sbx-seg" id="sbxPlacement2" style="margin-top:6px">
+        <button type="button" data-mode="stack">Stacked · above title</button>
+      </div>
+    </div>
+
+    <h4>Size &amp; spacing</h4>
+    <div class="sbx-field">
+      <label>Icon size <span class="sbx-val" id="sizeVal">26px</span></label>
+      <input type="range" id="sizeRange" min="16" max="40" step="1" value="26" />
+    </div>
+    <div class="sbx-field">
+      <label>Gap to title <span class="sbx-val" id="gapVal">8px</span></label>
+      <input type="range" id="gapRange" min="-6" max="28" step="1" value="8" />
+    </div>
+    <div class="sbx-row2">
+      <div class="sbx-field">
+        <label>Nudge X <span class="sbx-val" id="nxVal">0</span></label>
+        <input type="range" id="nxRange" min="-10" max="10" step="0.5" value="0" />
+      </div>
+      <div class="sbx-field">
+        <label>Nudge Y <span class="sbx-val" id="nyVal">0</span></label>
+        <input type="range" id="nyRange" min="-10" max="10" step="0.5" value="0" />
+      </div>
+    </div>
+
+    <h4>Grey</h4>
+    <div class="sbx-field">
+      <label><span><span class="sbx-swatch" id="colorSwatch"></span>Lightness</span><span class="sbx-val" id="colorVal">60%</span></label>
+      <input type="range" id="colorRange" min="30" max="80" step="1" value="60" />
+    </div>
+
+    <h4>Swap icons</h4>
+    <div class="sbx-swap">
+      <div>
+        <label>Card 1 — Uni</label>
+        <select data-slot-select="0">
+          <option value="bot" selected>Bot / message square</option>
+          <option value="hand">Hand metal</option>
+          <option value="pawn">Chess pawn</option>
+          <option value="none">None</option>
+        </select>
+      </div>
+      <div>
+        <label>Card 2 — Mobile Games</label>
+        <select data-slot-select="1">
+          <option value="bot">Bot / message square</option>
+          <option value="hand" selected>Hand metal</option>
+          <option value="pawn">Chess pawn</option>
+          <option value="none">None</option>
+        </select>
+      </div>
+      <div>
+        <label>Card 3 — Collectibles</label>
+        <select data-slot-select="2">
+          <option value="bot">Bot / message square</option>
+          <option value="hand">Hand metal</option>
+          <option value="pawn" selected>Chess pawn</option>
+          <option value="none">None</option>
+        </select>
+      </div>
+    </div>
+
+    <button type="button" class="sbx-reset" id="sbxReset">Reset to defaults</button>
+
+    <div class="sbx-css">
+      <h4 style="margin-bottom:8px">CSS to copy</h4>
+      <textarea id="cssOut" readonly></textarea>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ICONS = {
+        bot:
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+          '<path d="M12 6V2H8" /><path d="M2 12h2" /><path d="M20 12h2" />' +
+          '<path d="M20 16a2 2 0 0 1-2 2H8.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 4 20.286V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z" />' +
+          '<path d="M9 11v2" /><path d="M15 11v2" />' +
+          '<circle cx="10" cy="18" r="0.5" fill="currentColor" /><circle cx="12" cy="18" r="0.5" fill="currentColor" /><circle cx="14" cy="18" r="0.5" fill="currentColor" />' +
+          '</svg>',
+        hand:
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+          '<path d="M18 12.5V10a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1.4" />' +
+          '<path d="M14 11V9a2 2 0 1 0-4 0v2" />' +
+          '<path d="M10 10.5V5a2 2 0 1 0-4 0v9" />' +
+          '<path d="m7 15-1.76-1.76a2 2 0 0 0-2.83 2.82l3.6 3.6C7.5 21.14 9.2 22 12 22h2a8 8 0 0 0 8-8V7a2 2 0 1 0-4 0v5" />' +
+          '</svg>',
+        pawn:
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+          '<g><path d="M5 20a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z" /><path d="m14.5 10 1.5 8" /><path d="M7 10h10" /><path d="m8 18 1.5-8" /></g>' +
+          '<circle cx="12" cy="6" r="4" />' +
+          '</svg>',
+        none: ''
+      };
+
+      var slots = document.querySelectorAll('.card-icon-slot');
+      var selects = document.querySelectorAll('[data-slot-select]');
+      var cardsEl = document.getElementById('sbxCards');
+
+      var DEFAULTS = { mode: 'inline', size: 26, gap: 8, nx: 0, ny: 0, lightness: 60 };
+      var state = Object.assign({}, DEFAULTS);
+
+      function renderSlots() {
+        slots.forEach(function (slot) {
+          var i = slot.getAttribute('data-slot');
+          var sel = document.querySelector('[data-slot-select="' + i + '"]');
+          slot.innerHTML = ICONS[sel.value] || '';
+        });
+      }
+
+      function hslGrey(l) {
+        return 'hsl(220 6% ' + l + '%)';
+      }
+
+      function apply() {
+        var root = document.documentElement.style;
+        root.setProperty('--sbx-size', state.size + 'px');
+        root.setProperty('--sbx-gap', state.gap + 'px');
+        root.setProperty('--sbx-nudge-x', state.nx + 'px');
+        root.setProperty('--sbx-nudge-y', state.ny + 'px');
+        var color = hslGrey(state.lightness);
+        root.setProperty('--sbx-color', color);
+
+        cardsEl.classList.toggle('placement-inline', state.mode === 'inline');
+        cardsEl.classList.toggle('placement-stack', state.mode === 'stack');
+
+        document.getElementById('sizeVal').textContent = state.size + 'px';
+        document.getElementById('gapVal').textContent = state.gap + 'px';
+        document.getElementById('nxVal').textContent = state.nx;
+        document.getElementById('nyVal').textContent = state.ny;
+        document.getElementById('colorVal').textContent = state.lightness + '%';
+        document.getElementById('colorSwatch').style.background = color;
+
+        document.querySelectorAll('#sbxPlacement button, #sbxPlacement2 button').forEach(function (b) {
+          b.classList.toggle('is-on', b.getAttribute('data-mode') === state.mode);
+        });
+
+        updateCssOut();
+      }
+
+      function updateCssOut() {
+        var lines = [];
+        lines.push('.card-head {');
+        lines.push('  display: flex;');
+        lines.push(state.mode === 'inline'
+          ? '  flex-direction: row;\n  align-items: center;'
+          : '  flex-direction: column;\n  align-items: flex-start;');
+        lines.push('  margin-bottom: 10px;');
+        lines.push('}');
+        lines.push('.card-head h3 { margin: 0; }');
+        lines.push('.card-icon-slot {');
+        lines.push(state.mode === 'inline'
+          ? '  margin-right: ' + state.gap + 'px;'
+          : '  margin-bottom: ' + state.gap + 'px;');
+        lines.push('}');
+        lines.push('.card-icon-slot svg {');
+        lines.push('  width: ' + state.size + 'px;');
+        lines.push('  height: ' + state.size + 'px;');
+        lines.push('  display: block;');
+        lines.push('  color: ' + hslGrey(state.lightness) + ';');
+        if (state.nx !== 0 || state.ny !== 0) {
+          lines.push('  transform: translate(' + state.nx + 'px, ' + state.ny + 'px);');
+        }
+        lines.push('}');
+        document.getElementById('cssOut').value = lines.join('\n');
+      }
+
+      document.getElementById('sizeRange').addEventListener('input', function (e) { state.size = +e.target.value; apply(); });
+      document.getElementById('gapRange').addEventListener('input', function (e) { state.gap = +e.target.value; apply(); });
+      document.getElementById('nxRange').addEventListener('input', function (e) { state.nx = +e.target.value; apply(); });
+      document.getElementById('nyRange').addEventListener('input', function (e) { state.ny = +e.target.value; apply(); });
+      document.getElementById('colorRange').addEventListener('input', function (e) { state.lightness = +e.target.value; apply(); });
+
+      document.querySelectorAll('#sbxPlacement button, #sbxPlacement2 button').forEach(function (b) {
+        b.addEventListener('click', function () { state.mode = b.getAttribute('data-mode'); apply(); });
+      });
+
+      selects.forEach(function (s) { s.addEventListener('change', renderSlots); });
+
+      document.getElementById('sbxReset').addEventListener('click', function () {
+        state = Object.assign({}, DEFAULTS);
+        document.getElementById('sizeRange').value = state.size;
+        document.getElementById('gapRange').value = state.gap;
+        document.getElementById('nxRange').value = state.nx;
+        document.getElementById('nyRange').value = state.ny;
+        document.getElementById('colorRange').value = state.lightness;
+        apply();
+      });
+
+      renderSlots();
+      apply();
+    })();
+  </script>
+</body>
+</html>
