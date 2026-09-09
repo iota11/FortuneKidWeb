@@ -14,12 +14,19 @@
        浏览器就会拿旧样式去配新 HTML（社交图标变巨大、Our Games 栅格错位就是这么来的）。
        每次改 css/ 或 js/ 里的文件，把全部页面上的 v= 一起换成当天日期。 -->
   <link rel="stylesheet" href="css/style.css?v=20260908" />
-  <link rel="stylesheet" href="css/uni.css?v=20260908" />
+  <link rel="stylesheet" href="css/uni.css?v=2026090907" />
   <script>document.documentElement.classList.add('js');</script>
   <!-- Hero 里那个可拖转的 3D 模型用的查看器，官方 web component，免打包直接用 -->
   <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
 </head>
 <body>
+  <div class="uni-shader" aria-hidden="true">
+    <canvas id="uni-shader-canvas"></canvas>
+    <div class="uni-dust">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+  </div>
+  <div class="uni-tv-overlay" aria-hidden="true"></div>
 
   <header class="nav" id="nav">
     <a class="brand" href="/">
@@ -282,5 +289,6 @@
 
   <script src="js/main.js?v=20260908" defer></script>
   <script src="js/uni.js?v=20260908" defer></script>
+  <script type="module" src="js/uni-shader.js?v=2026090904"></script>
 </body>
 </html>

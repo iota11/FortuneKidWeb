@@ -7,7 +7,134 @@
    写法跟 style.css 里 body:has(.hero) 那几条是同一个思路。 */
 body:has(.uni) {
   --bg: #aecbd9;
-  background: linear-gradient(180deg, #8fabbd 0%, #b7d2df 45%, #dbe8ed 100%);
+  background: linear-gradient(180deg, #a9c2ce 0%, #c7d9df 30%, #dfeaec 57%, #edf2f1 100%);
+}
+
+/* UNI 的背景是一张固定在视口里的低对比流体画布；正文、导航和页脚始终在它上面。
+   浏览器不支持 WebGPU 时，.is-fallback 会显示同样色系的静态渐变。 */
+.uni-shader {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.uni-shader canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0.48;
+}
+/* A sparse bank of dust at the left edge gives the scene a little depth.
+   It lives behind the page content, so the copy and model remain crisp. */
+.uni-dust {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: min(39vw, 510px);
+  overflow: hidden;
+}
+.uni-dust i {
+  position: absolute;
+  left: var(--x);
+  bottom: -8vh;
+  width: var(--size);
+  height: var(--size);
+  display: block;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: 0 0 calc(var(--size) * 1.8) rgba(255, 255, 255, 0.32);
+  opacity: 0;
+  filter: blur(var(--blur));
+  animation: uni-dust-drift var(--duration) linear var(--delay) infinite;
+  will-change: transform, opacity;
+}
+.uni-dust i:nth-child(1) { --x: 7%;  --size: 3px; --blur: 0.2px; --duration: 18s; --delay: -12s; }
+.uni-dust i:nth-child(2) { --x: 19%; --size: 5px; --blur: 0.7px; --duration: 25s; --delay: -7s; }
+.uni-dust i:nth-child(3) { --x: 31%; --size: 2px; --blur: 0px;  --duration: 16s; --delay: -14s; }
+.uni-dust i:nth-child(4) { --x: 45%; --size: 4px; --blur: 0.5px; --duration: 22s; --delay: -4s; }
+.uni-dust i:nth-child(5) { --x: 57%; --size: 2px; --blur: 0px;  --duration: 20s; --delay: -17s; }
+.uni-dust i:nth-child(6) { --x: 70%; --size: 5px; --blur: 0.9px; --duration: 27s; --delay: -19s; }
+.uni-dust i:nth-child(7) { --x: 82%; --size: 3px; --blur: 0.3px; --duration: 19s; --delay: -9s; }
+.uni-dust i:nth-child(8) { --x: 92%; --size: 2px; --blur: 0px;  --duration: 23s; --delay: -2s; }
+@keyframes uni-dust-drift {
+  0%   { transform: translate3d(0, 0, 0); opacity: 0; }
+  12%  { opacity: 0.18; }
+  52%  { transform: translate3d(18px, -52vh, 0); opacity: 0.28; }
+  88%  { opacity: 0.13; }
+  100% { transform: translate3d(36px, -110vh, 0); opacity: 0; }
+}
+.uni-shader.is-fallback {
+  background: linear-gradient(180deg, #a9c2ce 0%, #c7d9df 30%, #dfeaec 57%, #edf2f1 100%);
+}
+.uni-shader.is-fallback canvas { display: none; }
+body:has(.uni) .uni,
+body:has(.uni) .footer { position: relative; z-index: 1; }
+
+/* Bad-TV pass, minus the screen warp: scanlines, RGB interference and snow sit
+   over the image, but no page/model geometry is ever displaced or bent. */
+.uni-tv-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.58;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(232, 68, 84, 0.075) 0,
+      rgba(232, 68, 84, 0.075) 1px,
+      transparent 1px,
+      transparent 6px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 2px,
+      rgba(54, 188, 209, 0.06) 2px,
+      rgba(54, 188, 209, 0.06) 3px,
+      transparent 3px,
+      transparent 6px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(8, 15, 18, 0.08) 0,
+      rgba(8, 15, 18, 0.08) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  mix-blend-mode: soft-light;
+}
+.uni-tv-overlay::before,
+.uni-tv-overlay::after {
+  content: '';
+  position: absolute;
+  inset: -20%;
+}
+.uni-tv-overlay::before {
+  background:
+    radial-gradient(circle at 16% 22%, rgba(255, 255, 255, 0.44) 0 0.8px, transparent 1.2px) 0 0 / 7px 7px,
+    radial-gradient(circle at 78% 72%, rgba(8, 17, 20, 0.30) 0 0.9px, transparent 1.3px) 0 0 / 9px 11px;
+  opacity: 0.34;
+  animation: uni-tv-grain 0.16s steps(2, end) infinite;
+}
+.uni-tv-overlay::after {
+  height: 28%;
+  inset: -28% 0 auto;
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 7px, rgba(236, 255, 248, 0.16) 7px 8px),
+    linear-gradient(to bottom, transparent, rgba(226, 244, 239, 0.24), transparent);
+  opacity: 0.62;
+  animation: uni-tv-roll 8.5s linear infinite;
+}
+@keyframes uni-tv-grain {
+  0% { transform: translate3d(-2%, 1%, 0); }
+  35% { transform: translate3d(2%, -2%, 0); }
+  70% { transform: translate3d(1%, 2%, 0); }
+  100% { transform: translate3d(-1%, -1%, 0); }
+}
+@keyframes uni-tv-roll {
+  to { transform: translate3d(0, 560%, 0); }
 }
 
 /* ===== 布局 ===== */
@@ -92,12 +219,39 @@ body:has(.uni-copy > .uni-step--lead:only-child) .nav {
    但也别撑到全屏那么高。 */
 .uni-step--hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 640px);
-  gap: clamp(32px, 5vw, 76px);
+  grid-template-columns: minmax(440px, 1.18fr) minmax(320px, 570px);
+  gap: clamp(24px, 3.5vw, 56px);
   align-items: center;
   max-width: none;
 }
-.uni-step--hero .step-media { margin-top: 0; }
+.uni-step--hero .step-copy {
+  /* Sit a little lower than the model's visual centre, leaving room for its
+     upward drift without making the two columns feel vertically mismatched. */
+  transform: translateY(clamp(16px, 2vw, 28px));
+}
+.uni-step--hero .step-body { white-space: nowrap; }
+.uni-step--hero .step-media {
+  margin-top: 0;
+  transform: translateX(clamp(12px, 2vw, 32px));
+}
+
+/* Hero 文案在模型揭幕前先依次落位：标题、说明、状态各自只动一次，
+   既给首屏一点进入感，也不会碰现有文字内容或干扰模型的加载动画。 */
+.uni-step--hero .step-copy > * {
+  opacity: 0;
+  transform: translate3d(-22px, 18px, 0);
+  animation: uni-hero-copy-in 0.72s var(--ease-ui, ease) both;
+}
+.uni-step--hero .step-copy > :nth-child(1) { animation-delay: 0.10s; }
+.uni-step--hero .step-copy > :nth-child(2) { animation-delay: 0.22s; }
+.uni-step--hero .step-copy > :nth-child(3) { animation-delay: 0.34s; }
+
+@keyframes uni-hero-copy-in {
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
 
 /* Hero 下面的「Coming soon」：描边胶囊，跟 .btn-ghost / .contact-mail 同一套语言，
    但它只是个状态标签，不做 hover、不接收点击。
@@ -281,17 +435,34 @@ body:has(.uni-copy > .uni-step--lead:only-child) .nav {
      .uni-step--media 里，那两个变量在这没人写），transform 钉死不动。
      opacity 反过来留给下面的入场动效：初始 0，js/uni.js 在模型 load 完
      之后加 .is-shown，靠这条 transition 淡出来。 */
-  transform: none;
+  transform: scale(0.965) translate3d(-10px, 12px, 0);
   opacity: 0;
-  transition: opacity 0.9s var(--ease-ui, ease);
+  transition:
+    opacity 1.35s var(--ease-ui, ease),
+    transform 1.55s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.uni-card-frame--hero.is-shown { opacity: 1; }
+.uni-card-frame--hero.is-shown {
+  opacity: 1;
+  transform: none;
+}
 .uni-card-frame--hero model-viewer {
   width: 100%;
   height: 100%;
   display: block;
   --poster-color: transparent;
   --progress-bar-height: 0; /* 藏掉 model-viewer 自带那条加载进度条 */
+}
+.uni-card-frame--hero.is-shown model-viewer {
+  /* Keep the entrance transform on the frame and the idle motion on the
+     viewer so the two animations do not compete for the same transform. */
+  animation: uni-model-float 7.2s ease-in-out 0.45s infinite;
+  will-change: transform;
+}
+@keyframes uni-model-float {
+  /* One complete, soft bob, then a quiet beat at its resting position. */
+  0%, 18% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -10px, 0); }
+  82%, 100% { transform: translate3d(0, 0, 0); }
 }
 
 /* ===== 07 投资人收尾卡片 ===== */
@@ -364,6 +535,9 @@ body:has(.uni-copy > .uni-step--lead:only-child) .nav {
     min-height: 0;
     padding: 52px 0 8px;   /* 窄屏不再给带画面的段落加码，跟其他段落同一档 */
   }
+  .uni-step--hero .step-media { transform: none; }
+  .uni-step--hero .step-copy { transform: none; }
+  .uni-step--hero .step-body { white-space: normal; }
   .uni-card--hero { width: min(100%, 380px); }
   .uni-step--media .step-copy,
   .uni-step--flip .step-copy,
@@ -375,11 +549,20 @@ body:has(.uni-copy > .uni-step--lead:only-child) .nav {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .uni-dust { display: none; }
+  .uni-tv-overlay::before,
+  .uni-tv-overlay::after { animation: none; }
   .uni-layout.is-live .uni-step,
   .uni-layout.is-live .uni-step--media .step-copy { opacity: 1; transition: none; }
   /* 卡片保持常亮、画面不漂移：内容一样看得到，只是不动 */
   .uni-card-frame { opacity: 1; transform: none; }
   .uni-media { transform: none; }
   /* Hero 那张不淡入、不带转场，直接是最终状态 */
-  .uni-card-frame--hero { transition: none; }
+  .uni-card-frame--hero { transition: none; transform: none; }
+  .uni-card-frame--hero.is-shown model-viewer { animation: none; }
+  .uni-step--hero .step-copy > * {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
 }
