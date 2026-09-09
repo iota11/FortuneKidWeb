@@ -16,6 +16,8 @@
   <link rel="stylesheet" href="css/style.css?v=20260908" />
   <link rel="stylesheet" href="css/uni.css?v=20260908" />
   <script>document.documentElement.classList.add('js');</script>
+  <!-- Hero 里那个可拖转的 3D 模型用的查看器，官方 web component，免打包直接用 -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
 </head>
 <body>
 
@@ -41,14 +43,47 @@
 
       <div class="uni-copy" id="uni-copy">
 
-        <!-- 01 Hero -->
-        <section class="uni-step uni-step--lead" data-step="1">
-          <h1 class="step-lead">UNI</h1>
-          <p class="step-body">
-            An app for playing and creating 3d worlds with AI
-          </p>
-          <!-- 状态标签：只说明进度，不是按钮，所以不做 hover、也不可点 -->
-          <span class="uni-soon">Coming soon</span>
+        <!-- 01 Hero：文案在左，右边放一个可拖转的 3D 模型 -->
+        <section class="uni-step uni-step--lead uni-step--hero" data-step="1">
+          <div class="step-copy">
+            <h1 class="step-lead">UNI</h1>
+            <p class="step-body">
+              An app for playing and creating 3d worlds with AI
+            </p>
+            <!-- 状态标签：只说明进度，不是按钮，所以不做 hover、也不可点 -->
+            <span class="uni-soon">Coming soon</span>
+          </div>
+          <div class="step-media">
+            <figure class="uni-card uni-card--hero">
+              <!-- id 给 js/uni.js 挂入场动效用 -->
+              <div class="uni-card-frame uni-card-frame--hero" id="uni-hero-frame">
+                <!-- camera-orbit 的水平角是"歇着的角度"（65°，外角正对着左边文案）
+                     减 45°，不是最终朝向：js/uni.js 在模型 load 完之后把它转回
+                     65°，model-viewer 自己补间，这样入场就是转 45° 落定，不是
+                     硬切出现。改这个数记得连 js 里的 REST_ORBIT 一起改，两边得
+                     对得上。min/max-camera-orbit 把 phi（第二个角，俯仰）锁死在
+                     68°，theta（第一个角，水平）留 auto，所以只能横着转、
+                     不能上下扳。 -->
+                <model-viewer
+                  id="uni-hero-model"
+                  src="assets/uni/hero-model.glb"
+                  camera-orbit="20deg 68deg auto"
+                  min-camera-orbit="auto 68deg auto"
+                  max-camera-orbit="auto 68deg auto"
+                  field-of-view="30deg"
+                  exposure="1.15"
+                  shadow-intensity="0.6"
+                  shadow-softness="0.9"
+                  disable-zoom
+                  camera-controls
+                  loading="eager"
+                  reveal="auto"
+                  interaction-prompt="none"
+                  alt="A colorful low-poly town, a sample of the 3d worlds UNI is built to create"
+                ></model-viewer>
+              </div>
+            </figure>
+          </div>
         </section>
 
         <!-- TODO 下面 02–06 全部暂时隐藏，现在这一页只留 01 Hero。
