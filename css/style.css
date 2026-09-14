@@ -1681,6 +1681,83 @@ body:has(.hero-band) .nav:not(.is-scrolled) { --nav-link-ink: #fff; }
 .legal-table td:first-child { color: var(--ink); font-weight: 500; }
 .legal-table tbody tr:last-child td { border-bottom: none; }
 
+/* 法务页正文允许选中/复制：翻译、核对条款、复制邮箱都要用到，
+   跟全站"展示型页面不可选中"的默认值（见顶部 body 规则）分开处理。 */
+.legal, .legal * {
+  user-select: text;
+  -webkit-user-select: text;
+}
+.legal { cursor: auto; }
+
+/* ===== 法务页地区标签（privacy.html / privacy-cn.html 共用） =====
+   两个标签对应两块已经都在 HTML 里的 .legal 面板，点击只是本地 show/hide
+   （js/legal-tabs.js），不导航、不发请求。没有 JS 时整组隐藏，默认那块
+   .legal 照常可读——降级方案是"少一个切换按钮"，不是"看不到内容"。 */
+/* 默认不显示：没有 JS 时切换按钮点了也没用，直接不出现，默认那块 .legal
+   照常可读。`.js` 是加在 <html> 上的（见 <head> 里的同步小脚本），
+   写成 `.js .legal-tabs-wrap` 而不是 `:not(.js) .legal-tabs-wrap`——
+   后者的 :not() 只作用在选择器最右边那一节的"祖先链"上，body 本身就没有
+   .js 类，会一直命中，等于这条规则形同虚设。 */
+.legal-tabs-wrap { margin-top: 28px; display: none; }
+.js .legal-tabs-wrap { display: block; }
+.legal-tabs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  background: var(--surface-tint);
+  border-radius: var(--radius-sm);
+}
+.legal-tab {
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 9px 18px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--dur-ui) var(--ease-ui), color var(--dur-ui) var(--ease-ui);
+}
+.legal-tab:hover { color: var(--ink); }
+.legal-tab[aria-selected="true"] {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 4px rgba(20, 22, 26, 0.12);
+}
+.legal-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.legal-tabs-note {
+  margin: 10px 0 0;
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+}
+.legal-tabs-note a { color: var(--ink); font-weight: 500; }
+.legal-tabs-note a:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+/* CN 面板的次级小标题（原文里加粗但不算编号大节的行，如"（一）……"/"1. ……"），
+   分量介于 .legal h2 和正文之间，本站没有 h3 样式，专开一档给它。 */
+.legal-subhead {
+  color: var(--ink);
+  font-size: 1.02rem;
+  font-weight: 600;
+  margin: 22px 0 10px;
+}
+.legal h2 + .legal-subhead,
+.legal-subhead + .legal-subhead { margin-top: 0; }
+
+/* CN 面板目录：复用 .legal ul 的间距/字号，只去掉圆点、加下划线交互 */
+.legal-toc {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  font-size: 1.02rem;
+}
+.legal-toc li { margin-bottom: 8px; }
+.legal-toc a { color: var(--ink); font-weight: 500; text-decoration: none; }
+.legal-toc a:hover { text-decoration: underline; text-underline-offset: 2px; }
+
 
 /* ===== 首页 hero：循环视频背景 =====
    从 sandbox-hero-video.html 里拍板的一套参数（2026-09-08）。没搬过来的那些——
